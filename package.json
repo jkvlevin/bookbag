@@ -10,7 +10,11 @@
   "dependencies": {
     "babel-polyfill": "6.8.0",
     "bootstrap": "3.3.6",
+    "connect-flash": "^0.1.1",
+    "express-session": "^1.14.2",
     "jquery": "2.2.3",
+    "passport": "^0.3.2",
+    "passport-stormpath": "^0.2.4",
     "react": "15.0.2",
     "react-bootstrap": "^0.30.5",
     "react-dom": "15.0.2",
@@ -19,6 +23,8 @@
     "react-router-redux": "4.0.4",
     "redux": "3.5.2",
     "redux-thunk": "2.0.1",
+    "static-favicon": "^2.0.0-alpha",
+    "stormpath": "^0.18.5",
     "toastr": "2.1.2"
   },
   "devDependencies": {
