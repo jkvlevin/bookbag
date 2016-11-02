@@ -2,7 +2,7 @@
 var LocalStrategy   = require('passport-local').Strategy;
 
 // load up the user model
-var Student         = require('./models/student');
+var Student         = require('../models/student');
 
 // expose this function to our app using module.exports
 module.exports = function(passport) {
@@ -26,12 +26,10 @@ module.exports = function(passport) {
     });
 
     // =========================================================================
-    // LOCAL SIGNUP ============================================================
+    // LOCAL STUDENT SIGNUP ====================================================
     // =========================================================================
-    // we are using named strategies since we have one for login and one for signup
-    // by default, if there was no name, it would just be called 'local'
 
-    passport.use('local-signup', new LocalStrategy({
+    passport.use('student-signup', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
         usernameField : 'email',
         passwordField : 'password',
@@ -39,54 +37,55 @@ module.exports = function(passport) {
     },
     function(req, email, password, done) {
 
+    	if (email)
+            email = email.toLowerCase(); // Use lower-case e-mails to avoid case-sensitive e-mail matching
+
         // asynchronous
-        // User.findOne wont fire unless data is sent back
+        // Student.findOne wont fire unless data is sent back
         process.nextTick(function() {
 
-        // find a user whose email is the same as the forms email
-        // we are checking to see if the user trying to login already exists
-        Student.findOne({ 'local.email' :  email }, function(err, user) {
-            // if there are any errors, return the error
-            if (err)
-                return done(err);
+	        // find a user whose email is the same as the forms email
+	        // we are checking to see if the user trying to login already exists
+	        Student.findOne({ 'email' :  email }, function(err, user) {
+	            // if there are any errors, return the error
+	            if (err)
+	                return done(err);
 
-            // check to see if theres already a user with that email
-            if (user) {
-                return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
-            } else {
+	            // check to see if theres already a user with that email
+	            if (user) {
+	                return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
+	            } 
+	            else {
 
-                // if there is no user with that email
-                // create the user
-                var newStudent             = new Student();
+	                // if there is no user with that email
+	                // create the user
+	                var newStudent             = new Student();
 
-                // set the user's local credentials
-                newStudent.email     = email;
-                newStudent.password  = newUser.generateHash(password);
-                newStudent.firstName = req.body.firstName;
-                newStudent.lastName  = req.body.lastName;
+	                // set the user's local credentials
+	                newStudent.email     = email;
+	                newStudent.password  = newStudent.generateHash(password);
+	                newStudent.firstName = req.body.firstName;
+	                newStudent.lastName  = req.body.lastName;
 
+	                // save the user
+	                newStudent.save(function(err) {
+	                    if (err)
+	                        throw err;
+	                    return done(null, newStudent);
+	                });
+	            }
 
-                // save the user
-                newStudent.save(function(err) {
-                    if (err)
-                        throw err;
-                    return done(null, newUser);
-                });
-            }
-
-        });    
+	        });    
 
         });
 
     }));
 
     // =========================================================================
-    // LOCAL LOGIN =============================================================
+    // LOCAL STUDENT LOGIN =====================================================
     // =========================================================================
-    // we are using named strategies since we have one for login and one for signup
-    // by default, if there was no name, it would just be called 'local'
 
-    passport.use('local-login', new LocalStrategy({
+    passport.use('student-login', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
         usernameField : 'email',
         passwordField : 'password',
@@ -94,24 +93,29 @@ module.exports = function(passport) {
     },
     function(req, email, password, done) { // callback with email and password from our form
 
-        // find a user whose email is the same as the forms email
-        // we are checking to see if the user trying to login already exists
-        Student.findOne({ 'local.email' :  email }, function(err, user) {
-            // if there are any errors, return the error before anything else
-            if (err)
-                return done(err);
+		if (email)
+            email = email.toLowerCase(); // Use lower-case e-mails to avoid case-sensitive e-mail matching
 
-            // if no user is found, return the message
-            if (!user)
-                return done(null, false, req.flash('loginMessage', 'No user found.')); // req.flash is the way to set flashdata using connect-flash
+		process.nextTick(function() {
+	        // find a user whose email is the same as the forms email
+	        // we are checking to see if the user trying to login already exists
+	        Student.findOne({ 'email' :  email }, function(err, user) {
+	            // if there are any errors, return the error before anything else
+	            if (err)
+	                return done(err);
 
-            // if the user is found but the password is wrong
-            if (!user.validPassword(password))
-                return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')); // create the loginMessage and save it to session as flashdata
+	            // if no user is found, return the message
+	            if (!user)
+	                return done(null, false, req.flash('loginMessage', 'No user found.')); // req.flash is the way to set flashdata using connect-flash
 
-            // all is well, return successful user
-            return done(null, user);
-        });
+	            // if the user is found but the password is wrong
+	            if (!user.validPassword(password))
+	                return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')); // create the loginMessage and save it to session as flashdata
+
+	            // all is well, return successful user
+	            return done(null, user);
+	        });
+    	});
 
     }));
 
