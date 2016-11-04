@@ -41,7 +41,6 @@ module.exports = function(passport) {
             email = email.toLowerCase(); // Use lower-case e-mails to avoid case-sensitive e-mail matching
 
         // asynchronous
-        // User.findOne wont fire unless data is sent back
         process.nextTick(function() {
 
             // find a user whose email is the same as the forms email
@@ -97,6 +96,7 @@ module.exports = function(passport) {
         if (email)
             email = email.toLowerCase(); // Use lower-case e-mails to avoid case-sensitive e-mail matching
 
+        // asynchronous
         process.nextTick(function() {
             // find a user whose email is the same as the forms email
             // we are checking to see if the user trying to login already exists
