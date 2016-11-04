@@ -3,19 +3,19 @@ import { Link } from 'react-router';
 import { Form, FormGroup, FormControl, Grid, Row, Col, ControlLabel, Checkbox, Button } from 'react-bootstrap';
 import Header from '../../components/Header';
 import styles from './styles.css';
-import LoginBox from '../../containers/LoginPage/LoginBox'
+import SearchResults from '../../containers/SearchPage/SearchResults'
 
-class LoginPage extends React.Component {
+class SearchPage extends React.Component {
   render() {
     return (
-      <div className="login-container">
+      <div className="search-container">
       <Header />
       <Grid>
-        <LoginBox />
+        <SearchResults />
       </Grid>
       </div>
     );
   }
 }
 
-export default LoginPage;
+export default SearchPage;

@@ -1,0 +1,7 @@
+.login-box{
+	border-radius : 10px;
+	background-color : #4A4A51;
+	width: 40%;
+    position: relative;
+    margin: 32vh auto;
+}
