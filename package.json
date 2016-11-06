@@ -80,5 +80,8 @@
   },
   "repository": {
     "type": "git"
+  },
+  "engines": {
+    "node": "6.3.2"
   }
 }
