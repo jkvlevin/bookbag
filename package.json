@@ -3,6 +3,7 @@
     "start": "babel-node tools/srcServer.js"
   },
   "dependencies": {
+    "babel-cli": "6.8.0",
     "babel-polyfill": "6.8.0",
     "bootstrap": "3.3.6",
     "jquery": "2.2.3",
@@ -59,8 +60,5 @@
   },
   "repository": {
     "type": "git"
-  },
-  "engines": {
-    "node": "6.3.1"
   }
 }
