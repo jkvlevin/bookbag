@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "node_modules/.bin/babel-node tools/srcServer.js"
+    "start": "babel-node tools/srcServer.js"
   },
   "dependencies": {
     "babel-cli": "6.8.0",
