@@ -2,123 +2,163 @@
 Module to Manage Database Connection & Queries
 *******************************************************************************/
 
-var pg = require('pg');
-var Database = [];
+let pg = require('pg');
+let Database = [];
+const DATABASE_URL = 'postgres://xtlscmgxzqrpjq:su76vkQ798qEeiMi1MxsclLq_2@ec2-184-73-196-82.compute-1.amazonaws.com:5432/d3qu3p1gh95p7l';
 
 /******************************************************************************
 Initial Database Connection
 *******************************************************************************/
 
-Database.init = function() {
-	pg.defaults.ssl = true;
-	pg.connect(process.env.DATABASE_URL, function(err, client) {
-	  if (err) throw err;
-	  console.log('Connected to postgres! Getting schemas...');
-
-	  client.query('SELECT table_schema,table_name FROM information_schema.tables;').on('row', function(row) {
-	      console.log(JSON.stringify(row));
-	    });
-	});
-}
+pg.defaults.ssl = true;
+pg.connect(DATABASE_URL, function(err, client) {
+  if (err) throw err;
+  console.log('Connected to postgres! Getting schemas...');
+});
 
 /******************************************************************************
 STUDENT DATABASE QUERIES
 *******************************************************************************/
 
-// Get all of a user's classes and return them
-Database.getClasses = function(userId) {
-	pg.connect(process.env.DATABASE_URL, function(err, client) {
-		if (err) throw err;
+// Log in a user
+Database.validateUser = function(email, password, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		if (err) callback(err);
+		let query = client.query("SELECT * FROM students WHERE email = '" + email + "'");
+		query.on('row', function(row, result) {
+			console.log(row.password);
+			if(row.password == password) callback(null, "success");
+			callback(null, "failure");
+		});
+	});
+};
 
-		var query = client.query('SELECT name FROM ' + userId + '_courses');
+// Get all of a user's classes and return them
+Database.getClasses = function(email, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		if (err) callback(err);
+
+		let query = client.query("SELECT name FROM " + sanitizeEmail(email) + "_courses");
 		query.on('row', function(row, result) {
 			result.addRow(row);
 		});
 		query.on('end', function(result) {
 			return result.rows;
-		})
-	})
-}
+		});
+	});
+};
 
 // Get all of the chapters in a give student's course
-Database.getChapters = function(userId, courseName) {
-	pg.connect(process.env.DATABASE_URL, function(err, client) {
-		if (err) throw err;
+Database.getChapters = function(email, courseName, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		if (err) callback(err);
 
-		var query = client.query('SELECT * FROM ' + userId + courseName);
+		let query = client.query('SELECT * FROM ' + sanitizeEmail(email) + courseName);
 		query.on('row', function(row, result) {
 			result.addRow(row);
 		});
 		query.on('end', function(result) {
 			return result.rows;
-		})
-	})
-}
+		});
+	});
+};
 
 // Search a user's query and return the results
-Database.search = function(searchQuery) {
-	pg.connect(process.env.DATABASE_URL, function(err, client) {
-		if (err) throw err;
+Database.searchChapters = function(searchQuery, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		if (err) callback(err);
 
-		var query = client.query('SELECT * from chapters WHERE chapters.name = ' + searchQuery);
-	})
-}
+		let query = client.query("SELECT * FROM chapters WHERE title ILIKE '%" + searchQuery + "%'");
+		query.on('row', function(row, result) {
+			result.addRow(row);
+		});
+		query.on('end', function(result) {
+			callback(null, JSON.stringify(result.rows, null, "    "));
+		});
+	});
+};
 
 // Add a new student
-Database.addStudent = function(name, email) {
-	pg.connect(process.env.DATABASE_URL, function(err, client) {
-		if (err) throw err;
-
-		var query = client.query('INSERT INTO students VALUES (' + name + ',' + email + ')');
-	})
-}
+Database.addStudent = function(email, name, password, exp_date, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		if (err) callback(err);
+		let insertString = "INSERT INTO students (email, name, password, exp_date) VALUES ('" + email + "' , '" + name + "' , '" + password + "' , to_date('" + exp_date + "', 'YYYY/MM/DD'))";
+		client.query(insertString);
+		let newEmail = email.replace('@', '').replace('.', '') + "_courses";
+		let addString = "CREATE TABLE " + newEmail + " (courseName varchar(160))";
+		client.query(addString);
+		callback(null, "success");
+	});
+};
 
 // Delete a student
-Database.deleteStudent = function(email) {
-	pg.connect(process.env.DATABASE_URL, function(err, client) {
-		if (err) throw err;
+Database.deleteStudent = function(email, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		if (err) callback(err);
 
-		// var query = client.query('DELETE FROM students WHERE email = ' + email);
-	})
-}
+		client.query("DELETE FROM students WHERE email = '" + email + "'");
+
+		let courses = email.replace('@', '').replace('.', '') + "_courses";
+		let query = client.query("SELECT coursename FROM " + courses);
+		query.on('row', function(row, result) {
+			client.query("DROP TABLE " + email.replace('@', '').replace('.', '') + row.coursename.replace(' ', ''));
+		});
+		client.query("DROP TABLE " + courses);
+
+		callback(null, "success");
+	});
+};
 
 // Add a new course to a student
-Database.addCourse = function(userId, courseName) {
-	pg.connect(process.env.DATABASE_URL, function(err, client) {
-		if (err) throw err;
+Database.addCourse = function(email, courseName, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		if (err) callback(err);
 
-		client.query('INSERT INTO ' + userId + '_courses VALUES (' + courseName + ')');
-		client.query('CREATE TABLE ' + userId + courseName + 'chapter varchar(80)');
-	})
-}
+		// Insert the course into the student's courselist
+		let newEmail = email.replace('@', '').replace('.', '') + "_courses";
+		let insertString = "INSERT INTO " + newEmail + " VALUES ('" + courseName + "')";
+		client.query(insertString);
+
+		// Create a new table that holds all the chapters in this course
+		let id = email.replace('@', '').replace('.', '') + courseName.replace(' ', '');
+		client.query("CREATE TABLE " + id + " (chapter varchar(80))");
+		callback(null, "success");
+	});
+};
 
 // Add a chapter to a course
-Database.addChapter = function(userId, courseName) {
-	pg.connect(process.env.DATABASE_URL, function(err, client) {
-		if (err) throw err;
+Database.addChapter = function(email, courseName, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		if (err) callback(err);
 
-		client.query('INSERT INTO ' + userId + '_courses VALUES (' + courseName + ')');
-		client.query('CREATE TABLE ' + userId + courseName + 'chapter varchar(80)');
-	})
-}
+		
+		// client.query("INSERT INTO " + addString + "VALUES ('" + courseName + "')");
+		// client.query('CREATE TABLE ' + email + courseName + ' (chapter varchar(80))');
+	});
+};
 
 // Remove course from a student
-Database.deleteCourse = function(userId, courseName) {
-	pg.connect(process.env.DATABASE_URL, function(err, client) {
-		if (err) throw err;
+Database.deleteCourse = function(userId, courseName, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		if (err) callback(err);
 
-		client.query('DROP ' + userId + courseName);
+		client.query('DROP TABLE' + userId + courseName);
 		client.query('DELETE FROM ' + userId + '_courses WHERE name = ' + courseName);
-	})
-}
+		callback("successfully deleted course " + courseName);
+	});
+};
 
 // Remove a chapter from a student's course
-Database.deleteChapter = function(userId, courseName, chapterName) {
-	pg.connect(process.env.DATABASE_URL, function(err, client) {
-		if (err) throw err;
+Database.deleteChapter = function(email, courseName, chapterName, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		if (err) callback(err);
 
-		client.query('DELETE FROM ' + userId + courseName + ' WHERE name = ' + chapterName);
-	})
+		client.query('DELETE FROM ' + sanitizeEmail(email) + courseName + ' WHERE name = ' + chapterName);
+	});
+};
+
+function sanitizeEmail(email) {
+	return email.replace('@', '').replace('.', '');
 }
 
 /******************************************************************************
