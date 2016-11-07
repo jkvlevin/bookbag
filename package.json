@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "start": "babel-node tools/srcServer.js"
+    "start": "babel-node tools/srcServer.js",
+    "lint": "node_modules/.bin/esw webpack.config.* src tools"
   },
   "dependencies": {
     "babel-cli": "^6.18.0",

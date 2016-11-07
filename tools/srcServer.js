@@ -9,16 +9,16 @@ import open from 'open';
 const app = express();
 const compiler = webpack(config);
 
-var Database = require('./Database.js');
-var bodyParser = require('body-parser');
+let Database = require('./Database.js');
+let bodyParser = require('body-parser');
 // var Auth = require('Auth')
 
 /******************************************************************************
 Server Setup
 *******************************************************************************/
 
-var server = app.listen(process.env.PORT || 8080, function () {
-    var port = server.address().port;
+let server = app.listen(process.env.PORT || 8080, function () {
+    let port = server.address().port;
     console.log("App now running on port", port);
 });
 
@@ -47,8 +47,8 @@ Routes
 
 //login code
 app.get('/login', function(req, res) {
-  var userId = req.body.userId;
-  var pw = req.body.pw;
+  let userId = req.body.email;
+  let pw = req.body.pw;
 
   // Auth.login should try login, send either the correct user data
   // or a notification of login failure
@@ -56,10 +56,10 @@ app.get('/login', function(req, res) {
 });
 
 app.post('/signup', function(req, res) {
-	var name = req.body.name;
-	var pw = req.body.pw;
-	var email = req.body.email;
-	var exp_date = '2017-12-12';
+	let name = req.body.name;
+	let pw = req.body.pw;
+	let email = req.body.email;
+	let exp_date = '2017-12-12';
 
 	// Auth.creatAccount should try to create account and return either
 	// creation verification or creation error
@@ -71,12 +71,12 @@ app.post('/signup', function(req, res) {
 });
 
 app.post('/deleteStudent', function(req, res) {
-	var email = req.body.email;
+	let email = req.body.email;
 
 	Database.deleteStudent(email, function(err, data) {
 		if (err) throw Error(err);
 		res.end(data);
-	})
+	});
 });
 
 app.get('/student', function(req, res) {
@@ -105,6 +105,7 @@ app.post('/addCourse', function(req, res) {
 
 app.post('/student/searchShade', function(req, res) {
 	// Auth.verify(req.userId);
-	data = Database.shadeSearch(req.searchQuery);
-	res.send(data);
-})
+	Database.shadeSearch(req.searchQuery, function(err, data) {
+		res.send(data);
+	});
+});
