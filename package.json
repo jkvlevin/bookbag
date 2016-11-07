@@ -1,8 +1,10 @@
 {
   "scripts": {
-    "start": "babel-node tools/srcServer.js"
+    "start": "babel-node tools/srcServer.js",
+    "lint": "node_modules/.bin/esw webpack.config.* src tools"
   },
   "dependencies": {
+    "axios": "^0.15.2",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.8.0",
     "babel-loader": "^6.2.7",
@@ -33,7 +35,7 @@
     "redux": "3.5.2",
     "redux-thunk": "2.0.1",
     "style-loader": "0.13.1",
-    "toastr": "2.1.2",
+    "toastr": "^2.1.2",
     "url-loader": "0.5.7",
     "webpack": "1.13.0",
     "webpack-dev-middleware": "1.6.1",

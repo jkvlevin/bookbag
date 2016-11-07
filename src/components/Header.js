@@ -1,9 +1,10 @@
-import React, {PropTypes} from 'react';
+import React, { PropTypes } from 'react';
 import { Navbar, Nav, NavItem, FormGroup, FormControl } from 'react-bootstrap';
+import SearchBar from './SearchBar.js';
 
-const Header = () => {
+const Header = ({ showSearch, hasUser }) => {
   return (
-    <Navbar inverse fixedTop style={{textAlign:"center"}}>
+    <Navbar inverse fixedTop style={{textAlign:"center", backgroundColor:"#262228"}}>
     <Navbar.Header>
       <Navbar.Brand>
         <a href="/">BookBag</a>
@@ -12,17 +13,19 @@ const Header = () => {
     </Navbar.Header>
     <Navbar.Collapse>
         <Navbar.Form style={{display:"inline-block"}}>
-          <FormGroup>
-            <FormControl type="text" placeholder="Search" />
-          </FormGroup>
+          {showSearch ? <SearchBar /> : ""}
         </Navbar.Form>
       <Nav pullRight>
-        <NavItem eventKey={1} href="/about">About</NavItem>
-        <NavItem eventKey={2} href="/login">Login</NavItem>
+        {hasUser ? <NavItem eventKey={1} href="/">Logout</NavItem> : <NavItem eventKey={2} href="/login">Login</NavItem>}
       </Nav>
     </Navbar.Collapse>
   </Navbar>
   );
+};
+
+Header.propTypes = {
+  showSearch: PropTypes.bool.isRequired,
+  hasUser: PropTypes.bool.isRequired
 };
 
 export default Header;
