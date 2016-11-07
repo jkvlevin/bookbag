@@ -20,12 +20,25 @@ pg.connect(DATABASE_URL, function(err, client) {
 STUDENT DATABASE QUERIES
 *******************************************************************************/
 
-// Get all of a user's classes and return them
-Database.getClasses = function(userId) {
+// Log in a user
+Database.validateUser = function(email, password, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
-		if (err) throw err;
+		if (err) callback(err);
+		let query = client.query("SELECT * FROM students WHERE email = '" + email + "'");
+		query.on('row', function(row, result) {
+			console.log(row.password);
+			if(row.password == password) callback(null, "success");
+			callback(null, "failure");
+		});
+	});
+};
 
-		let query = client.query("SELECT name FROM " + userId + "_courses");
+// Get all of a user's classes and return them
+Database.getClasses = function(email, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		if (err) callback(err);
+
+		let query = client.query("SELECT name FROM " + sanitizeEmail(email) + "_courses");
 		query.on('row', function(row, result) {
 			result.addRow(row);
 		});
@@ -36,11 +49,11 @@ Database.getClasses = function(userId) {
 };
 
 // Get all of the chapters in a give student's course
-Database.getChapters = function(userId, courseName) {
+Database.getChapters = function(email, courseName, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
-		if (err) throw err;
+		if (err) callback(err);
 
-		let query = client.query('SELECT * FROM ' + userId + courseName);
+		let query = client.query('SELECT * FROM ' + sanitizeEmail(email) + courseName);
 		query.on('row', function(row, result) {
 			result.addRow(row);
 		});
@@ -53,9 +66,8 @@ Database.getChapters = function(userId, courseName) {
 // Search a user's query and return the results
 Database.searchChapters = function(searchQuery, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
-		if (err) {
-			callback(err);
-		}
+		if (err) callback(err);
+
 		let query = client.query("SELECT * FROM chapters WHERE title ILIKE '%" + searchQuery + "%'");
 		query.on('row', function(row, result) {
 			result.addRow(row);
@@ -115,9 +127,9 @@ Database.addCourse = function(email, courseName, callback) {
 };
 
 // Add a chapter to a course
-Database.addChapter = function(email, courseName) {
+Database.addChapter = function(email, courseName, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
-		if (err) throw err;
+		if (err) callback(err);
 
 		
 		// client.query("INSERT INTO " + addString + "VALUES ('" + courseName + "')");
@@ -126,23 +138,28 @@ Database.addChapter = function(email, courseName) {
 };
 
 // Remove course from a student
-Database.deleteCourse = function(userId, courseName) {
+Database.deleteCourse = function(userId, courseName, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
-		if (err) throw err;
+		if (err) callback(err);
 
 		client.query('DROP TABLE' + userId + courseName);
 		client.query('DELETE FROM ' + userId + '_courses WHERE name = ' + courseName);
+		callback("successfully deleted course " + courseName);
 	});
 };
 
 // Remove a chapter from a student's course
-Database.deleteChapter = function(userId, courseName, chapterName) {
+Database.deleteChapter = function(email, courseName, chapterName, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
-		if (err) throw err;
+		if (err) callback(err);
 
-		client.query('DELETE FROM ' + userId + courseName + ' WHERE name = ' + chapterName);
+		client.query('DELETE FROM ' + sanitizeEmail(email) + courseName + ' WHERE name = ' + chapterName);
 	});
 };
+
+function sanitizeEmail(email) {
+	return email.replace('@', '').replace('.', '');
+}
 
 /******************************************************************************
 PROFESSOR DATABASE QUERIES

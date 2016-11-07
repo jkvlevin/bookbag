@@ -46,13 +46,15 @@ Routes
 *******************************************************************************/
 
 //login code
-app.get('/login', function(req, res) {
-  let userId = req.body.email;
-  let pw = req.body.pw;
+app.post('/login', function(req, res) {
+  let email = req.body.email;
+  let password = req.body.password;
+  console.log(req.body);
 
-  // Auth.login should try login, send either the correct user data
-  // or a notification of login failure
-  // res = Auth.login(userId, pw);
+  Database.validateUser(email, password, function(err, data) {
+  	if (err) throw Error(err);
+  	res.end(data);
+  });
 });
 
 app.post('/signup', function(req, res) {
