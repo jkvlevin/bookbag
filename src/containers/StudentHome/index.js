@@ -1,10 +1,9 @@
 import React, { PropTypes } from 'react';
-import { Link } from 'react-router';
+import { Link, browserHistory } from 'react-router';
 import { Well, Button, Glyphicon } from 'react-bootstrap';
 import Header from '../../components/Header';
 import styles from './styles.css';
 import Sidebar from '../../components/Sidebar';
-import { browserHistory } from 'react-router';
 
 class StudentHome extends React.Component {
   constructor(props) {

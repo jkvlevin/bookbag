@@ -35,7 +35,7 @@ app.use(bodyParser.json());
 // to support URL-encoded bodies
 app.use(bodyParser.urlencoded({
   extended: true
-})); 
+}));
 
 app.get('*', function(req, res) {
   res.sendFile(path.join( __dirname, '../src/index.html'));
@@ -57,7 +57,8 @@ app.post('/login', function(req, res) {
   });
 });
 
-app.post('/signup', function(req, res) {
+app.post('/api/signup', function(req, res) {
+  console.log('hello');
 	let name = req.body.name;
 	let pw = req.body.pw;
 	let email = req.body.email;

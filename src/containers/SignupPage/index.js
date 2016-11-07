@@ -10,11 +10,12 @@ import { createAccount } from './actions.js';
 class SignupPage extends React.Component {
   constructor(props) {
    super(props);
-   this.state = { email: '', password: '', passwordConfirm: '' };
+   this.state = { email: '', password: '', passwordConfirm: '', name: ''};
    this.handleEChange = this.handleEChange.bind(this);
    this.handlePChange = this.handlePChange.bind(this);
    this.handlePCChange = this.handlePCChange.bind(this);
    this.handleSubmit = this.handleSubmit.bind(this);
+   this.handleNameChange = this.handleNameChange.bind(this);
   }
 
   handleEChange(event) {
@@ -29,10 +30,14 @@ class SignupPage extends React.Component {
     this.setState({passwordConfirm: event.target.value});
   }
 
+  handleNameChange(event) {
+    this.setState({name: event.target.value});
+  }
+
   handleSubmit(event) {
     event.preventDefault();
     if (this.state.password == this.state.passwordConfirm) {
-      createAccount(this.state.email, this.state.password);
+      createAccount(this.state.name, this.state.email, this.state.password);
       this.setState({email: '', password: '', passwordConfirm: ''});
     } else {
       toastr.error('Passwords do not match');
@@ -44,6 +49,11 @@ class SignupPage extends React.Component {
       <Header showSearch={false} hasUser={false}/>
       <div className="signup-box">
         <Form horizontal onSubmit={this.handleSubmit} style={{padding:"40px", textAlign:"center"}}>
+
+          <FormGroup controlId="formHorizontal">
+            <FormControl type="text" value={this.state.name} placeholder="Name" onChange={this.handleNameChange} />
+          </FormGroup>
+
           <FormGroup controlId="formHorizontalEmail">
             <FormControl type="email" value={this.state.email} placeholder="Email" onChange={this.handleEChange} />
           </FormGroup>
