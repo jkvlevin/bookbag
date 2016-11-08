@@ -1,10 +1,10 @@
 import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
 import { Link, browserHistory } from 'react-router';
 import { Well, Button, Glyphicon } from 'react-bootstrap';
 import Header from '../../components/Header';
 import styles from './styles.css';
 import Sidebar from '../../components/Sidebar';
-import Carousel from 'react-slick';
 
 class StudentHome extends React.Component {
   constructor(props) {
@@ -26,17 +26,20 @@ class StudentHome extends React.Component {
     };
     return (
       <div className="student-container">
-        <Header showSearch hasUser/>
-        <h2 style={{marginTop:"80px", marginLeft:"40px"}}> Welcome, Jake </h2>
-        <Carousel {...settings}>
-          <div><img src='http://placekitten.com/g/400/200' /></div>
-          <div><img src='http://placekitten.com/g/400/200' /></div>
-          <div><img src='http://placekitten.com/g/400/200' /></div>
-          <div><img src='http://placekitten.com/g/400/200' /></div>
-        </Carousel>
+        <Header showSearch hasUser currentUser={this.props.currentUser}/>
+        <h2 style={{marginTop:"80px", marginLeft:"40px"}}> Welcome, {this.props.currentUser} </h2>
       </div>
     );
   }
 }
 
-export default StudentHome;
+StudentHome.propTypes = {
+  currentUser: PropTypes.string.isRequired
+}
+
+function mapStateToProps(state) {
+  return {
+    currentUser: state.appReducer.currentUser
+  };
+}
+export default connect(mapStateToProps)(StudentHome);
