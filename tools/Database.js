@@ -37,7 +37,7 @@ Database.getCourses = function(email, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
 		if (err) callback(err);
 
-		let query = client.query("SELECT name FROM " + sanitizeEmail(email) + "_courses");
+		let query = client.query("SELECT * FROM " + sanitizeEmail(email) + "_courses");
 		query.on('row', function(row, result) {
 			result.addRow(row);
 		});

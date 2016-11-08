@@ -5,7 +5,7 @@ export function loadCourses(email) {
   return function (dispatch) {
     axios.post('/api/getcourses', {
       email: email
-    }).then(response) => {
+    }).then((response) => {
         const courses = response.data;
         dispatch(loadCoursesSuccess(courses));
     });

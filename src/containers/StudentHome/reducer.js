@@ -7,13 +7,15 @@ const initialState = {
   showSearch: false,
 };
 
-export default function studentHomeReducer(state = initialState, action) {
+function studentReducer(state = initialState, action) {
+  switch (action.type) {
     case types.LOAD_COURSES_SUCCESS:
       return Object.assign({}, state, {
-        courses: action.courses;
+        courses: action.courses
       });
-
     default:
       return state;
   }
 }
+
+export default studentReducer;

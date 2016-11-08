@@ -77,7 +77,7 @@ app.post('/api/deleteStudent', function(req, res) {
 	});
 });
 
-app.get('/api/getcourses', function(req, res) {
+app.post('/api/getcourses', function(req, res) {
 	// Auth.verify(req.email);
 	Database.getCourses(req.body.email, function(err, data) {
 		if (err) throw Error(err);
