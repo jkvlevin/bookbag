@@ -49,7 +49,15 @@ class SignupPage extends React.Component {
     return (
       <div className="signup-container">
       <Header showSearch={false} hasUser={false}/>
-      <div className="signup-box">
+      <h3 className="texts"> Sign up for BookBag today and get access to <br /> <br />
+        <h4 className="texts2" style={{color:"#cb4e4c", marginLeft:"15px"}}> Course management platform </h4> <br />
+        <h4 className="texts2" style={{color:"#cb4e4c", marginLeft:"15px"}}> Curated chapters of information written by professors worldwide </h4> <br />
+        <h4 className="texts2" style={{color:"#cb4e4c", marginLeft:"15px"}}> Unlimited chapter subscriptions </h4> <br />
+      </h3>
+
+
+      <div className="signup-box"> <br />
+        <h2 style={{color:"white", fontSize:"28px", marginLeft:"70px"}}> Sign up for BookBag </h2>
         <Form horizontal onSubmit={this.handleSubmit} style={{padding:"40px", textAlign:"center"}}>
 
           <FormGroup controlId="formHorizontal">
@@ -69,7 +77,7 @@ class SignupPage extends React.Component {
           </FormGroup>
 
           <FormGroup>
-            <Button type="submit" className="login-button" onClick={this.handleSubmit} style={{background:"#0375b4", borderColor:"#0375b4", width:"150px", height:"40px"}}>
+            <Button type="submit" className="login-button" onClick={this.handleSubmit} style={{background:"#008800", borderColor:"#008800", color:"white", width:"150px", height:"40px", marginTop:"20px"}}>
               Create Account
             </Button>
           </FormGroup>

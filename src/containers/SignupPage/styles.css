@@ -1,7 +1,7 @@
 .signup-container{
+  background-image: url("./createaccountbg.jpeg");
   height: 100vh;
   width: 100vw;
-  background-color: #E9EBEE;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -10,9 +10,21 @@
 }
 
 .signup-box {
-  margin-top: 30vh;
-  margin-left: 35vw;
+  margin-top: 20vh;
+  margin-right: 150px;
   border-radius: 10px;
   background-color: #262228;
-  width: 30vw;
+  width: 400px;
+  float:right;
+}
+
+.texts {
+  color: white;
+  margin-left: 25px;
+  float: left;
+  margin-top: 200px;
+}
+
+.text2 {
+  float:left;
 }
