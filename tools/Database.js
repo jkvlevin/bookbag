@@ -113,14 +113,15 @@ Database.addCourse = function(email, courseName, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
 		if (err) callback(err);
 
+    let cn = courseName.replace(' ', '');
+
 		// Insert the course into the student's courselist
-		let newEmail = email.replace('@', '').replace('.', '') + "_courses";
-		let insertString = "INSERT INTO " + newEmail + " VALUES ('" + courseName + "')";
+		let insertString = "INSERT INTO " + sanitizeEmail(email) + "_courses VALUES ('" + cn + "')";
 		client.query(insertString);
 
 		// Create a new table that holds all the chapters in this course
-		let id = email.replace('@', '').replace('.', '') + courseName.replace(' ', '');
-		client.query("CREATE TABLE " + id + " (chapter varchar(80))");
+    let createString = "CREATE TABLE " + sanitizeEmail(email) + cn + " (chapter varchar(80))"
+		client.query(createString);
 		callback(null, "success");
 	});
 };

@@ -15,3 +15,8 @@
   margin-top: 90px;
   width: 300px;
 }
+
+.modal-button: {
+  width: 250px;
+  border-radius: 5px;
+}

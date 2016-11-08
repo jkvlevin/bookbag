@@ -3,3 +3,7 @@
   margin: 0 !important;
   font-family: 'Avenir Next';
 }
+
+.btn:focus,.btn:active {
+   outline: none !important;
+}
