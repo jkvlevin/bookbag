@@ -4,6 +4,7 @@ import { Well, Button, Glyphicon } from 'react-bootstrap';
 import Header from '../../components/Header';
 import styles from './styles.css';
 import Sidebar from '../../components/Sidebar';
+import Carousel from 'react-slick';
 
 class StudentHome extends React.Component {
   constructor(props) {
@@ -16,13 +17,23 @@ class StudentHome extends React.Component {
   }
 
   render() {
+    var settings = {
+      dots: true,
+      infinite: true,
+      speed: 500,
+      slidesToShow: 1,
+      slidesToScroll: 1
+    };
     return (
       <div className="student-container">
         <Header showSearch hasUser/>
         <h2 style={{marginTop:"80px", marginLeft:"40px"}}> Welcome, Jake </h2>
-        <Well id="courses">
-          <Button style={{float:"left"}}><Glyphicon glyph="align-justify" /></Button><h4 style={{marginLeft:"60px"}}>My Courses </h4>
-        </Well>
+        <Carousel {...settings}>
+          <div><img src='http://placekitten.com/g/400/200' /></div>
+          <div><img src='http://placekitten.com/g/400/200' /></div>
+          <div><img src='http://placekitten.com/g/400/200' /></div>
+          <div><img src='http://placekitten.com/g/400/200' /></div>
+        </Carousel>
       </div>
     );
   }
