@@ -49,11 +49,10 @@ Routes
 app.post('/api/login', function(req, res) {
   let email = req.body.email;
   let password = req.body.password;
-  console.log(req.body);
 
   Database.validateUser(email, password, function(err, data) {
   	if (err) throw Error(err);
-  	res.end(data);
+  	res.sendStatus(data);
   });
 });
 
@@ -72,7 +71,7 @@ app.post('/api/createstudentaccount', function(req, res) {
 	});
 });
 
-app.post('/deleteStudent', function(req, res) {
+app.post('/api/deleteStudent', function(req, res) {
 	let email = req.body.email;
 
 	Database.deleteStudent(email, function(err, data) {
@@ -81,7 +80,7 @@ app.post('/deleteStudent', function(req, res) {
 	});
 });
 
-app.get('/student', function(req, res) {
+app.get('/api/getCourses', function(req, res) {
 	// Auth.verify(req.email);
 	Database.getClasses(req.body.email, function(err, data) {
 		if (err) throw Error(err);
@@ -89,7 +88,7 @@ app.get('/student', function(req, res) {
 	});
 });
 
-app.post('/search', function(req, res) {
+app.post('/api/search', function(req, res) {
 	// Auth.verify(req.email);
 	Database.searchChapters(req.body.searchQuery, function(err, data) {
 		if (err) throw(err);
@@ -97,7 +96,7 @@ app.post('/search', function(req, res) {
 	});
 });
 
-app.post('/addCourse', function(req, res) {
+app.post('/api/addCourse', function(req, res) {
 	// Auth.verify(req.email);
 	Database.addCourse(req.body.email, req.body.courseName, function(err, data) {
 		if (err) throw(err);
@@ -105,7 +104,7 @@ app.post('/addCourse', function(req, res) {
 	});
 });
 
-app.post('/student/searchShade', function(req, res) {
+app.post('/api/searchShade', function(req, res) {
 	// Auth.verify(req.userId);
 	Database.shadeSearch(req.searchQuery, function(err, data) {
 		res.send(data);
