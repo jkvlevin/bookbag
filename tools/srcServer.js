@@ -88,19 +88,31 @@ app.post('/api/getcourses', function(req, res) {
 app.post('/api/getcoursechapters', function(req, res) {
 	// Auth.verify(req.email);
 	var courses = [];
-  console.log("courses are " + req.body.courses);
-	for (var course in req.body.courses) {
-    console.log("course is " + req.body.courses[course].coursename);
-		Database.getCourseChapters(req.body.email, req.body.courses[course].coursename, function(err, data) {
-			if (err) throw Error(err);
-			courses.push({
-				courseName: course,
-				chapters : data
-			});
+	loopFunction(courses, req.body.courses, req.body.email, function(data) {
+		res.send(data);
+	})
+});
+
+var loopFunction = function(courses, rcourses, email, callback) {
+	for (var course in rcourses) {
+		getCourseCalls(courses, rcourses[course].coursename, email, function(data) {
+			courses.push(data);
+			if (courses.length == rcourses.length) {
+				callback(courses);
+			}
 		});
 	}
-	res.send(courses);
-});
+};
+
+var getCourseCalls = function(courses, coursename, email, callback) {
+	Database.getCourseChapters(email, coursename, function(err, data) {
+		if (err) throw Error(err);
+		callback({
+			courseName: coursename,
+			chapters : data
+		});
+	});
+};
 
 app.post('/api/search', function(req, res) {
 	// Auth.verify(req.email);
