@@ -11,7 +11,10 @@ const compiler = webpack(config);
 
 let Database = require('./Database.js');
 let bodyParser = require('body-parser');
-// var Auth = require('Auth')
+let Auth = require('./Auth.js')
+let jwt = require('jsonwebtoken')
+var con  = require('./config')
+
 
 /******************************************************************************
 Server Setup
@@ -42,6 +45,48 @@ app.get('*', function(req, res) {
 });
 
 /******************************************************************************
+Route middlewhere to verify token
+*******************************************************************************/
+
+var apiRoutes = express.Router();
+
+apiRoutes.use(function(req, res, next) {
+
+  // check header or url parameters or post parameters for token
+  var token = req.body.token || req.query.token || req.headers['x-access-token'];
+
+  console.log("hello");
+
+  // decode token
+  if (token) {
+
+  	  console.log("hi");
+
+    // verifies secret and checks exp
+    jwt.verify(token, con.secret, function(err, decoded) {      
+      if (err) {
+        return res.json({ success: false, message: 'Failed to authenticate token.' });    
+      } else {
+        // if everything is good, save to request for use in other routes
+        req.decoded = decoded;    
+        next();
+      }
+    });
+
+  } else {
+
+    // if there is no token
+    // return an error
+    return res.status(403).send({ 
+        success: false, 
+        message: 'No token provided.' 
+    });
+    
+  }
+});
+
+
+/******************************************************************************
 Routes
 *******************************************************************************/
 
@@ -49,13 +94,22 @@ Routes
 app.post('/api/login', function(req, res) {
   Database.validateUser(req.body.email, req.body.password, function(err, data) {
   	if (err) return;
-  	res.sendStatus(data);
+
+  	var token = Auth.generateToken(req.body.email);
+	res.json({
+		success: true,
+		message: 'Enjoy your token!',
+		token: token
+	});
+  	
+  	//res.sendStatus(data);
   });
 });
 
 app.post('/api/createstudentaccount', function(req, res) {
 	let name = req.body.name;
-	let pw = req.body.pw;
+	//let pw = req.body.pw;
+	let pw = Auth.hashPassword(req.body.pw);
 	let email = req.body.email;
 	let exp_date = '2017-12-12';
 
@@ -64,7 +118,14 @@ app.post('/api/createstudentaccount', function(req, res) {
 	// Auth.createAccount(name, pw, email);
 	Database.addStudent(email, name, pw, exp_date, function(err, data) {
 		if (err) throw Error(err);
-		res.end(data);
+
+		var token = Auth.generateToken(email);
+
+		//res.end(data);
+		res.json({
+			success: true,
+			token: token
+		});
 	});
 });
 

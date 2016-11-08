@@ -1,5 +1,5 @@
 /******************************************************************************
-Module to Manage Auth
+Module to manage Auth
 *******************************************************************************/
 
 var bcrypt  = require('bcrypt-nodejs');
@@ -17,7 +17,5 @@ exports.validatePassword = function(attemptedPassword, hashedPassword) {
 }
 
 exports.generateToken = function(user) {
-	return jwt.sign(user, config.secret, {
-		expiresIn: 3600 // in seconds
-	});
+	return jwt.sign(user, config.secret);
 }
