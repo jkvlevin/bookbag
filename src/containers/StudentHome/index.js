@@ -66,7 +66,7 @@ class StudentHome extends React.Component {
           handleSettingsClick={this.handleSettingsClick}
           addCourseModal={this.props.addCourseModal}
         />
-        <h2 style={{marginTop:"80px", marginLeft:"180px", fontSize:"22px"}}> Welcome, {this.props.currentUser} </h2>
+        <h2 style={{marginTop:"80px", marginLeft:"180px", fontSize:"22px"}}> Welcome back, </h2>
 
         <Modal show={this.props.showModal} onHide={this.props.closeModal} style={{marginTop:"100px"}}>
             <Modal.Header closeButton>
