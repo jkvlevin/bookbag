@@ -16,7 +16,7 @@ export function createAccount(name, email, password) {
       email: email
     }).then((response) => {
       if(response.data !== 'success') {
-        toastr.error('Login failure');
+        toastr.error('Account creation failure');
       } else {
         dispatch(createAccountSuccess());
         dispatch(setUser(email));

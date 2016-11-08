@@ -7,6 +7,7 @@ import routes from './routes';
 import configureStore from './configureStore';
 import { Provider } from 'react-redux';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import '../node_modules/toastr/build/toastr.min.css';
 
 const store = configureStore();
 

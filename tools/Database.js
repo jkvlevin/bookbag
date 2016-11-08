@@ -27,7 +27,7 @@ Database.validateUser = function(email, password, callback) {
 		let query = client.query("SELECT * FROM students WHERE email = '" + email + "'");
 		query.on('row', function(row, result) {
 			if(row.password == password) callback(null, 200);
-			else callback(null, 404);
+			else callback(null, 202);
 		});
 	});
 };
@@ -130,7 +130,7 @@ Database.addChapter = function(email, courseName, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
 		if (err) callback(err);
 
-		
+
 		// client.query("INSERT INTO " + addString + "VALUES ('" + courseName + "')");
 		// client.query('CREATE TABLE ' + email + courseName + ' (chapter varchar(80))');
 	});

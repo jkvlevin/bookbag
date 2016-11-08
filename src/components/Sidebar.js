@@ -1,21 +1,13 @@
 import React, { PropTypes } from 'react';
 import { Button } from 'react-bootstrap';
+import { browserHistory } from 'react-router';
 
-const Sidebar = ({ handleSearch }) => {
+const Sidebar = () => {
   return (
-    <div style={{width:"140px", height:"100vh", backgroundColor:"#2ebd59", padding:"10px", float:"left"}}>
-      <h4 style={{marginTop:"80px"}}> Subscriptions </h4>
-      <Button style={{backgroundColor:"rgba(0,0,0,0)", border:"none"}}> Current Courses </Button>
-      <Button style={{backgroundColor:"rgba(0,0,0,0)", border:"none"}}> My Chapters </Button>
-      <h4 style={{marginTop:"20px"}}> Discover </h4>
-      <Button onClick={handleSearch} style={{backgroundColor:"rgba(0,0,0,0)", border:"none"}}> Search </Button>
-      <Button style={{backgroundColor:"rgba(0,0,0,0)", border:"none"}}> Browse </Button>
+    <div style={{width:"140px", height:"100vh", backgroundColor:"#262228", padding:"10px", float:"left"}}>
+      <h4 style={{marginTop:"80px", color:"#B0B0B0", marginLeft:"5px"}}> My Courses </h4>
     </div>
   );
-};
-
-Sidebar.propTypes = {
-  handleSearch: PropTypes.func.isRequired
 };
 
 export default Sidebar;
