@@ -87,10 +87,17 @@ app.post('/api/getcourses', function(req, res) {
 
 app.get('/api/getcoursechapters', function(req, res) {
 	// Auth.verify(req.email);
-	Database.getCourseChapters(req.body.email, req.body.courseName, function(err, data) {
-		if (err) throw Error(err);
-		res.send(data);
-	});
+	var courses[];
+	for (course in req.body.courses) {
+		Database.getCourseChapters(req.body.email, course, function(err, data) {
+			if (err) throw Error(err);
+			courses.push({
+				courseName: course,
+				chapters : data
+			});
+		});
+	}
+	res.send(courses);
 });
 
 app.post('/api/search', function(req, res) {
