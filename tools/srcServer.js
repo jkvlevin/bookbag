@@ -77,9 +77,17 @@ app.post('/api/deleteStudent', function(req, res) {
 	});
 });
 
-app.get('/api/getCourses', function(req, res) {
+app.get('/api/getcourses', function(req, res) {
 	// Auth.verify(req.email);
-	Database.getClasses(req.body.email, function(err, data) {
+	Database.getCourses(req.body.email, function(err, data) {
+		if (err) throw Error(err);
+		res.send(data);
+	});
+});
+
+app.get('/api/getcoursechapters', function(req, res) {
+	// Auth.verify(req.email);
+	Database.getCourseChapters(req.body.email, req.body.courseName, function(err, data) {
 		if (err) throw Error(err);
 		res.send(data);
 	});
