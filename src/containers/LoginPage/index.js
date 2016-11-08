@@ -32,8 +32,8 @@ class LoginPage extends React.Component {
   render() {
     return (
       <div className="login-container">
-      <Header showSearch={false} hasUser={false}/>
-        <div className="login-box">
+        <div className="login-box"> <br />
+          <h2 style={{color:"white", fontSize:"28px", marginLeft:"155px"}}> Sign In </h2>
           <Form horizontal onSubmit={this.handleSubmit} style={{padding:"40px", textAlign:"center"}}>
             <FormGroup controlId="formHorizontalEmail">
               <FormControl type="email" value={this.state.email} placeholder="Email" onChange={this.handleEChange} />
@@ -44,13 +44,13 @@ class LoginPage extends React.Component {
             </FormGroup>
 
             <FormGroup>
-              <Button type="submit" className="login-button" onClick={this.handleSubmit} style={{background:"#0375b4", borderColor:"#0375b4", width:"100px", height:"40px"}}>
-                Sign in
+              <Button type="submit" className="login-button" onClick={this.handleSubmit} style={{background:"#008800", color:"white", borderColor:"#008800", width:"200px", height:"40px"}}>
+                Sign In
               </Button>
             </FormGroup>
 
             <FormGroup>
-              <a href="/signup">Sign Up</a>
+              <p style={{color:"white"}}> Not a member yet? <a href="/signup" style={{color:"#008800", marginLeft:"10px"}}>Sign up now</a> </p>
             </FormGroup>
           </Form>
         </div>
