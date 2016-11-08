@@ -1,9 +1,18 @@
 .student-container{
   height: 100%;
   width: 100vw;
-  background-color: #E9EBEE;
+  background-color: white;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+  float: left;
+}
+
+#courses {
+  position: absolute;
+  margin-left: 200px;
+  margin-top: 90px;
+  width: 300px;
+
 }

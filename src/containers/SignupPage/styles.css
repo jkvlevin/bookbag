@@ -1,9 +1,18 @@
 .signup-container{
-  height: 100%;
+  height: 100vh;
   width: 100vw;
   background-color: #E9EBEE;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+  float: left;
+}
+
+.signup-box {
+  margin-top: 30vh;
+  margin-left: 35vw;
+  border-radius: 10px;
+  background-color: #262228;
+  width: 30vw;
 }
