@@ -2,23 +2,22 @@ import * as types from '../../actionTypes';
 import { setUser } from '../App/actions.js';
 import { browserHistory } from 'react-router';
 import axios from 'axios';
+import toastr from 'toastr';
 
 export function login(email, password) {
-  return (dispatch) => {
-    // axios.post('bookbagapp/heroku.com/userlogin', {
-    //   email: email,
-    //   password: password
-    // })
-    // .then(res => {
-    //   user = res.data;
-    const user = {
+  return function (dispatch) {
+    axios.post('/api/login', {
       email: email,
       password: password
-    };
-    dispatch(loginSuccess());
-    setUser(user);
-    browserHistory.push("/student");
-    // });
+    }).then((response) => {
+      if(response.status !== 200) {
+        toastr.error('Login failure');
+      } else {
+        dispatch(loginSuccess());
+        dispatch(setUser(email));
+        browserHistory.push("/student");
+      }
+    });
   };
 }
 

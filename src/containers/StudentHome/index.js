@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
 import { Link, browserHistory } from 'react-router';
 import { Well, Button, Glyphicon, Carousel } from 'react-bootstrap';
 import Header from '../../components/Header';
@@ -54,9 +55,20 @@ class StudentHome extends React.Component {
               </Carousel.Caption>
             </Carousel.Item>
         </Carousel>
+        <Header showSearch hasUser currentUser={this.props.currentUser}/>
+        <h2 style={{marginTop:"80px", marginLeft:"40px"}}> Welcome, {this.props.currentUser} </h2>
       </div>
     );
   }
 }
 
-export default StudentHome;
+StudentHome.propTypes = {
+  currentUser: PropTypes.string.isRequired
+}
+
+function mapStateToProps(state) {
+  return {
+    currentUser: state.appReducer.currentUser
+  };
+}
+export default connect(mapStateToProps)(StudentHome);

@@ -10,31 +10,54 @@
   float: left;
 }
 
-.shadow {
-  background-color: rgba(0,0,0,.6);
-  margin-left:10vw;
-  width: 70vw;
-  height: 30vh;
-  border-radius: 10px;
+#sign-in {
+  float: right;
+  margin-top: 50px;
+  margin-right: 40px;
+  font-size: 18px;
+  color: white;
+  width: 100px;
+  background-color: #008800;
 }
 
-@media (max-height: 480px) {
-  .shadow {
-    background-color: rgba(0,0,0,0);
-  }
+#divider {
+  width: 150px;
+  font-size: 5px;
+  margin-left: 55px;
+  border-top: 1px solid #aaaaaa;
+  border-bottom: 1px solid #ffffff;
 }
 
 #profBtn {
-  margin-top: 20vh;
+  color: white;
+  font-size: 18px;
+  font-family: circular;
+  background-color: rgba(0,0,0,.2);
+  margin-top: 120px;
   height: 50px;
   border-color: #262228;
   border-width: 1px;
+  margin-left: 35px;
+  font-family: 'Avenir Next' !important;
+}
+
+#profBtn:hover {
+  background-color:	#008800;
 }
 
 #stdBtn {
-  margin-top: 20vh;
-  margin-left: 5vw;
+  color: white;
+  font-size: 18px;
+  font-family: circular;
+  background-color: rgba(0,0,0,.2);
+  margin-top: 120px;
   height: 50px;
   border-color: #262228;
   border-width: 1px;
+  margin-left: 35px;
+  font-family: 'Avenir Next' !important;
+}
+
+#stdBtn:hover {
+  background-color: #008800;
 }
