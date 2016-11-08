@@ -27,13 +27,13 @@ Database.validateUser = function(email, password, callback) {
 		let query = client.query("SELECT * FROM students WHERE email = '" + email + "'");
 		query.on('row', function(row, result) {
 			if(row.password == password) callback(null, 200);
-			else callback(null, 404);
+			else callback(null, 202);
 		});
 	});
 };
 
-// Get all of a user's classes and return them
-Database.getClasses = function(email, callback) {
+// Get all of a user's courses and return them
+Database.getCourses = function(email, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
 		if (err) callback(err);
 
@@ -42,13 +42,13 @@ Database.getClasses = function(email, callback) {
 			result.addRow(row);
 		});
 		query.on('end', function(result) {
-			return result.rows;
+			callback(null, JSON.stringify(result.rows, null, "    "));
 		});
 	});
 };
 
 // Get all of the chapters in a give student's course
-Database.getChapters = function(email, courseName, callback) {
+Database.getCourseChapters = function(email, courseName, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
 		if (err) callback(err);
 
@@ -57,7 +57,7 @@ Database.getChapters = function(email, courseName, callback) {
 			result.addRow(row);
 		});
 		query.on('end', function(result) {
-			return result.rows;
+			callback(null, JSON.stringify(result.rows, null, "    "));
 		});
 	});
 };
