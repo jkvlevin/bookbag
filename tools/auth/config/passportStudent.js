@@ -7,27 +7,27 @@ var Student         = require('../models/student');
 // expose this function to our app using module.exports
 module.exports = function(passport) {
 
-    // =========================================================================
-    // passport session setup ==================================================
-    // =========================================================================
-    // required for persistent login sessions
-    // passport needs ability to serialize and unserialize users out of session
+	// =========================================================================
+	// passport session setup ==================================================
+	// =========================================================================
+	// required for persistent login sessions
+	// passport needs ability to serialize and unserialize users out of session
 
-    // used to serialize the user for the session
-    passport.serializeUser(function(user, done) {
-        done(null, user.id);
-    });
+	// used to serialize the user for the session
+	passport.serializeUser(function(user, done) {
+		done(null, user.id);
+	});
 
-    // used to deserialize the user
-    passport.deserializeUser(function(id, done) {
-        Student.findById(id, function(err, user) {
-            done(err, user);
-        });
-    });
+	// used to deserialize the user
+	passport.deserializeUser(function(id, done) {
+		Student.findById(id, function(err, user) {
+			done(err, user);
+		});
+	});
 
-    // =========================================================================
-    // LOCAL STUDENT SIGNUP ====================================================
-    // =========================================================================
+	// =========================================================================
+	// LOCAL STUDENT SIGNUP ====================================================
+	// =========================================================================
 
     passport.use('student-signup', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
@@ -41,7 +41,6 @@ module.exports = function(passport) {
             email = email.toLowerCase(); // Use lower-case e-mails to avoid case-sensitive e-mail matching
 
         // asynchronous
-        // Student.findOne wont fire unless data is sent back
         process.nextTick(function() {
 
 	        // find a user whose email is the same as the forms email
@@ -65,7 +64,7 @@ module.exports = function(passport) {
 	                newStudent.email     = email;
 	                newStudent.password  = newStudent.generateHash(password);
 	                newStudent.firstName = req.body.firstName;
-	                newStudent.lastName  = req.body.lastName;
+	                //newStudent.lastName  = req.body.lastName;
 
 	                // save the user
 	                newStudent.save(function(err) {
@@ -96,6 +95,7 @@ module.exports = function(passport) {
 		if (email)
             email = email.toLowerCase(); // Use lower-case e-mails to avoid case-sensitive e-mail matching
 
+        // asynchronous
 		process.nextTick(function() {
 	        // find a user whose email is the same as the forms email
 	        // we are checking to see if the user trying to login already exists

@@ -9,9 +9,42 @@ import open from 'open';
 const app = express();
 const compiler = webpack(config);
 
-var Database = require('./Database.js');
+//var Database = require('./Database.js');
 var bodyParser = require('body-parser');
 // var Auth = require('Auth')
+
+var mongoose = require('mongoose');
+var passport = require('passport');
+var flash    = require('connect-flash');
+
+var morgan       = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser   = require('body-parser');
+var session      = require('express-session');
+
+var configDB = require('./auth/config/database.js');
+
+require('./auth/config/passportProf')(passport); // pass passport for configuration
+require('./auth/config/passportStudent')(passport); // pass passport for configuration
+
+mongoose.connect(configDB.url); // connect to our database
+
+app.use(morgan('dev')); // log every request to the console
+app.use(cookieParser()); // read cookies (needed for auth)
+app.use(bodyParser.json()); // get information from html forms
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
+// required for passport
+app.use(session({
+    secret: 'ilovescotchscotchyscotchscotch', // session secret
+    resave: true,
+    saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
+app.use(flash()); // use connect-flash for flash messages stored in session
+
 
 /******************************************************************************
 Server Setup
@@ -46,65 +79,67 @@ Routes
 *******************************************************************************/
 
 //login code
-app.get('/login', function(req, res) {
-  var userId = req.body.userId;
-  var pw = req.body.pw;
+// app.get('/login', function(req, res) {
+//   var userId = req.body.userId;
+//   var pw = req.body.pw;
 
-  // Auth.login should try login, send either the correct user data
-  // or a notification of login failure
-  // res = Auth.login(userId, pw);
-});
+//   // Auth.login should try login, send either the correct user data
+//   // or a notification of login failure
+//   // res = Auth.login(userId, pw);
+// });
 
-app.post('/signup', function(req, res) {
-	var name = req.body.name;
-	var pw = req.body.pw;
-	var email = req.body.email;
-	var exp_date = '2017-12-12';
 
-	// Auth.creatAccount should try to create account and return either
-	// creation verification or creation error
-	// Auth.createAccount(name, pw, email);
-	Database.addStudent(email, name, pw, exp_date, function(err, data) {
-		if (err) throw Error(err);
-		res.end(data);
-	});
-});
+// app.post('/signup', function(req, res) {
+// 	var name = req.body.name;
+// 	var pw = req.body.pw;
+// 	var email = req.body.email;
+// 	var exp_date = '2017-12-12';
 
-app.post('/deleteStudent', function(req, res) {
-	var email = req.body.email;
+// 	// Auth.creatAccount should try to create account and return either
+// 	// creation verification or creation error
+// 	// Auth.createAccount(name, pw, email);
+// 	Database.addStudent(email, name, pw, exp_date, function(err, data) {
+// 		if (err) throw Error(err);
+// 		res.end(data);
+// 	});
+// });
 
-	Database.deleteStudent(email, function(err, data) {
-		if (err) throw Error(err);
-		res.end(data);
-	})
-});
+// app.post('/deleteStudent', function(req, res) {
+// 	var email = req.body.email;
 
-app.get('/student', function(req, res) {
-	// Auth.verify(req.email);
-	Database.getClasses(req.body.email, function(err, data) {
-		if (err) throw Error(err);
-		res.send(data);
-	});
-});
+// 	Database.deleteStudent(email, function(err, data) {
+// 		if (err) throw Error(err);
+// 		res.end(data);
+// 	})
+// });
 
-app.post('/search', function(req, res) {
-	// Auth.verify(req.email);
-	Database.searchChapters(req.body.searchQuery, function(err, data) {
-		if (err) throw(err);
-		res.end(data);
-	});
-});
 
-app.post('/addCourse', function(req, res) {
-	// Auth.verify(req.email);
-	Database.addCourse(req.body.email, req.body.courseName, function(err, data) {
-		if (err) throw(err);
-		res.end(data);
-	});
-});
+// app.get('/student', function(req, res) {
+// 	// Auth.verify(req.email);
+// 	Database.getClasses(req.body.email, function(err, data) {
+// 		if (err) throw Error(err);
+// 		res.send(data);
+// 	});
+// });
 
-app.post('/student/searchShade', function(req, res) {
-	// Auth.verify(req.userId);
-	data = Database.shadeSearch(req.searchQuery);
-	res.send(data);
-})
+// app.post('/search', function(req, res) {
+// 	// Auth.verify(req.email);
+// 	Database.searchChapters(req.body.searchQuery, function(err, data) {
+// 		if (err) throw(err);
+// 		res.end(data);
+// 	});
+// });
+
+// app.post('/addCourse', function(req, res) {
+// 	// Auth.verify(req.email);
+// 	Database.addCourse(req.body.email, req.body.courseName, function(err, data) {
+// 		if (err) throw(err);
+// 		res.end(data);
+// 	});
+// });
+
+// app.post('/student/searchShade', function(req, res) {
+// 	// Auth.verify(req.userId);
+// 	data = Database.shadeSearch(req.searchQuery);
+// 	res.send(data);
+// })
