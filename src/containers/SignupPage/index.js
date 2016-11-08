@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 import { Form, FormGroup, FormControl, Grid, Row, Col, ControlLabel, Checkbox, Button } from 'react-bootstrap';
 import Header from '../../components/Header';
 import styles from './styles.css';
-import { createAccount } from './actions.js';
+import * as actions from './actions.js';
 import toastr from 'toastr';
 
 {/* TODO CLEANUP GENERAL HANDLERS, ADD CREATE ACCOUNT VALIDATION., MORE FIELDS? */}
@@ -93,7 +93,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    createAccount: (name, email, password) => dispatch(createAccount(name, email, password))
+    createAccount: (name, email, password) => dispatch(actions.createAccount(name, email, password))
   };
 }
 

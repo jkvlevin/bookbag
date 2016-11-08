@@ -46,7 +46,7 @@ Routes
 *******************************************************************************/
 
 //login code
-app.post('/login', function(req, res) {
+app.post('/api/login', function(req, res) {
   let email = req.body.email;
   let password = req.body.password;
   console.log(req.body);
@@ -57,8 +57,7 @@ app.post('/login', function(req, res) {
   });
 });
 
-app.post('/api/signup', function(req, res) {
-  console.log('hello');
+app.post('/api/createstudentaccount', function(req, res) {
 	let name = req.body.name;
 	let pw = req.body.pw;
 	let email = req.body.email;

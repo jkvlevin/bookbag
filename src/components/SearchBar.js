@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { FormGroup, FormControl } from 'react-bootstrap';
 
-const SearchBar = ({ handleSearch }) => {
+const SearchBar = () => {
   return (
       <FormGroup>
-        <FormControl onSubmit={handleSearch} type="text" placeholder="Search" style={{width:"25vw"}}/>
+        <FormControl  type="text" placeholder="Search" style={{width:"25vw"}}/>
       </FormGroup>
   );
 };
+
+// SearchBar.propTypes = {
+//   handleSearch: PropTypes.func.isRequired
+// };
 
 export default SearchBar;

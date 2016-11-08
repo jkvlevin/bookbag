@@ -25,7 +25,6 @@ class LoginPage extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    alert('Text field value is: ' + this.state.email + this.state.password);
     this.props.login(this.state.email, this.state.password);
     this.setState({email: '', password: ''});
   }
