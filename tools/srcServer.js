@@ -77,7 +77,11 @@ app.post('/api/deleteStudent', function(req, res) {
 	});
 });
 
+<<<<<<< HEAD
 app.post('/api/getcourses', function(req, res) {
+=======
+app.get('/api/getcourses', function(req, res) {
+>>>>>>> 3469d3196bed092399203652b836104634aaa060
 	// Auth.verify(req.email);
 	Database.getCourses(req.body.email, function(err, data) {
 		if (err) throw Error(err);

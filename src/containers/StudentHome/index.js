@@ -8,6 +8,7 @@ import Sidebar from '../../components/Sidebar';
 import CourseCarousel from './CourseCarousel';
 import * as actions from './actions.js';
 
+
 class StudentHome extends React.Component {
   constructor(props) {
    super(props);
