@@ -26,8 +26,8 @@ Database.validateUser = function(email, password, callback) {
 		if (err) callback(err);
 		let query = client.query("SELECT * FROM students WHERE email = '" + email + "'");
 		query.on('row', function(row, result) {
-			if(row.password.equals(password)) callback(null, 200);
-			callback(null, 404);
+			if(row.password == password) callback(null, 200);
+			else callback(null, 404);
 		});
 	});
 };

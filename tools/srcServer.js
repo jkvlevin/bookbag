@@ -47,11 +47,8 @@ Routes
 
 //login code
 app.post('/api/login', function(req, res) {
-  let email = req.body.email;
-  let password = req.body.password;
-
-  Database.validateUser(email, password, function(err, data) {
-  	if (err) throw Error(err);
+  Database.validateUser(req.body.email, req.body.password, function(err, data) {
+  	if (err) return;
   	res.sendStatus(data);
   });
 });
