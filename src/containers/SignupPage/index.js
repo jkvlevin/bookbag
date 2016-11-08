@@ -4,8 +4,10 @@ import { Link } from 'react-router';
 import { Form, FormGroup, FormControl, Grid, Row, Col, ControlLabel, Checkbox, Button } from 'react-bootstrap';
 import Header from '../../components/Header';
 import styles from './styles.css';
-import toastr from 'toastr';
 import { createAccount } from './actions.js';
+import toastr from 'toastr';
+
+{/* TODO CLEANUP GENERAL HANDLERS, ADD CREATE ACCOUNT VALIDATION., MORE FIELDS? */}
 
 class SignupPage extends React.Component {
   constructor(props) {
@@ -37,7 +39,7 @@ class SignupPage extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
     if (this.state.password == this.state.passwordConfirm) {
-      createAccount(this.state.name, this.state.email, this.state.password);
+      this.props.createAccount(this.state.name, this.state.email, this.state.password);
       this.setState({email: '', password: '', passwordConfirm: ''});
     } else {
       toastr.error('Passwords do not match');
@@ -79,4 +81,20 @@ class SignupPage extends React.Component {
   }
 }
 
-export default SignupPage;
+SignupPage.propTypes = {
+  createAccount: PropTypes.func.isRequired
+};
+
+function mapStateToProps(state) {
+  return {
+    isValid: state.signupReducer.isValid
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    createAccount: (name, email, password) => dispatch(createAccount(name, email, password))
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignupPage);
