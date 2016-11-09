@@ -7,23 +7,31 @@ export function loadCourses(email) {
       email: email
     }).then((response) => {
         const courses = response.data;
+        const courseNames = [];
+        for (var course in courses) {
+          courseNames.push(courses[course].coursename);
+        }
+
+        dispatch(loadCourseNamesSuccess(courseNames));
         dispatch(loadCourseChapters(email, courses));
     });
   };
 }
 
 export function loadCourseChapters(email, courses) {
-  console.log(courses);
   return function (dispatch) {
     axios.post('/api/getcoursechapters', {
       email: email,
       courses: courses
     }).then((response) => {
         const coursesWithChapters = response.data;
-        console.log(coursesWithChapters);
         dispatch(loadCoursesSuccess(coursesWithChapters));
     });
   };
+}
+
+export function loadCourseNamesSuccess(courseNames) {
+  return { type: types.LOAD_COURSE_NAMES_SUCCESS, courseNames };
 }
 
 export function loadCoursesSuccess(courses) {

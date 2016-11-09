@@ -1,18 +1,19 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link, browserHistory } from 'react-router';
-import { Well, Button, Glyphicon, Carousel, Modal, Form, FormControl, FormGroup, InputGroup } from 'react-bootstrap';
+import { Well, Button, Glyphicon, Modal, Form, FormControl, FormGroup, InputGroup } from 'react-bootstrap';
 import Header from '../../components/Header';
-import styles from './styles.css';
 import Sidebar from '../../components/Sidebar/Sidebar.js';
+import CourseCarousel from '../../components/CourseCarousel/CourseCarousel.js';
 import * as actions from './actions.js';
+import styles from './styles.css';
 
 
 class StudentHome extends React.Component {
   constructor(props) {
    super(props);
 
-   this.state = { addCourseName: ''};
+   this.state = { addCourseName: '', index: 0, direction: null};
 
    this.handleCoursesClick = this.handleCoursesClick.bind(this);
    this.handleBrowseClick = this.handleBrowseClick.bind(this);
@@ -20,6 +21,7 @@ class StudentHome extends React.Component {
    this.handleSettingsClick = this.handleSettingsClick.bind(this);
    this.handleACNChange = this.handleACNChange.bind(this);
    this.submitAddCourse = this.submitAddCourse.bind(this);
+   this.handleSelect = this.handleSelect.bind(this);
  }
 
  componentDidMount() {
@@ -53,20 +55,27 @@ class StudentHome extends React.Component {
    this.props.closeModal();
  }
 
+ handleSelect(selectedIndex, e) {
+   this.setState({
+     index: selectedIndex,
+     direction: e.direction
+   });
+ }
+
  render() {
 
     return (
       <div className="student-container">
         <Header showSearch hasUser currentUser={this.props.currentUser}/>
         <Sidebar
-          courses={this.props.courses}
+          courseNames={this.props.courseNames}
           handleCoursesClick={this.handleCoursesClick}
           handleBrowseClick={this.handleBrowseClick}
           handleSearchClick={this.handleSearchClick}
           handleSettingsClick={this.handleSettingsClick}
           addCourseModal={this.props.addCourseModal}
         />
-        <h2 style={{marginTop:"80px", marginLeft:"180px", fontSize:"22px"}}> Welcome back, </h2>
+        <h2 style={{marginTop:"80px", marginLeft:"180px", fontSize:"22px", color:"white"}}> My Courses </h2>
 
         <Modal show={this.props.showModal} onHide={this.props.closeModal} style={{marginTop:"100px"}}>
             <Modal.Header closeButton>
@@ -88,6 +97,13 @@ class StudentHome extends React.Component {
             </Form>
           </Modal.Body>
         </Modal>
+
+        <div id="course-carousel-container" style={{overflowY:"scroll", overflowX:"hidden", top:"150px", bottom:"0px", left:"180px", right:"40px", position:"absolute", backgroundColor:"#231f25", borderRadius:"15px"}}>
+          {this.props.courseNames.map(courseName =>
+            <CourseCarousel key={courseName} courseName={courseName} index={this.state.index} direction={this.state.direction} handleSelect={this.handleSelect} />
+          )}
+        </div>
+
       </div>
     );
   }
@@ -100,14 +116,16 @@ StudentHome.propTypes = {
   addCourseModal: PropTypes.func.isRequired,
   closeModal: PropTypes.func.isRequired,
   showModal: PropTypes.bool.isRequired,
-  addCourse: PropTypes.func.isRequired
+  addCourse: PropTypes.func.isRequired,
+  courseNames: PropTypes.array.isRequired
 };
 
 function mapStateToProps(state) {
   return {
     currentUser: state.appReducer.currentUser,
     courses: state.studentReducer.courses,
-    showModal: state.studentReducer.showModal
+    showModal: state.studentReducer.showModal,
+    courseNames: state.studentReducer.courseNames
   };
 }
 

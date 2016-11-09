@@ -4,7 +4,7 @@
   width: 20%;
   border-radius: 5px;
   text-align: center;
-  
+
 }
 
 .chapter img {
@@ -12,4 +12,8 @@
   width: 100%;
   display: block;
   border-radius: 5px;
+}
+
+.carousel-control {
+  background-image: none !important;
 }
