@@ -11,7 +11,7 @@ export function login(email, password) {
       password: password
     }).then((response) => {
       if(response.status !== 200) {
-        toastr.error('Login failure');
+        toastr.error('Login failure, invalid username or password');
       } else {
         dispatch(loginSuccess());
         dispatch(setUser(email));

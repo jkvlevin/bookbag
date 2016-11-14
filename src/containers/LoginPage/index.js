@@ -6,6 +6,8 @@ import Header from '../../components/Header';
 import styles from './styles.css';
 import * as actions from './actions.js';
 
+{/* TODO condense handlers into general, form validation */}
+
 class LoginPage extends React.Component {
   constructor(props) {
    super(props);

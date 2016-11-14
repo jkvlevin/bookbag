@@ -138,13 +138,42 @@ app.post('/api/deleteStudent', function(req, res) {
 	});
 });
 
-app.get('/api/getCourses', function(req, res) {
+app.post('/api/getcourses', function(req, res) {
 	// Auth.verify(req.email);
-	Database.getClasses(req.body.email, function(err, data) {
+	Database.getCourses(req.body.email, function(err, data) {
 		if (err) throw Error(err);
 		res.send(data);
 	});
 });
+
+app.post('/api/getcoursechapters', function(req, res) {
+	// Auth.verify(req.email);
+	var courses = [];
+	loopFunction(courses, req.body.courses, req.body.email, function(data) {
+		res.send(data);
+	})
+});
+
+var loopFunction = function(courses, rcourses, email, callback) {
+	for (var course in rcourses) {
+		getCourseCalls(courses, rcourses[course].coursename, email, function(data) {
+			courses.push(data);
+			if (courses.length == rcourses.length) {
+				callback(courses);
+			}
+		});
+	}
+};
+
+var getCourseCalls = function(courses, coursename, email, callback) {
+	Database.getCourseChapters(email, coursename, function(err, data) {
+		if (err) throw Error(err);
+		callback({
+			courseName: coursename,
+			chapters : data
+		});
+	});
+};
 
 app.post('/api/search', function(req, res) {
 	// Auth.verify(req.email);
@@ -156,6 +185,7 @@ app.post('/api/search', function(req, res) {
 
 app.post('/api/addCourse', function(req, res) {
 	// Auth.verify(req.email);
+  console.log("The Course is " + req.body.courseName);
 	Database.addCourse(req.body.email, req.body.courseName, function(err, data) {
 		if (err) throw(err);
 		res.end(data);

@@ -4,7 +4,6 @@ Module to Manage Database Connection & Queries
 
 let pg = require('pg');
 let Database = [];
-let Auth = require('./Auth.js')
 const DATABASE_URL = 'postgres://xtlscmgxzqrpjq:su76vkQ798qEeiMi1MxsclLq_2@ec2-184-73-196-82.compute-1.amazonaws.com:5432/d3qu3p1gh95p7l';
 
 /******************************************************************************
@@ -27,30 +26,29 @@ Database.validateUser = function(email, password, callback) {
 		if (err) callback(err);
 		let query = client.query("SELECT * FROM students WHERE email = '" + email + "'");
 		query.on('row', function(row, result) {
-			//if(row.password == password) callback(null, 200);
-			if (Auth.validatePassword(password, row.password)) callback(null, 200);
-			else callback(null, 404);
+			if(row.password == password) callback(null, 200);
+			else callback(null, 202);
 		});
 	});
 };
 
-// Get all of a user's classes and return them
-Database.getClasses = function(email, callback) {
+// Get all of a user's courses and return them
+Database.getCourses = function(email, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
 		if (err) callback(err);
 
-		let query = client.query("SELECT name FROM " + sanitizeEmail(email) + "_courses");
+		let query = client.query("SELECT * FROM " + sanitizeEmail(email) + "_courses");
 		query.on('row', function(row, result) {
 			result.addRow(row);
 		});
 		query.on('end', function(result) {
-			return result.rows;
+			callback(null, JSON.stringify(result.rows, null, "    "));
 		});
 	});
 };
 
 // Get all of the chapters in a give student's course
-Database.getChapters = function(email, courseName, callback) {
+Database.getCourseChapters = function(email, courseName, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
 		if (err) callback(err);
 
@@ -59,7 +57,7 @@ Database.getChapters = function(email, courseName, callback) {
 			result.addRow(row);
 		});
 		query.on('end', function(result) {
-			return result.rows;
+			callback(null, JSON.stringify(result.rows, null, "    "));
 		});
 	});
 };
@@ -115,14 +113,15 @@ Database.addCourse = function(email, courseName, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
 		if (err) callback(err);
 
+    let cn = courseName.replace(' ', '');
+
 		// Insert the course into the student's courselist
-		let newEmail = email.replace('@', '').replace('.', '') + "_courses";
-		let insertString = "INSERT INTO " + newEmail + " VALUES ('" + courseName + "')";
+		let insertString = "INSERT INTO " + sanitizeEmail(email) + "_courses VALUES ('" + cn + "')";
 		client.query(insertString);
 
 		// Create a new table that holds all the chapters in this course
-		let id = email.replace('@', '').replace('.', '') + courseName.replace(' ', '');
-		client.query("CREATE TABLE " + id + " (chapter varchar(80))");
+    let createString = "CREATE TABLE " + sanitizeEmail(email) + cn + " (chapter varchar(80))"
+		client.query(createString);
 		callback(null, "success");
 	});
 };
@@ -132,7 +131,7 @@ Database.addChapter = function(email, courseName, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
 		if (err) callback(err);
 
-		
+
 		// client.query("INSERT INTO " + addString + "VALUES ('" + courseName + "')");
 		// client.query('CREATE TABLE ' + email + courseName + ' (chapter varchar(80))');
 	});

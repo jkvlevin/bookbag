@@ -20,7 +20,7 @@ const Header = ({ showSearch, hasUser, currentUser}) => {
           <MenuItem eventKey={1.1}>Action</MenuItem>
           <MenuItem eventKey={3.2}>Another action</MenuItem>
           <MenuItem divider />
-          <MenuItem eventKey={3.3}>Separated link</MenuItem>
+          <MenuItem href={'/'} eventKey={3.3}>Logout</MenuItem>
         </NavDropdown> : <NavItem eventKey={2} href="/login">Login</NavItem>}
       </Nav>
     </Navbar.Collapse>
