@@ -1,0 +1,142 @@
+@media (min-width: 491px) {
+  #librarybar-container {
+    background-color: white;
+    background-size: cover;
+    height: auto;
+    min-height: 100%;
+    width: 320px;
+    border-right: thin solid #B0B0B0;
+    float: left;
+  }
+
+  #library-head {
+    background-color: #262228;
+    color: #F8F8F8;
+    height: 28px;
+    padding: 1px;
+  }
+
+  .Collapsible__contentOuter {
+    max-height: 450px !important;
+  }
+
+  .Collapsible__trigger {
+    display: block;
+    font-size: 17px;
+    font-weight: 400;
+    text-decoration: none;
+    color: #333333;
+    position: relative;
+    border: 1px solid white;
+    padding: 10px;
+    background: #2DBE60;
+    color: #F8F8F8; }
+    .Collapsible__trigger:after {
+      content: url('./arrow-204-16.png');
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      display: block;
+      transition: transform 100ms; }
+    .Collapsible__trigger.is-open:after {
+      transform: rotateZ(180deg);
+      top:5px;
+    }
+
+    .list-group-item {
+      border-top: none !important;
+      border-left: none !important;
+      border-right: none !important;
+      border-radius: 0px !important;
+    }
+
+
+  #addFolderBtn {
+    border-color: white;
+    margin-bottom: 15px;
+  }
+
+  #addFolderBtn:hover {
+    background-color: white;
+  }
+
+  #addFolderBtn:focus {
+    outline: none !important;
+  }
+
+  #none-tag {
+    font-family: "Avenir Next";
+    font-size: 10px;
+    padding: 5px;
+  }
+}
+
+@media (max-width: 490px) {
+  #librarybar-container {
+    height: auto;
+    min-height: 100%;
+    width: 100%;
+    margin-top: 51px;
+  }
+
+  #library-head {
+    background-color: #262228;
+    color: #F8F8F8;
+    height: 28px;
+    padding: 1px;
+  }
+
+  .Collapsible__contentOuter {
+    max-height: 450px !important;
+  }
+
+  .Collapsible__trigger {
+    display: block;
+    font-size: 17px;
+    font-weight: 400;
+    text-decoration: none;
+    color: #333333;
+    position: relative;
+    border: 1px solid white;
+    padding: 10px;
+    background: #2DBE60;
+    color: #F8F8F8; }
+    .Collapsible__trigger:after {
+      content: url('./arrow-204-16.png');
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      display: block;
+      transition: transform 100ms; }
+    .Collapsible__trigger.is-open:after {
+      transform: rotateZ(180deg);
+      top:5px;
+    }
+
+    .list-group-item {
+      border-top: none !important;
+      border-left: none !important;
+      border-right: none !important;
+      border-radius: 0px !important;
+    }
+
+
+  #addFolderBtn {
+    border-color: white;
+    margin-bottom: 15px;
+  }
+
+  #addFolderBtn:hover {
+    background-color: white;
+  }
+
+  #addFolderBtn:focus {
+    outline: none !important;
+  }
+
+  #none-tag {
+    font-family: "Avenir Next";
+    font-size: 10px;
+    padding: 5px;
+  }
+}

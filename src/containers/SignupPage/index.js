@@ -57,7 +57,8 @@ class SignupPage extends React.Component {
 
 
       <div className="signup-box"> <br />
-        <h2 style={{color:"white", fontSize:"28px", marginLeft:"70px"}}> Sign up for BookBag </h2>
+
+        <div style={{textAlign:"center"}}><h2 style={{color:"white", fontSize:"28px"}}> Sign up for BookBag </h2></div>
         <Form horizontal onSubmit={this.handleSubmit} style={{padding:"40px", textAlign:"center"}}>
 
           <FormGroup controlId="formHorizontal">

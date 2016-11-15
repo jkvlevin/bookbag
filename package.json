@@ -30,6 +30,7 @@
     "re-carousel": "^1.2.6",
     "react": "15.0.2",
     "react-bootstrap": "^0.30.5",
+    "react-collapsible": "^1.2.0",
     "react-dom": "15.0.2",
     "react-icons": "^2.2.1",
     "react-redux": "4.4.5",

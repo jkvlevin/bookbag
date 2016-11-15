@@ -1,13 +1,14 @@
 .student-container{
   height: 100vh;
   width: 100vw;
-  background-color: #231f25;
+  background-color: white;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
   float: left;
-  overflow: hidden;
+  overflow: auto;
+  padding: 0;
 }
 
 #courses {
