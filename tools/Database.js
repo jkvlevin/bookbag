@@ -24,7 +24,7 @@ Account Queries
 Database.validateUser = function(email, password, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
 		if (err) callback(err);
-		let query = client.query("SELECT * FROM students WHERE email = '" + email + "'");
+		let query = client.query("SELECT * FROM users WHERE email = '" + email + "'");
 		query.on('row', function(row, result) {
 			if(row.password == password) callback(null, 200);
 			else if(row.password != password) callback(null, 202);
@@ -136,7 +136,7 @@ Database.getCourses = function(email, callback) {
 			result.addRow(row);
 		});
 		query.on('end', function(result) {
-			callback(null, JSON.stringify(result.rows, null, "    "));
+			callback(null, result.rows);
 		});
 	});
 };
@@ -157,11 +157,11 @@ Database.getFolders = function(email, callback) {
 };
 
 // Get all of the chapters in a give student's course
-Database.getCourseChapters = function(email, courseName, callback) {
+Database.getCourseChapters = function(prof, courseName, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
 		if (err) callback(err);
-
-		let query = client.query('SELECT * FROM ' + sanitizeEmail(email) + courseName);
+		let cn = courseName.replace(' ', '');
+		let query = client.query('SELECT * FROM ' + sanitizeEmail(prof) + cn + "_chapters");
 		query.on('row', function(row, result) {
 			result.addRow(row);
 		});

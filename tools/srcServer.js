@@ -100,7 +100,11 @@ Student Retreival APIs
 app.post('/api/student/getcourses', function(req, res) {
 	Database.getCourses(req.body.email, function(err, data) {
 		if (err) throw Error(err);
-		res.send(data);
+		var courses = [];
+		getCourseData(courses, data, req.body.email, function(d) {
+			
+			res.send(JSON.stringify(d));
+		})
 	});
 });
 
@@ -112,13 +116,26 @@ app.post('/api/getfolders', function(req, res) {
 	});
 });
 
-app.post('/api/getcoursechapters', function(req, res) {
-	// Auth.verify(req.email);
-	var courses = [];
-	getCourseData(courses, req.body.courses, req.body.email, function(data) {
-		res.send(data);
-	})
-});
+var getCourseData = function(courses, courseData, email, callback) {
+	for (var course in courseData) {
+		getCourseCalls(courses, courseData[course].coursename, courseData[course].prof, function(data) {
+			courses.push(data);
+			if (courses.length == courseData.length) {
+				callback(courses);
+			}
+		});
+	}
+};
+
+var getCourseCalls = function(courses, coursename, prof, callback) {
+	Database.getCourseChapters(prof, coursename, function(err, data) {
+		if (err) throw Error(err);
+		callback({
+			courseName: coursename,
+			chapters : data
+		});
+	});
+};
 
 app.post('/api/getfolderchapters', function(req, res) {
 	// Auth.verify(req.email);
@@ -140,27 +157,6 @@ var getFolderData = function(folders, rfolders, email, callback) {
 };
 
 var getFolderCalls = function(courses, coursename, email, callback) {
-	Database.getCourseChapters(email, coursename, function(err, data) {
-		if (err) throw Error(err);
-		callback({
-			courseName: coursename,
-			chapters : data
-		});
-	});
-};
-
-var getCourseData = function(courses, rcourses, email, callback) {
-	for (var course in rcourses) {
-		getCourseCalls(courses, rcourses[course].coursename, email, function(data) {
-			courses.push(data);
-			if (courses.length == rcourses.length) {
-				callback(courses);
-			}
-		});
-	}
-};
-
-var getCourseCalls = function(courses, coursename, email, callback) {
 	Database.getCourseChapters(email, coursename, function(err, data) {
 		if (err) throw Error(err);
 		callback({
