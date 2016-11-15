@@ -4,6 +4,7 @@
     position: fixed;
     display: block;
     z-index: 300;
+    width: 100%;
   }
 
   #library-menu {
@@ -12,11 +13,13 @@
     max-width: 320px;
     border-right: thin solid #B0B0B0;
     height: 100vh;
+    float: left;
   }
 
   #course-display {
     width: 70%;
-
+    height: 100vh;
+    display: flex;
   }
 
   #library-head {
@@ -86,7 +89,7 @@
     height: auto;
     min-height: 100%;
     width: 991px;
-    margin-top: 61px;
+    margin-top: 45px;
   }
 
   #library-head {

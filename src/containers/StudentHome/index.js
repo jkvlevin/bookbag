@@ -77,7 +77,7 @@ class StudentHome extends React.Component {
           userName={this.props.currentUser}
         />
         <HeaderMenu currentUser={this.props.currentUser} />
-        <Library courseNames={this.props.courseNames} selectedCourse={this.props.courseNames[0]} hasFolders={false}/>
+        <Library courses={this.props.courses} courseNames={this.props.courseNames} selectedCourse={this.props.courseNames[0]} hasFolders={false}/>
         {/* <Modal show={this.props.showModal} onHide={this.props.closeModal} style={{marginTop:"100px"}}>
             <Modal.Header closeButton>
               <Modal.Title style={{textAlign:"center"}}>Create Course</Modal.Title>

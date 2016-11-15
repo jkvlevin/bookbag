@@ -44,6 +44,7 @@ Library.propTypes = {
   courseNames: PropTypes.array.isRequired,
   selectedCourse: PropTypes.string.isRequired,
   hasFolders: PropTypes.bool.isRequired,
+  courses: PropTypes.array.isRequired,
   folders: PropTypes.array
 };
 
