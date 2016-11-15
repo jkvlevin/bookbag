@@ -55,20 +55,19 @@ app.post('/api/login', function(req, res) {
 
 app.post('/api/createstudentaccount', function(req, res) {
 	let name = req.body.name;
-	let pw = req.body.pw;
+	let password = req.body.password;
 	let email = req.body.email;
-	let exp_date = '2017-12-12';
 
 	// Auth.creatAccount should try to create account and return either
 	// creation verification or creation error
 	// Auth.createAccount(name, pw, email);
-	Database.addStudent(email, name, pw, exp_date, function(err, data) {
+	Database.addStudent(email, name, password, function(err, data) {
 		if (err) throw Error(err);
 		res.end(data);
 	});
 });
 
-app.post('/api/deleteStudent', function(req, res) {
+app.post('/api/deletestudentaccount', function(req, res) {
 	let email = req.body.email;
 
 	Database.deleteStudent(email, function(err, data) {
@@ -85,7 +84,23 @@ app.post('/api/getcourses', function(req, res) {
 	});
 });
 
+app.post('/api/getfolders', function(req, res) {
+	// Auth.verify(req.email);
+	Database.getFolders(req.body.email, function(err, data) {
+		if (err) throw Error(err);
+		res.send(data);
+	});
+});
+
 app.post('/api/getcoursechapters', function(req, res) {
+	// Auth.verify(req.email);
+	var courses = [];
+	getCourseData(courses, req.body.courses, req.body.email, function(data) {
+		res.send(data);
+	})
+});
+
+app.post('/api/getfolderchapters', function(req, res) {
 	// Auth.verify(req.email);
 	var courses = [];
 	loopFunction(courses, req.body.courses, req.body.email, function(data) {
@@ -93,7 +108,7 @@ app.post('/api/getcoursechapters', function(req, res) {
 	})
 });
 
-var loopFunction = function(courses, rcourses, email, callback) {
+var getCourseData = function(courses, rcourses, email, callback) {
 	for (var course in rcourses) {
 		getCourseCalls(courses, rcourses[course].coursename, email, function(data) {
 			courses.push(data);
@@ -122,10 +137,18 @@ app.post('/api/search', function(req, res) {
 	});
 });
 
-app.post('/api/addCourse', function(req, res) {
+app.post('/api/addcourse', function(req, res) {
 	// Auth.verify(req.email);
   console.log("The Course is " + req.body.courseName);
 	Database.addCourse(req.body.email, req.body.courseName, function(err, data) {
+		if (err) throw(err);
+		res.end(data);
+	});
+});
+
+app.post('/api/addfolder', function(req, res) {
+	// Auth.verify(req.email);
+	Database.addFolder(req.body.email, req.body.folderName, function(err, data) {
 		if (err) throw(err);
 		res.end(data);
 	});
