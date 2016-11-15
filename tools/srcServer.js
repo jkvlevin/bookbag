@@ -42,42 +42,62 @@ app.get('*', function(req, res) {
 });
 
 /******************************************************************************
-Routes
+Login/Account APIs
 *******************************************************************************/
 
 //login code
 app.post('/api/login', function(req, res) {
   Database.validateUser(req.body.email, req.body.password, function(err, data) {
-  	if (err) return;
+  	if (err) console.log(err);
   	res.sendStatus(data);
   });
 });
 
-app.post('/api/createstudentaccount', function(req, res) {
+// Create Student Account
+app.post('/api/student/createaccount', function(req, res) {
 	let name = req.body.name;
 	let password = req.body.password;
 	let email = req.body.email;
 
-	// Auth.creatAccount should try to create account and return either
-	// creation verification or creation error
-	// Auth.createAccount(name, pw, email);
 	Database.addStudent(email, name, password, function(err, data) {
-		if (err) throw Error(err);
+		if (err) console.log(err);
 		res.end(data);
 	});
 });
 
-app.post('/api/deletestudentaccount', function(req, res) {
-	let email = req.body.email;
+/******************************************************************************
+Creation APIs
+*******************************************************************************/
 
-	Database.deleteStudent(email, function(err, data) {
-		if (err) throw Error(err);
+// Create new Course (Prof-only)
+app.post('/api/student/addcourse', function(req, res) {
+	Database.addCourse(req.body.email, req.body.courseName, req.body.prof, function(err, data) {
+		if (err) throw(err);
 		res.end(data);
 	});
 });
 
-app.post('/api/getcourses', function(req, res) {
+app.post('/api/prof/createcourse', function(req, res) {
+	Database.createCourse(req.body.name, req.body.prof, req.body.description, req.body.keywords, function(err, data) {
+		if (err) throw(err);
+		res.end(data);
+	});
+});
+
+// Create new Folder (Both Accounts)
+app.post('/api/addfolder', function(req, res) {
 	// Auth.verify(req.email);
+	Database.addFolder(req.body.email, req.body.folderName, function(err, data) {
+		if (err) throw(err);
+		res.end(data);
+	});
+});
+
+/******************************************************************************
+Student Retreival APIs
+*******************************************************************************/
+
+app.post('/api/student/getcourses', function(req, res) {
 	Database.getCourses(req.body.email, function(err, data) {
 		if (err) throw Error(err);
 		res.send(data);
@@ -102,11 +122,32 @@ app.post('/api/getcoursechapters', function(req, res) {
 
 app.post('/api/getfolderchapters', function(req, res) {
 	// Auth.verify(req.email);
-	var courses = [];
-	loopFunction(courses, req.body.courses, req.body.email, function(data) {
+	var folders = [];
+	getFolderData(folders, req.body.folders, req.body.email, function(data) {
 		res.send(data);
 	})
 });
+
+var getFolderData = function(folders, rfolders, email, callback) {
+	for (var course in rfolders) {
+		getFolderCalls(folders, rfolders[folder].coursename, email, function(data) {
+			folders.push(data);
+			if (foldres.length == rfolders.length) {
+				callback(folders);
+			}
+		});
+	}
+};
+
+var getFolderCalls = function(courses, coursename, email, callback) {
+	Database.getCourseChapters(email, coursename, function(err, data) {
+		if (err) throw Error(err);
+		callback({
+			courseName: coursename,
+			chapters : data
+		});
+	});
+};
 
 var getCourseData = function(courses, rcourses, email, callback) {
 	for (var course in rcourses) {
@@ -129,26 +170,13 @@ var getCourseCalls = function(courses, coursename, email, callback) {
 	});
 };
 
+/******************************************************************************
+Search APIs
+*******************************************************************************/
+
 app.post('/api/search', function(req, res) {
 	// Auth.verify(req.email);
 	Database.searchChapters(req.body.searchQuery, function(err, data) {
-		if (err) throw(err);
-		res.end(data);
-	});
-});
-
-app.post('/api/addcourse', function(req, res) {
-	// Auth.verify(req.email);
-  console.log("The Course is " + req.body.courseName);
-	Database.addCourse(req.body.email, req.body.courseName, function(err, data) {
-		if (err) throw(err);
-		res.end(data);
-	});
-});
-
-app.post('/api/addfolder', function(req, res) {
-	// Auth.verify(req.email);
-	Database.addFolder(req.body.email, req.body.folderName, function(err, data) {
 		if (err) throw(err);
 		res.end(data);
 	});
@@ -158,5 +186,18 @@ app.post('/api/searchShade', function(req, res) {
 	// Auth.verify(req.userId);
 	Database.shadeSearch(req.searchQuery, function(err, data) {
 		res.send(data);
+	});
+});
+
+/******************************************************************************
+Deletion APIs
+*******************************************************************************/
+
+app.post('/api/deletestudentaccount', function(req, res) {
+	let email = req.body.email;
+
+	Database.deleteStudent(email, function(err, data) {
+		if (err) console.log(err);
+		res.end(data);
 	});
 });
