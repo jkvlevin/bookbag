@@ -6,6 +6,9 @@ const HeaderMenu = ({currentUser}) => {
     <div id="headermenu-container">
       <Navbar inverse fixedTop style={{textAlign:"center", backgroundColor:"#262228"}}>
       <Navbar.Header>
+        <Navbar.Brand>
+          <p>BookBag</p>
+        </Navbar.Brand>
         <Navbar.Toggle />
       </Navbar.Header>
       <Navbar.Collapse>

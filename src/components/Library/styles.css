@@ -1,12 +1,19 @@
-@media (min-width: 491px) {
+@media (min-width: 992px) {
   #librarybar-container {
-    background-color: white;
-    background-size: cover;
-    height: auto;
-    min-height: 100%;
-    width: 320px;
-    border-right: thin solid #B0B0B0;
-    float: left;
+    margin-left: 170px;
+    position: fixed;
+    display: block;
+    z-index: 300;
+  }
+
+  #library-menu {
+    width: 30%;
+    min-width: 270px;
+    max-width: 320px;
+  }
+
+  #course-display {
+    width: 70%;
   }
 
   #library-head {
@@ -71,12 +78,12 @@
   }
 }
 
-@media (max-width: 490px) {
+@media (max-width: 991px) {
   #librarybar-container {
     height: auto;
     min-height: 100%;
-    width: 100%;
-    margin-top: 51px;
+    width: 991px;
+    margin-top: 61px;
   }
 
   #library-head {
@@ -84,6 +91,16 @@
     color: #F8F8F8;
     height: 28px;
     padding: 1px;
+  }
+
+  #library-menu {
+    z-index: 300;
+    width: 271px;
+    float: left;
+  }
+
+  #course-display {
+    margin-left: 271px;
   }
 
   .Collapsible__contentOuter {

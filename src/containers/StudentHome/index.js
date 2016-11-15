@@ -5,8 +5,7 @@ import { Well, Button, Glyphicon, Modal, Form, FormControl, FormGroup, InputGrou
 import Header from '../../components/Header';
 import Sidebar from '../../components/MenuBar/Sidebar.js';
 import HeaderMenu from '../../components/MenuBar/HeaderMenu.js';
-import LibraryBar from '../../components/Library/LibraryBar';
-import CoursePanel from '../../components/CoursePanel/CoursePanel.js'
+import Library from '../../components/Library/Library';
 import * as actions from './actions.js';
 import styles from './styles.css';
 
@@ -78,8 +77,7 @@ class StudentHome extends React.Component {
           userName={this.props.currentUser}
         />
         <HeaderMenu currentUser={this.props.currentUser} />
-        <LibraryBar courseNames={this.props.courseNames} selectedCourse={this.props.courseNames[0]} hasFolders={false}/>
-        <CoursePanel selectedCourse={this.props.courseNames[0]} />
+        <Library courseNames={this.props.courseNames} selectedCourse={this.props.courseNames[0]} hasFolders={false}/>
         {/* <Modal show={this.props.showModal} onHide={this.props.closeModal} style={{marginTop:"100px"}}>
             <Modal.Header closeButton>
               <Modal.Title style={{textAlign:"center"}}>Create Course</Modal.Title>

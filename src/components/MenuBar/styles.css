@@ -1,4 +1,4 @@
-@media (min-width: 491px) {
+@media (min-width: 992px) {
   #sidebar-container {
     height: auto;
     min-height: 100vh;
@@ -7,6 +7,9 @@
     padding: 10px;
     float: left;
     border-right: thin solid #B0B0B0;
+    position: fixed;
+    z-index: 300;
+    display: block;
   }
 
   #headermenu-container {
@@ -48,7 +51,7 @@
   }
 }
 
-@media (max-width: 490px) {
+@media (max-width: 991px) {
   #sidebar-container {
     display: none;
   }

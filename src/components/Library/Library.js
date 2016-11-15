@@ -6,12 +6,10 @@ import Collapsible from 'react-collapsible';
 import AddIcon from 'react-icons/lib/md/add-circle-outline.js';
 
 
-const LibraryBar = ({ courseNames, selectedCourse, hasFolders, folders }) => {
+const Library = ({ courseNames, selectedCourse, hasFolders, folders }) => {
   return (
     <div id="librarybar-container" class="clearfix">
-      {/* <div id="library-head">
-        <h2 style={{fontSize:"17px", marginLeft:"15px", marginTop:"5px"}}>My Library</h2>
-      </div> */}
+      <div id="library-menu">
       <Collapsible trigger="Courses" transitionTime={100} overflowWhenOpen='scroll' open={true}>
         <ListGroup style={{paddingLeft:"15px", paddingRight:"15px"}}>
           {courseNames.map(courseName =>
@@ -32,15 +30,19 @@ const LibraryBar = ({ courseNames, selectedCourse, hasFolders, folders }) => {
       </Collapsible>
       <Collapsible trigger="All Chapters" transitionTime={100} overflowWhenOpen="auto">
       </Collapsible>
+      </div>
+      <div id="course-display">
+        <h1> {selectedCourse} </h1>
+      </div>
     </div>
   );
 };
 
-LibraryBar.propTypes = {
+Library.propTypes = {
   courseNames: PropTypes.array.isRequired,
   selectedCourse: PropTypes.string.isRequired,
   hasFolders: PropTypes.bool.isRequired,
   folders: PropTypes.array
 };
 
-export default LibraryBar;
+export default Library;
