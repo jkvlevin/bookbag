@@ -10,10 +10,13 @@
     width: 30%;
     min-width: 270px;
     max-width: 320px;
+    border-right: thin solid #B0B0B0;
+    height: 100vh;
   }
 
   #course-display {
     width: 70%;
+
   }
 
   #library-head {
@@ -96,11 +99,16 @@
   #library-menu {
     z-index: 300;
     width: 271px;
+    border-right: thin solid #B0B0B0;
+    height: auto;
+    min-height: 100vh;
     float: left;
   }
 
   #course-display {
     margin-left: 271px;
+    height: auto;
+    min-height: 100vh;
   }
 
   .Collapsible__contentOuter {

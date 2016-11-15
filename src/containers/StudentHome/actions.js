@@ -3,29 +3,16 @@ import axios from 'axios';
 
 export function loadCourses(email) {
   return function (dispatch) {
-    axios.post('/api/getcourses', {
+    axios.post('/api/student/getcourses', {
       email: email
     }).then((response) => {
         const courses = response.data;
         const courseNames = [];
         for (var course in courses) {
-          courseNames.push(courses[course].coursename);
+          courseNames.push(courses[course].courseName);
         }
-
         dispatch(loadCourseNamesSuccess(courseNames));
-        dispatch(loadCourseChapters(email, courses));
-    });
-  };
-}
-
-export function loadCourseChapters(email, courses) {
-  return function (dispatch) {
-    axios.post('/api/getcoursechapters', {
-      email: email,
-      courses: courses
-    }).then((response) => {
-        const coursesWithChapters = response.data;
-        dispatch(loadCoursesSuccess(coursesWithChapters));
+        dispatch(loadCoursesSuccess(courses));
     });
   };
 }

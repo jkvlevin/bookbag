@@ -18,7 +18,7 @@ const HeaderMenu = ({currentUser}) => {
           <MenuItem eventKey={1.3}>Search</MenuItem>
           <MenuItem eventKey={1.4}>Notifications</MenuItem>
           <MenuItem divider />
-          <MenuItem href={'/'} eventKey={1.4}>Logout</MenuItem>
+          <MenuItem href={'/'} eventKey={1.5}>Logout</MenuItem>
         </Nav>
       </Navbar.Collapse>
     </Navbar>
