@@ -55,4 +55,7 @@
   #sidebar-container {
     display: none;
   }
+  .navbar {
+    margin-bottom: 0px !important;
+  }
 }

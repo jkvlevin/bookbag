@@ -9,11 +9,12 @@ import AddIcon from 'react-icons/lib/md/add-circle-outline.js';
 const Library = ({ courseNames, selectedCourse, hasFolders, folders }) => {
   return (
     <div id="librarybar-container" class="clearfix">
+
       <div id="library-menu">
       <Collapsible trigger="Courses" transitionTime={100} overflowWhenOpen='scroll' open={true}>
         <ListGroup style={{paddingLeft:"15px", paddingRight:"15px"}}>
           {courseNames.map(courseName =>
-            <Courselist courseName={courseName} selectedCourse={selectedCourse} />
+            <Courselist key={courseName} courseName={courseName} selectedCourse={selectedCourse} />
           )}
         </ListGroup>
       </Collapsible>
@@ -31,6 +32,7 @@ const Library = ({ courseNames, selectedCourse, hasFolders, folders }) => {
       <Collapsible trigger="All Chapters" transitionTime={100} overflowWhenOpen="auto">
       </Collapsible>
       </div>
+
       <div id="course-display">
         <h1> {selectedCourse} </h1>
       </div>
@@ -42,6 +44,7 @@ Library.propTypes = {
   courseNames: PropTypes.array.isRequired,
   selectedCourse: PropTypes.string.isRequired,
   hasFolders: PropTypes.bool.isRequired,
+  courses: PropTypes.array.isRequired,
   folders: PropTypes.array
 };
 
