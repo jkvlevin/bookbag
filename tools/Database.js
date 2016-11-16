@@ -166,7 +166,7 @@ Database.getCourseChapters = function(prof, courseName, callback) {
 			result.addRow(row);
 		});
 		query.on('end', function(result) {
-			callback(null, JSON.stringify(result.rows, null, "    "));
+			callback(null, result.rows);
 		});
 	});
 };

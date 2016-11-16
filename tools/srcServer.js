@@ -102,8 +102,8 @@ app.post('/api/student/getcourses', function(req, res) {
 		if (err) throw Error(err);
 		var courses = [];
 		getCourseData(courses, data, req.body.email, function(d) {
-			
-			res.send(JSON.stringify(d));
+
+			res.send(d);
 		})
 	});
 });
