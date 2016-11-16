@@ -7,7 +7,7 @@
   -o-background-size: cover;
   background-size: cover;
   float: left;
-  overflow: auto;
+  overflow-y: scroll;
   padding: 0;
 }
 

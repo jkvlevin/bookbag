@@ -2,19 +2,26 @@ import React, { PropTypes } from 'react';
 import { Button, ListGroup, ListGroupItem } from 'react-bootstrap';
 import styles from './styles.css'
 import Courselist from './Courselist';
+import CourseDisplay from './CourseDisplay';
 import Collapsible from 'react-collapsible';
 import AddIcon from 'react-icons/lib/md/add-circle-outline.js';
 
 
-const Library = ({ courseNames, selectedCourse, hasFolders, folders }) => {
-  return (
-    <div id="librarybar-container" class="clearfix">
+const Library = ({ courses, selectedCourse, hasFolders, folders }) => {
+  const courseNames = [];
+  for (let course in courses) {
+    courseNames.push(courses[course].courseName);
+  }
+  const selectedCourseName = selectedCourse.courseName;
+  console.log(selectedCourse);
+  return(
+    <div id="librarybar-container" className="clearfix">
 
       <div id="library-menu">
       <Collapsible trigger="Courses" transitionTime={100} overflowWhenOpen='scroll' open={true}>
         <ListGroup style={{paddingLeft:"15px", paddingRight:"15px"}}>
           {courseNames.map(courseName =>
-            <Courselist key={courseName} courseName={courseName} selectedCourse={selectedCourse} />
+            <Courselist key={courseName} courseName={courseName} selectedCourse={selectedCourseName} />
           )}
         </ListGroup>
       </Collapsible>
@@ -34,15 +41,14 @@ const Library = ({ courseNames, selectedCourse, hasFolders, folders }) => {
       </div>
 
       <div id="course-display">
-        <h1> {selectedCourse} </h1>
+          <CourseDisplay chapters={courses} courseName={selectedCourseName} />
       </div>
     </div>
   );
 };
 
 Library.propTypes = {
-  courseNames: PropTypes.array.isRequired,
-  selectedCourse: PropTypes.string.isRequired,
+  selectedCourse: PropTypes.object.isRequired,
   hasFolders: PropTypes.bool.isRequired,
   courses: PropTypes.array.isRequired,
   folders: PropTypes.array

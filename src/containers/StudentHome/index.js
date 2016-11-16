@@ -64,20 +64,18 @@ class StudentHome extends React.Component {
  }
 
  render() {
-
     return (
       <div className="student-container">
         <Sidebar
-          courseNames={this.props.courseNames}
           handleCoursesClick={this.handleCoursesClick}
           handleBrowseClick={this.handleBrowseClick}
           handleSearchClick={this.handleSearchClick}
           handleSettingsClick={this.handleSettingsClick}
-          addCourseModal={this.props.addCourseModal}
           userName={this.props.currentUser}
         />
         <HeaderMenu currentUser={this.props.currentUser} />
-        <Library courses={this.props.courses} courseNames={this.props.courseNames} selectedCourse={this.props.courseNames[0]} hasFolders={false}/>
+        {console.log(this.props.courses)}
+        <Library courses={this.props.courses} selectedCourse={this.props.courses[0]} hasFolders={false}/>
         {/* <Modal show={this.props.showModal} onHide={this.props.closeModal} style={{marginTop:"100px"}}>
             <Modal.Header closeButton>
               <Modal.Title style={{textAlign:"center"}}>Create Course</Modal.Title>
@@ -112,7 +110,6 @@ StudentHome.propTypes = {
   closeModal: PropTypes.func.isRequired,
   showModal: PropTypes.bool.isRequired,
   addCourse: PropTypes.func.isRequired,
-  courseNames: PropTypes.array.isRequired
 };
 
 function mapStateToProps(state) {
@@ -120,7 +117,6 @@ function mapStateToProps(state) {
     currentUser: state.appReducer.currentUser,
     courses: state.studentReducer.courses,
     showModal: state.studentReducer.showModal,
-    courseNames: state.studentReducer.courseNames
   };
 }
 

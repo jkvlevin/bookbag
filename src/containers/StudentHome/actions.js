@@ -7,19 +7,11 @@ export function loadCourses(email) {
       email: email
     }).then((response) => {
         const courses = response.data;
-        const courseNames = [];
-        for (var course in courses) {
-          courseNames.push(courses[course].courseName);
-        }
-        dispatch(loadCourseNamesSuccess(courseNames));
         dispatch(loadCoursesSuccess(courses));
     });
   };
 }
 
-export function loadCourseNamesSuccess(courseNames) {
-  return { type: types.LOAD_COURSE_NAMES_SUCCESS, courseNames };
-}
 
 export function loadCoursesSuccess(courses) {
   return { type: types.LOAD_COURSES_SUCCESS, courses };
