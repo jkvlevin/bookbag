@@ -4,6 +4,7 @@ Module to Manage Database Connection & Queries
 
 let pg = require('pg');
 let Database = [];
+let Auth = require('./Auth.js')
 const DATABASE_URL = 'postgres://xtlscmgxzqrpjq:su76vkQ798qEeiMi1MxsclLq_2@ec2-184-73-196-82.compute-1.amazonaws.com:5432/d3qu3p1gh95p7l';
 
 /******************************************************************************
@@ -26,7 +27,10 @@ Database.validateUser = function(email, password, callback) {
 		if (err) callback(err);
 		let query = client.query("SELECT * FROM students WHERE email = '" + email + "'");
 		query.on('row', function(row, result) {
-			if(row.password == password) callback(null, 200);
+			//if(row.password == password) callback(null, 200);
+			console.log(password);
+			console.log(row.password);
+			if(Auth.validatePassword(password, row.password)) callback(null, 200);
 			else callback(null, 202);
 		});
 	});
