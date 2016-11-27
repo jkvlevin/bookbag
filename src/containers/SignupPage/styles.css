@@ -7,22 +7,41 @@
   -o-background-size: cover;
   background-size: cover;
   float: left;
+  overflow: auto;
 }
 
-.signup-box {
+@media (min-width: 880px) {
+  .signup-box {
   margin-top: 20vh;
-  margin-right: 150px;
+  margin-right: 10vw;
   border-radius: 10px;
   background-color: #262228;
   width: 400px;
   float:right;
+  }
+
+  .texts {
+    color: white;
+    margin-left: 25px;
+    float: left;
+    margin-top: 200px;
+    width: 40vw;
+  }
 }
 
-.texts {
-  color: white;
-  margin-left: 25px;
-  float: left;
-  margin-top: 200px;
+@media (max-width: 879px) {
+  .signup-box {
+  margin-top: 20vh;
+  margin-left: 20vw;
+  margin-right: 20vw;
+  border-radius: 10px;
+  background-color: #262228;
+  width: 60vw;
+  }
+
+  .texts {
+    display: none;
+  }
 }
 
 .text2 {

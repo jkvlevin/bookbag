@@ -3,8 +3,9 @@ import { connect } from 'react-redux';
 import { Link, browserHistory } from 'react-router';
 import { Well, Button, Glyphicon, Modal, Form, FormControl, FormGroup, InputGroup } from 'react-bootstrap';
 import Header from '../../components/Header';
-import Sidebar from '../../components/Sidebar/Sidebar.js';
-import CourseCarousel from '../../components/CourseCarousel/CourseCarousel.js';
+import Sidebar from '../../components/MenuBar/Sidebar.js';
+import HeaderMenu from '../../components/MenuBar/HeaderMenu.js';
+import Library from '../../components/Library/Library';
 import * as actions from './actions.js';
 import styles from './styles.css';
 
@@ -66,7 +67,6 @@ class StudentHome extends React.Component {
 
     return (
       <div className="student-container">
-        <Header showSearch hasUser currentUser={this.props.currentUser}/>
         <Sidebar
           courseNames={this.props.courseNames}
           handleCoursesClick={this.handleCoursesClick}
@@ -74,10 +74,11 @@ class StudentHome extends React.Component {
           handleSearchClick={this.handleSearchClick}
           handleSettingsClick={this.handleSettingsClick}
           addCourseModal={this.props.addCourseModal}
+          userName={this.props.currentUser}
         />
-        <h2 style={{marginTop:"80px", marginLeft:"180px", fontSize:"22px", color:"white"}}> My Courses </h2>
-
-        <Modal show={this.props.showModal} onHide={this.props.closeModal} style={{marginTop:"100px"}}>
+        <HeaderMenu currentUser={this.props.currentUser} />
+        <Library courses={this.props.courses} courseNames={this.props.courseNames} selectedCourse={this.props.courseNames[0]} hasFolders={false}/>
+        {/* <Modal show={this.props.showModal} onHide={this.props.closeModal} style={{marginTop:"100px"}}>
             <Modal.Header closeButton>
               <Modal.Title style={{textAlign:"center"}}>Create Course</Modal.Title>
             </Modal.Header>
@@ -96,13 +97,7 @@ class StudentHome extends React.Component {
             </FormGroup>
             </Form>
           </Modal.Body>
-        </Modal>
-
-        <div id="course-carousel-container" style={{overflowY:"scroll", overflowX:"hidden", top:"150px", bottom:"0px", left:"180px", right:"40px", position:"absolute", backgroundColor:"#231f25", borderRadius:"15px"}}>
-          {this.props.courseNames.map(courseName =>
-            <CourseCarousel key={courseName} courseName={courseName} index={this.state.index} direction={this.state.direction} handleSelect={this.handleSelect} />
-          )}
-        </div>
+        </Modal> */}
 
       </div>
     );

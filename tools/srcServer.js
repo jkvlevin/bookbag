@@ -3,6 +3,8 @@ import webpack from 'webpack';
 import path from 'path';
 import config from '../webpack.config.dev';
 import open from 'open';
+import jwt from 'jsonwebtoken';
+import expressJWT from 'express-jwt';
 
 /* eslint-disable no-console */
 
@@ -11,10 +13,7 @@ const compiler = webpack(config);
 
 let Database = require('./Database.js');
 let bodyParser = require('body-parser');
-let Auth = require('./Auth.js')
-let jwt = require('jsonwebtoken')
-var con  = require('./config')
-
+// var Auth = require('Auth')
 
 /******************************************************************************
 Server Setup
@@ -31,6 +30,7 @@ app.use(require('webpack-dev-middleware')(compiler, {
 }));
 
 app.use(require('webpack-hot-middleware')(compiler));
+app.use(expressJWT({ secret : "JWT Secret"}).unless({ path : ['/api/login', '/api/createaccount']}));
 
  // to support JSON-encoded bodies
 app.use(bodyParser.json());
@@ -45,129 +45,87 @@ app.get('*', function(req, res) {
 });
 
 /******************************************************************************
-Route middlewhere to verify token
-*******************************************************************************/
-
-// var apiRoutes = express.Router();
-
-// apiRoutes.use(function(req, res, next) {
-
-//   // check header or url parameters or post parameters for token
-//   var token = req.body.token || req.query.token || req.headers['x-access-token'];
-
-//   console.log("hello");
-
-//   // decode token
-//   if (token) {
-
-//   	  console.log("hi");
-
-//     // verifies secret and checks exp
-//     jwt.verify(token, con.secret, function(err, decoded) {      
-//       if (err) {
-//         return res.json({ success: false, message: 'Failed to authenticate token.' });    
-//       } else {
-//         // if everything is good, save to request for use in other routes
-//         req.decoded = decoded;    
-//         next();
-//       }
-//     });
-
-//   } else {
-
-//     // if there is no token
-//     // return an error
-//     return res.status(403).send({ 
-//         success: false, 
-//         message: 'No token provided.' 
-//     });
-    
-//   }
-// });
-
-
-/******************************************************************************
-Routes
+Login/Account APIs
 *******************************************************************************/
 
 //login code
 app.post('/api/login', function(req, res) {
   Database.validateUser(req.body.email, req.body.password, function(err, data) {
-  	if (err) return;
-
-  	var token = Auth.generateToken(req.body.email);
-	// res.json({
-	// 	success: true,
-	// 	message: 'Enjoy your token!',
-	// 	token: token
-	// });
-  	
-  	res.sendStatus(data);
+  	if (err) console.log(err);
+  	jwt.sign({username : req.body.email}, 'JWT Secret', {expiresIn : "12h"}, function(err, token) {
+  		res.status(data).json({token});
+  	});
   });
 });
 
-app.post('/api/createstudentaccount', function(req, res) {
+// Create Student Account
+app.post('/api/student/createaccount', function(req, res) {
 	let name = req.body.name;
-	//let pw = req.body.pw;
-	let pw = Auth.hashPassword(req.body.pw);
-	console.log(pw);
-	let email = req.body.email;
-	let exp_date = '2017-12-12';
-
-	// Auth.creatAccount should try to create account and return either
-	// creation verification or creation error
-	// Auth.createAccount(name, pw, email);
-	Database.addStudent(email, name, pw, exp_date, function(err, data) {
-		if (err) throw Error(err);
-
-		var token = Auth.generateToken(email);
-
-		res.end(data);
-		// res.json({
-		// 	success: true,
-		// 	token: token
-		// });
-	});
-});
-
-app.post('/api/deleteStudent', function(req, res) {
+	let password = req.body.password;
 	let email = req.body.email;
 
-	Database.deleteStudent(email, function(err, data) {
-		if (err) throw Error(err);
+	Database.addStudent(email, name, password, function(err, data) {
+		if (err) console.log(err);
 		res.end(data);
 	});
 });
 
-app.post('/api/getcourses', function(req, res) {
+/******************************************************************************
+Creation APIs
+*******************************************************************************/
+
+// Add course to library
+app.post('/api/student/addcourse', function(req, res) {
+	Database.addCourse(req.body.email, req.body.courseName, req.body.prof, function(err, data) {
+		if (err) throw(err);
+		res.end(data);
+	});
+});
+
+// Create new Course (Prof-only)
+app.post('/api/prof/createcourse', function(req, res) {
+	Database.createCourse(req.body.name, req.body.prof, req.body.description, req.body.keywords, function(err, data) {
+		if (err) throw(err);
+		res.end(data);
+	});
+});
+
+// Create new Folder (Both Accounts)
+app.post('/api/addfolder', function(req, res) {
 	// Auth.verify(req.email);
+	Database.addFolder(req.body.email, req.body.folderName, function(err, data) {
+		if (err) throw(err);
+		res.end(data);
+	});
+});
+
+/******************************************************************************
+Student Retreival APIs
+*******************************************************************************/
+
+app.post('/api/student/getcourses', function(req, res) {
 	Database.getCourses(req.body.email, function(err, data) {
 		if (err) throw Error(err);
-		res.send(data);
+		var courses = [];
+		getCourseData(courses, data, req.body.email, function(d) {
+			res.send(d);
+		})
 	});
 });
 
-app.post('/api/getcoursechapters', function(req, res) {
-	// Auth.verify(req.email);
-	var courses = [];
-	loopFunction(courses, req.body.courses, req.body.email, function(data) {
-		res.send(data);
-	})
-});
-
-var loopFunction = function(courses, rcourses, email, callback) {
-	for (var course in rcourses) {
-		getCourseCalls(courses, rcourses[course].coursename, email, function(data) {
+var getCourseData = function(courses, courseData, email, callback) {
+	for (var course in courseData) {
+		getCourseCalls(courses, courseData[course].coursename, courseData[course].prof, function(data) {
 			courses.push(data);
-			if (courses.length == rcourses.length) {
+			if (courses.length == courseData.length) {
 				callback(courses);
 			}
 		});
 	}
 };
 
-var getCourseCalls = function(courses, coursename, email, callback) {
-	Database.getCourseChapters(email, coursename, function(err, data) {
+var getCourseCalls = function(courses, coursename, prof, callback) {
+	Database.getCourseChapters(prof, coursename, function(err, data) {
 		if (err) throw Error(err);
 		callback({
 			courseName: coursename,
@@ -175,6 +133,43 @@ var getCourseCalls = function(courses, coursename, email, callback) {
 		});
 	});
 };
+
+// Get all folder names
+app.post('/api/getfolders', function(req, res) {
+	// Auth.verify(req.email);
+	Database.getFolders(req.body.email, function(err, data) {
+		if (err) throw Error(err);
+		var folders = [];
+		getFolderData(folders, data, req.body.email, function(d) {
+			res.send(d);
+		})
+	});
+});
+
+var getFolderData = function(folders, folderData, email, callback) {
+	for (var folder in folderData) {
+		getFolderCalls(folders, folderData[folder].foldername, email, function(data) {
+			folders.push(data);
+			if (folders.length == folderData.length) {
+				callback(folders);
+			}
+		});
+	}
+};
+
+var getFolderCalls = function(courses, foldername, email, callback) {
+	Database.getFolderChapters(email, foldername, function(err, data) {
+		if (err) throw Error(err);
+		callback({
+			folderName: foldername,
+			chapters : data
+		});
+	});
+};
+
+/******************************************************************************
+Search APIs
+*******************************************************************************/
 
 app.post('/api/search', function(req, res) {
 	// Auth.verify(req.email);
@@ -184,18 +179,22 @@ app.post('/api/search', function(req, res) {
 	});
 });
 
-app.post('/api/addCourse', function(req, res) {
-	// Auth.verify(req.email);
-  console.log("The Course is " + req.body.courseName);
-	Database.addCourse(req.body.email, req.body.courseName, function(err, data) {
-		if (err) throw(err);
-		res.end(data);
-	});
-});
-
 app.post('/api/searchShade', function(req, res) {
 	// Auth.verify(req.userId);
 	Database.shadeSearch(req.searchQuery, function(err, data) {
 		res.send(data);
+	});
+});
+
+/******************************************************************************
+Deletion APIs
+*******************************************************************************/
+
+app.post('/api/deletestudentaccount', function(req, res) {
+	let email = req.body.email;
+
+	Database.deleteStudent(email, function(err, data) {
+		if (err) console.log(err);
+		res.end(data);
 	});
 });

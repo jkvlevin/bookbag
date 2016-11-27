@@ -1,0 +1,170 @@
+@media (min-width: 992px) {
+  #librarybar-container {
+    margin-left: 170px;
+    position: fixed;
+    display: block;
+    z-index: 300;
+    width: 100%;
+  }
+
+  #library-menu {
+    width: 30%;
+    min-width: 270px;
+    max-width: 320px;
+    border-right: thin solid #B0B0B0;
+    height: 100vh;
+    float: left;
+  }
+
+  #course-display {
+    width: 70%;
+    height: 100vh;
+    display: flex;
+  }
+
+  #library-head {
+    background-color: #262228;
+    color: #F8F8F8;
+    height: 28px;
+    padding: 1px;
+  }
+
+  .Collapsible__contentOuter {
+    max-height: 450px !important;
+  }
+
+  .Collapsible__trigger {
+    display: block;
+    font-size: 17px;
+    font-weight: 400;
+    text-decoration: none;
+    color: #333333;
+    position: relative;
+    border: 1px solid white;
+    padding: 10px;
+    background: #2DBE60;
+    color: #F8F8F8; }
+    .Collapsible__trigger:after {
+      content: url('./arrow-204-16.png');
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      display: block;
+      transition: transform 100ms; }
+    .Collapsible__trigger.is-open:after {
+      transform: rotateZ(180deg);
+      top:5px;
+    }
+
+    .list-group-item {
+      border-top: none !important;
+      border-left: none !important;
+      border-right: none !important;
+      border-radius: 0px !important;
+    }
+
+
+  #addFolderBtn {
+    border-color: white;
+    margin-bottom: 15px;
+  }
+
+  #addFolderBtn:hover {
+    background-color: white;
+  }
+
+  #addFolderBtn:focus {
+    outline: none !important;
+  }
+
+  #none-tag {
+    font-family: "Avenir Next";
+    font-size: 10px;
+    padding: 5px;
+  }
+}
+
+@media (max-width: 991px) {
+  #librarybar-container {
+    height: auto;
+    min-height: 100%;
+    width: 991px;
+    margin-top: 45px;
+  }
+
+  #library-head {
+    background-color: #262228;
+    color: #F8F8F8;
+    height: 28px;
+    padding: 1px;
+  }
+
+  #library-menu {
+    z-index: 300;
+    width: 271px;
+    border-right: thin solid #B0B0B0;
+    height: auto;
+    min-height: 100vh;
+    float: left;
+  }
+
+  #course-display {
+    margin-left: 271px;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .Collapsible__contentOuter {
+    max-height: 450px !important;
+  }
+
+  .Collapsible__trigger {
+    display: block;
+    font-size: 17px;
+    font-weight: 400;
+    text-decoration: none;
+    color: #333333;
+    position: relative;
+    border: 1px solid white;
+    padding: 10px;
+    background: #2DBE60;
+    color: #F8F8F8; }
+    .Collapsible__trigger:after {
+      content: url('./arrow-204-16.png');
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      display: block;
+      transition: transform 100ms; }
+    .Collapsible__trigger.is-open:after {
+      transform: rotateZ(180deg);
+      top:5px;
+    }
+
+    .list-group-item {
+      border-top: none !important;
+      border-left: none !important;
+      border-right: none !important;
+      border-radius: 0px !important;
+    }
+
+
+  #addFolderBtn {
+    border-color: white;
+    margin-bottom: 15px;
+  }
+
+  #addFolderBtn:hover {
+    background-color: white;
+  }
+
+  #addFolderBtn:focus {
+    outline: none !important;
+  }
+
+  #none-tag {
+    font-family: "Avenir Next";
+    font-size: 10px;
+    padding: 5px;
+  }
+}
