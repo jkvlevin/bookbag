@@ -55,6 +55,9 @@ Database.createCourse = function(name, prof, desc, keys, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
 		if (err) callback(err);
 		let cn = name.replace(' ', '');
+
+		// GIT CODE HERE
+
 		client.query("INSERT INTO courses (id, name, prof, description, keywords, subscribers) VALUES (uuid_generate_v4(), '" + name + "', '" + prof + "', '" + desc + "', '" + keys + "', " + 0 + ")");
 		client.query("CREATE TABLE " + sanitizeEmail(prof) + cn + "_chapters (name varchar(160), prof varchar(160), url varchar(2083))");
 		callback(null, "success");	
@@ -67,8 +70,6 @@ Database.addCourse = function(email, courseName, prof, callback) {
 		if (err) callback(err);
 
 	    let cn = courseName.replace(' ', '');
-
-	    // If the course exists, insert it into the student's courselist
 
 		// Insert the course into the student's courselist
 		client.query("INSERT INTO " + sanitizeEmail(email) + "_courses VALUES ('" + cn + "', '"+ prof + "')");
@@ -102,6 +103,7 @@ Database.addFolder = function(email, folderName, callback) {
 Database.createChapter = function(prof, chapterName, contributors, checkout_dur, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
 		if (err) callback(err);
+
 		//Retreive pdf and src urls from git module
 
 		client.query("INSERT INTO chapters VALUES (uuid_generate_v4(), " + chaptername + ", " + prof + ", " + contributors + ", " + src_url + ", " + pdf_url + ", " + "null, null, " + checkout_dur + ")");
@@ -245,23 +247,31 @@ Database.deleteStudent = function(email, callback) {
 	});
 };
 
-// Remove course from a student
-Database.deleteCourse = function(userId, courseName, callback) {
+// Remove course from a student's library
+Database.removeCourse = function(email, prof, courseName, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
 		if (err) callback(err);
 
-		client.query('DROP TABLE' + userId + courseName);
-		client.query('DELETE FROM ' + userId + '_courses WHERE name = ' + courseName);
-		callback("successfully deleted course " + courseName);
+		client.query('DROP TABLE' + email + courseName + prof + "_notes");
+		client.query("DELETE FROM " + email + "_courses WHERE name = '" + courseName + "'");
+		client.query("UPDATE courses SET subscribers = subscribers + 1 WHERE name = '" courseName + "' AND prof = '" + prof + "'");
+		callback(null, 200);
 	});
 };
 
-// Remove a chapter from a student's course
-Database.deleteChapter = function(email, courseName, chapterName, callback) {
+Database.deleteCourse = function(prof, courseName, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
 		if (err) callback(err);
 
-		client.query('DELETE FROM ' + sanitizeEmail(email) + courseName + ' WHERE name = ' + chapterName);
+		// Remove from course master list
+		client.query("DELETE FROM courses WHERE name = '" + courseName + "' AND prof = '" + prof + "'");
+		// Remove from prof's courses
+		client.query("DELETE FROM " + prof + "_courses WHERE name = '" + courseName + "'");
+		// Remove from any student's courselist
+		client.query("DROP TABLE IN (SELECT * FROM pg_tables WHERE SUBSTRING(tablename FROM '" + courseName + prof + "') <> ''");
+
+		callback(null, 200);
+
 	});
 };
 

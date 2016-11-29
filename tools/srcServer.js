@@ -195,6 +195,13 @@ app.post('/api/deletestudentaccount', function(req, res) {
 
 	Database.deleteStudent(email, function(err, data) {
 		if (err) console.log(err);
-		res.end(data);
+		res.send(data);
+	});
+});
+
+app.post('/api/student/removecourse', function(req, res) {
+	Database.removeCourse(req.body.email, req.body.prof, req.body.courseName, function(err, data) {
+		if (err) console.log(err);
+		res.sendStatus(data);
 	});
 });
