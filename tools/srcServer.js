@@ -15,6 +15,8 @@ let Database = require('./Database.js');
 let bodyParser = require('body-parser');
 // var Auth = require('Auth')
 
+var expjwt = expressJWT({ secret : "JWT Secret"});
+
 /******************************************************************************
 Server Setup
 *******************************************************************************/
@@ -30,7 +32,7 @@ app.use(require('webpack-dev-middleware')(compiler, {
 }));
 
 app.use(require('webpack-hot-middleware')(compiler));
-app.use(expressJWT({ secret : "JWT Secret"}).unless({ path : ['/api/login', '/api/createaccount', '/login', '/']}));
+// app.use(expressJWT({ secret : "JWT Secret"}).unless({ path : ['/api/login', '/api/createaccount', '/login', '/']}));
 
  // to support JSON-encoded bodies
 app.use(bodyParser.json());
@@ -103,15 +105,11 @@ app.post('/api/addfolder', function(req, res) {
 Student Retreival APIs
 *******************************************************************************/
 
-app.post('/api/student/getcourses', function(req, res) {
+app.post('/api/student/getcourses', expjwt, function(req, res) {
 	Database.getCourses(req.body.email, function(err, data) {
 		if (err) throw Error(err);
 		var courses = [];
 		getCourseData(courses, data, req.body.email, function(d) {
-<<<<<<< HEAD
-
-=======
->>>>>>> fa20f4e83b333759bd2a41a6ebcac8b6e195f3dc
 			res.send(d);
 		})
 	});

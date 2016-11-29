@@ -60,7 +60,7 @@ Database.createCourse = function(name, prof, desc, keys, callback) {
 
 		client.query("INSERT INTO courses (id, name, prof, description, keywords, subscribers) VALUES (uuid_generate_v4(), '" + name + "', '" + prof + "', '" + desc + "', '" + keys + "', " + 0 + ")");
 		client.query("CREATE TABLE " + sanitizeEmail(prof) + cn + "_chapters (name varchar(160), prof varchar(160), url varchar(2083))");
-		callback(null, "success");	
+		callback(null, "success");
 	});
 }
 
