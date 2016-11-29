@@ -106,11 +106,8 @@ Student Retreival APIs
 *******************************************************************************/
 
 app.post('/api/student/getcourses', expjwt, function(req, res) {
-  console.log(req.headers["authorization"]);
-  jwt.verify(req.headers["authorization"], 'JWT Secret', function(err, decoded) {
-    console.log(decoded);
-    console.log(decoded.email);
-  	Database.getCourses(decoded.email, function(err, data) {
+  jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+  	Database.getCourses(decoded.username, function(err, data) {
   		if (err) throw Error(err);
   		var courses = [];
   		getCourseData(courses, data, req.body.email, function(d) {
