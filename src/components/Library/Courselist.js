@@ -7,7 +7,7 @@ const Courselist = ({ courseName, selectedCourse }) => {
   const isSelected = (courseName === selectedCourse);
   return (
     <div>
-      { isSelected ? <ListGroupItem key={courseName} style={{color:"#2DBE60", fontSize:"15px", fontWeight:"500"}}> {courseName}</ListGroupItem> : <ListGroupItem key={courseName} style={{color:"#878787", fontSize:"13px"}}> {courseName}</ListGroupItem> }
+      { isSelected ? <ListGroupItem key={courseName} style={{color:"#34c749", fontSize:"15px", fontWeight:"500"}}> {courseName}</ListGroupItem> : <ListGroupItem key={courseName} style={{color:"#878787", fontSize:"13px"}}> {courseName}</ListGroupItem> }
     </div>
   );
 };

@@ -12,8 +12,8 @@ const Library = ({ courses, selectedCourse, hasFolders, folders }) => {
   for (let course in courses) {
     courseNames.push(courses[course].courseName);
   }
+
   const selectedCourseName = selectedCourse.courseName;
-  console.log(selectedCourse);
   return(
     <div id="librarybar-container" className="clearfix">
 
@@ -33,7 +33,7 @@ const Library = ({ courses, selectedCourse, hasFolders, folders }) => {
           </ListGroup>
           : <p id="none-tag"> You have no folders. Create folders to organize and manage your own selections of Chapters. </p>
           }
-          <Button id="addFolderBtn"><AddIcon style={{color:"#2DBE60", fontSize:"26px"}}/></Button>
+          <Button id="addFolderBtn"><AddIcon style={{color:"#34c749", fontSize:"26px"}}/></Button>
         </div>
       </Collapsible>
       <Collapsible trigger="All Chapters" transitionTime={100} overflowWhenOpen="auto">
@@ -41,7 +41,7 @@ const Library = ({ courses, selectedCourse, hasFolders, folders }) => {
       </div>
 
       <div id="course-display">
-          <CourseDisplay chapters={courses} courseName={selectedCourseName} />
+          <CourseDisplay chapters={selectedCourse.chapters} courseName={selectedCourseName} />
       </div>
     </div>
   );

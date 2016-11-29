@@ -30,14 +30,14 @@
     border-radius: 50%;
     width: 35px;
     height: 35px;
-    color: #2DBE60;
+    color: #34c749;
     padding:1px;
     margin-top: 10px;
     float:left;
   }
 
   #menu-button:hover {
-    color: #2DBE60;
+    color: #34c749;
   }
 
   #menu-icon {

@@ -5,7 +5,7 @@ const CourseDisplay = ({ courseName, chapters }) => {
     <div>
       <h1 style={{marginLeft:"25px", fontSize:"24px", color:"#807F83"}}> {courseName} </h1>
       <div id="course-box" style={{width:"100%", marginTop:"thin solid #B0B0B0"}}>
-
+        
       </div>
     </div>
   );

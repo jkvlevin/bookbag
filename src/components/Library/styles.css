@@ -42,7 +42,7 @@
     position: relative;
     border: 1px solid white;
     padding: 10px;
-    background: #2DBE60;
+    background: #34c749;
     color: #F8F8F8; }
     .Collapsible__trigger:after {
       content: url('./arrow-204-16.png');
@@ -89,7 +89,7 @@
     height: auto;
     min-height: 100%;
     width: 991px;
-    margin-top: 45px;
+    margin-top: 51px;
   }
 
   #library-head {
@@ -127,7 +127,7 @@
     position: relative;
     border: 1px solid white;
     padding: 10px;
-    background: #2DBE60;
+    background: #34c749;
     color: #F8F8F8; }
     .Collapsible__trigger:after {
       content: url('./arrow-204-16.png');

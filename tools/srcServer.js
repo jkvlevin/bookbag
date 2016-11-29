@@ -3,6 +3,8 @@ import webpack from 'webpack';
 import path from 'path';
 import config from '../webpack.config.dev';
 import open from 'open';
+import jwt from 'jsonwebtoken';
+import expressJWT from 'express-jwt';
 
 /* eslint-disable no-console */
 
@@ -28,6 +30,7 @@ app.use(require('webpack-dev-middleware')(compiler, {
 }));
 
 app.use(require('webpack-hot-middleware')(compiler));
+app.use(expressJWT({ secret : "JWT Secret"}).unless({ path : ['/api/login', '/api/createaccount']}));
 
  // to support JSON-encoded bodies
 app.use(bodyParser.json());
@@ -49,7 +52,9 @@ Login/Account APIs
 app.post('/api/login', function(req, res) {
   Database.validateUser(req.body.email, req.body.password, function(err, data) {
   	if (err) console.log(err);
-  	res.sendStatus(data);
+  	jwt.sign({username : req.body.email}, 'JWT Secret', {expiresIn : "12h"}, function(err, token) {
+  		res.status(data).json({token});
+  	});
   });
 });
 
@@ -69,7 +74,7 @@ app.post('/api/student/createaccount', function(req, res) {
 Creation APIs
 *******************************************************************************/
 
-// Create new Course (Prof-only)
+// Add course to library
 app.post('/api/student/addcourse', function(req, res) {
 	Database.addCourse(req.body.email, req.body.courseName, req.body.prof, function(err, data) {
 		if (err) throw(err);
@@ -77,6 +82,7 @@ app.post('/api/student/addcourse', function(req, res) {
 	});
 });
 
+// Create new Course (Prof-only)
 app.post('/api/prof/createcourse', function(req, res) {
 	Database.createCourse(req.body.name, req.body.prof, req.body.description, req.body.keywords, function(err, data) {
 		if (err) throw(err);
@@ -102,17 +108,12 @@ app.post('/api/student/getcourses', function(req, res) {
 		if (err) throw Error(err);
 		var courses = [];
 		getCourseData(courses, data, req.body.email, function(d) {
+<<<<<<< HEAD
 
+=======
+>>>>>>> fa20f4e83b333759bd2a41a6ebcac8b6e195f3dc
 			res.send(d);
 		})
-	});
-});
-
-app.post('/api/getfolders', function(req, res) {
-	// Auth.verify(req.email);
-	Database.getFolders(req.body.email, function(err, data) {
-		if (err) throw Error(err);
-		res.send(data);
 	});
 });
 
@@ -137,30 +138,34 @@ var getCourseCalls = function(courses, coursename, prof, callback) {
 	});
 };
 
-app.post('/api/getfolderchapters', function(req, res) {
+// Get all folder names
+app.post('/api/getfolders', function(req, res) {
 	// Auth.verify(req.email);
-	var folders = [];
-	getFolderData(folders, req.body.folders, req.body.email, function(data) {
-		res.send(data);
-	})
+	Database.getFolders(req.body.email, function(err, data) {
+		if (err) throw Error(err);
+		var folders = [];
+		getFolderData(folders, data, req.body.email, function(d) {
+			res.send(d);
+		})
+	});
 });
 
-var getFolderData = function(folders, rfolders, email, callback) {
-	for (var course in rfolders) {
-		getFolderCalls(folders, rfolders[folder].coursename, email, function(data) {
+var getFolderData = function(folders, folderData, email, callback) {
+	for (var folder in folderData) {
+		getFolderCalls(folders, folderData[folder].foldername, email, function(data) {
 			folders.push(data);
-			if (foldres.length == rfolders.length) {
+			if (folders.length == folderData.length) {
 				callback(folders);
 			}
 		});
 	}
 };
 
-var getFolderCalls = function(courses, coursename, email, callback) {
-	Database.getCourseChapters(email, coursename, function(err, data) {
+var getFolderCalls = function(courses, foldername, email, callback) {
+	Database.getFolderChapters(email, foldername, function(err, data) {
 		if (err) throw Error(err);
 		callback({
-			courseName: coursename,
+			folderName: foldername,
 			chapters : data
 		});
 	});
@@ -194,6 +199,13 @@ app.post('/api/deletestudentaccount', function(req, res) {
 
 	Database.deleteStudent(email, function(err, data) {
 		if (err) console.log(err);
-		res.end(data);
+		res.send(data);
+	});
+});
+
+app.post('/api/student/removecourse', function(req, res) {
+	Database.removeCourse(req.body.email, req.body.prof, req.body.courseName, function(err, data) {
+		if (err) console.log(err);
+		res.sendStatus(data);
 	});
 });
