@@ -26,7 +26,7 @@ class StudentHome extends React.Component {
  }
 
  componentDidMount() {
-   this.props.loadCourses(this.props.currentUser);
+   this.props.loadCourses();
  }
 
  handleCoursesClick() {
@@ -133,7 +133,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    loadCourses: (email) => dispatch(actions.loadCourses(email)),
+    loadCourses: () => dispatch(actions.loadCourses()),
     addCourseModal: () => dispatch(actions.addCourseModal()),
     closeModal: () => dispatch(actions.closeModal()),
     addCourse: (email, name) => dispatch(actions.addCourse(email, name)),

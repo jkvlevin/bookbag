@@ -1,10 +1,17 @@
 import * as types from '../../actionTypes';
 import axios from 'axios';
 
-export function loadCourses(email) {
+export function loadCourses() {
+  const token = localStorage.getItem('userToken');
+  var authLine = 'Bearer ' + token;
   return function (dispatch) {
-    axios.post('/api/student/getcourses', {
-      email: email
+    axios({
+      method: 'post',
+      url: '/api/student/getcourses',
+      // data: {
+      //   email: email
+      // },
+      headers: { Authorization : authLine}
     }).then((response) => {
         const courses = response.data;
         dispatch(loadCoursesSuccess(courses));
