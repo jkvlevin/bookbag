@@ -254,7 +254,7 @@ Database.removeCourse = function(email, prof, courseName, callback) {
 
 		client.query('DROP TABLE' + email + courseName + prof + "_notes");
 		client.query("DELETE FROM " + email + "_courses WHERE name = '" + courseName + "'");
-		client.query("UPDATE courses SET subscribers = subscribers + 1 WHERE name = '" courseName + "' AND prof = '" + prof + "'");
+		client.query("UPDATE courses SET subscribers = subscribers + 1 WHERE name = '" + courseName + "' AND prof = '" + prof + "'");
 		callback(null, 200);
 	});
 };
