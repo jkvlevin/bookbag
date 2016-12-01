@@ -12,7 +12,7 @@ const CourseDisplay = ({ courseName, chapters }) => {
             <ChapterList key={chapter.id} name={chapter.name} owner={chapter.owner} id={chapter.id} />
           )}
         </ListGroup>
-        <h1 style={{marginLeft:"25px", fontSize:"20px", color:"#807F83"}}> Course Notes </h1>
+        <h1 style={{marginLeft:"25px", fontSize:"18px", color:"#807F83"}}> Course Notes </h1>
         <div id="course-notes" style={{height:"50%", overflowY:"auto"}}>
           <Nav bsStyle="tabs" activeKey="1">
             <NavItem eventKey="1">Lecture 1</NavItem>
