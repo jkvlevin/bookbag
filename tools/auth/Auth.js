@@ -4,7 +4,7 @@ Module to manage Auth
 
 var bcrypt  = require('bcrypt-nodejs');
 var jwt     = require('jsonwebtoken')
-var config  = require('./config')
+var config  = require('./authconfig')
 
 // Return a hashed password
 exports.hashPassword = function(password) {
