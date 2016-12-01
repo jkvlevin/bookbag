@@ -8,9 +8,6 @@ export function loadCourses() {
     axios({
       method: 'post',
       url: '/api/student/getcourses',
-      // data: {
-      //   email: email
-      // },
       headers: { Authorization : authLine}
     }).then((response) => {
         const courses = response.data;

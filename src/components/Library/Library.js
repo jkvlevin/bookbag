@@ -41,7 +41,7 @@ const Library = ({ courses, selectedCourse, hasFolders, folders }) => {
       </div>
 
       <div id="course-display">
-          <CourseDisplay chapters={selectedCourse.chapters} courseName={selectedCourseName} />
+          <CourseDisplay courseName={selectedCourseName} chapters={selectedCourse.chapters}/>
       </div>
     </div>
   );

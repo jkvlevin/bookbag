@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { Button, ListGroup, ListGroupItem } from 'react-bootstrap';
+import { ListGroupItem } from 'react-bootstrap';
 import styles from './styles.css'
 
 

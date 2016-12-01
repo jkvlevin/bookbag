@@ -1,7 +1,7 @@
 import * as types from '../../actionTypes';
 
 const initialState = {
-  courses: [{courseName:' '}],
+  courses: [{courseName:' ', chapters: [{name:'', owner:'', contributors:'', src_url:'', pdf_url:''}]}],
   showSearch: false,
   showModal: false,
 };

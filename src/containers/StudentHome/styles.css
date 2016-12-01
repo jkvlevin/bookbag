@@ -6,8 +6,9 @@
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
-  float: left;
-  overflow-y: scroll;
+  /*float: left;*/
+  min-height: 560px;
+  overflow-y: auto;
   padding: 0;
 }
 
