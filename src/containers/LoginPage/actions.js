@@ -13,8 +13,9 @@ export function login(email, password) {
       if(response.status !== 200) {
         toastr.error('Login failure, invalid username or password');
       } else {
-        dispatch(loginSuccess());
         dispatch(setUser(email));
+        localStorage.setItem('userToken', response.data.token);
+        dispatch(loginSuccess());
         browserHistory.push("/student");
       }
     });

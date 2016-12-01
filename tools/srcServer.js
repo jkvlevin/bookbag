@@ -15,6 +15,8 @@ let Database = require('./Database.js');
 let bodyParser = require('body-parser');
 // var Auth = require('Auth')
 
+var expjwt = expressJWT({ secret : "JWT Secret"});
+
 /******************************************************************************
 Server Setup
 *******************************************************************************/
@@ -30,7 +32,7 @@ app.use(require('webpack-dev-middleware')(compiler, {
 }));
 
 app.use(require('webpack-hot-middleware')(compiler));
-app.use(expressJWT({ secret : "JWT Secret"}).unless({ path : ['/api/login', '/api/createaccount']}));
+// app.use(expressJWT({ secret : "JWT Secret"}).unless({ path : ['/api/login', '/api/createaccount', '/login', '/']}));
 
  // to support JSON-encoded bodies
 app.use(bodyParser.json());
@@ -103,14 +105,16 @@ app.post('/api/addfolder', function(req, res) {
 Student Retreival APIs
 *******************************************************************************/
 
-app.post('/api/student/getcourses', function(req, res) {
-	Database.getCourses(req.body.email, function(err, data) {
-		if (err) throw Error(err);
-		var courses = [];
-		getCourseData(courses, data, req.body.email, function(d) {
-			res.send(d);
-		})
-	});
+app.post('/api/student/getcourses', expjwt, function(req, res) {
+  jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+  	Database.getCourses(decoded.username, function(err, data) {
+  		if (err) throw Error(err);
+  		var courses = [];
+  		getCourseData(courses, data, req.body.email, function(d) {
+  			res.send(d);
+  		})
+  	});
+  });
 });
 
 var getCourseData = function(courses, courseData, email, callback) {
@@ -195,6 +199,13 @@ app.post('/api/deletestudentaccount', function(req, res) {
 
 	Database.deleteStudent(email, function(err, data) {
 		if (err) console.log(err);
-		res.end(data);
+		res.send(data);
+	});
+});
+
+app.post('/api/student/removecourse', function(req, res) {
+	Database.removeCourse(req.body.email, req.body.prof, req.body.courseName, function(err, data) {
+		if (err) console.log(err);
+		res.sendStatus(data);
 	});
 });

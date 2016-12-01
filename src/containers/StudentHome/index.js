@@ -6,6 +6,7 @@ import Header from '../../components/Header';
 import Sidebar from '../../components/MenuBar/Sidebar.js';
 import HeaderMenu from '../../components/MenuBar/HeaderMenu.js';
 import Library from '../../components/Library/Library';
+import SearchIcon from 'react-icons/lib/fa/search';
 import * as actions from './actions.js';
 import styles from './styles.css';
 
@@ -22,11 +23,10 @@ class StudentHome extends React.Component {
    this.handleSettingsClick = this.handleSettingsClick.bind(this);
    this.handleACNChange = this.handleACNChange.bind(this);
    this.submitAddCourse = this.submitAddCourse.bind(this);
-   this.handleSelect = this.handleSelect.bind(this);
  }
 
  componentDidMount() {
-   this.props.loadCourses(this.props.currentUser);
+   this.props.loadCourses();
  }
 
  handleCoursesClick() {
@@ -38,7 +38,7 @@ class StudentHome extends React.Component {
  }
 
  handleSearchClick() {
-   alert('Search');
+   this.props.addCourseModal();
  }
 
  handleSettingsClick() {
@@ -56,28 +56,37 @@ class StudentHome extends React.Component {
    this.props.closeModal();
  }
 
- handleSelect(selectedIndex, e) {
-   this.setState({
-     index: selectedIndex,
-     direction: e.direction
-   });
- }
-
  render() {
-
     return (
       <div className="student-container">
         <Sidebar
-          courseNames={this.props.courseNames}
           handleCoursesClick={this.handleCoursesClick}
           handleBrowseClick={this.handleBrowseClick}
           handleSearchClick={this.handleSearchClick}
           handleSettingsClick={this.handleSettingsClick}
-          addCourseModal={this.props.addCourseModal}
           userName={this.props.currentUser}
         />
         <HeaderMenu currentUser={this.props.currentUser} />
-        <Library courses={this.props.courses} courseNames={this.props.courseNames} selectedCourse={this.props.courseNames[0]} hasFolders={false}/>
+        <Library courses={this.props.courses} selectedCourse={this.props.courses[0]} hasFolders={false}/>
+
+        <Modal show={this.props.showModal} onHide={this.props.closeModal} animation={false} style={{marginTop:"100px"}}>
+          <Modal.Body>
+            <Form onSubmit={this.submitAddCourse}>
+            <FormGroup>
+              <InputGroup>
+                <FormControl type="text" value={this.state.addCourseName} placeholder="Search" onChange={this.handleACNChange}/>
+                <InputGroup.Button>
+                  <Button> <SearchIcon style={{color:"#2dbe60"}}/> </Button>
+                </InputGroup.Button>
+              </InputGroup>
+            </FormGroup>
+            </Form>
+            <div id="search-content">
+              <h4> Search content goes here </h4>
+            </div>
+          </Modal.Body>
+        </Modal>
+
         {/* <Modal show={this.props.showModal} onHide={this.props.closeModal} style={{marginTop:"100px"}}>
             <Modal.Header closeButton>
               <Modal.Title style={{textAlign:"center"}}>Create Course</Modal.Title>
@@ -112,7 +121,6 @@ StudentHome.propTypes = {
   closeModal: PropTypes.func.isRequired,
   showModal: PropTypes.bool.isRequired,
   addCourse: PropTypes.func.isRequired,
-  courseNames: PropTypes.array.isRequired
 };
 
 function mapStateToProps(state) {
@@ -120,13 +128,12 @@ function mapStateToProps(state) {
     currentUser: state.appReducer.currentUser,
     courses: state.studentReducer.courses,
     showModal: state.studentReducer.showModal,
-    courseNames: state.studentReducer.courseNames
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    loadCourses: (email) => dispatch(actions.loadCourses(email)),
+    loadCourses: () => dispatch(actions.loadCourses()),
     addCourseModal: () => dispatch(actions.addCourseModal()),
     closeModal: () => dispatch(actions.closeModal()),
     addCourse: (email, name) => dispatch(actions.addCourse(email, name)),
