@@ -107,6 +107,20 @@ app.post('/api/prof/addchaptertocourse', function(req, res) {
 	});
 });
 
+app.post('/api/student/addchaptertocoursenotes', function(req, res) {
+	Database.addChapterToCourseNotes(req.body.student, req.body.prof, req.body.chaptername, req.body.chapterauthor, req.body.coursename, function(err, data) {
+		if (err) throw(err);
+		res.sendStatus(data);
+	});
+});
+
+app.post('/api/student/addchaptertofolder', function(req, res) {
+	Database.addChapterToFolder(req.body.student, req.body.chaptername, req.body.chapterauthor, req.body.foldername, function(err, data) {
+		if (err) throw(err);
+		res.sendStatus(data);
+	});
+});
+
 // Create new Folder (Both Accounts)
 app.post('/api/addfolder', function(req, res) {
 	// Auth.verify(req.email);

@@ -110,6 +110,28 @@ Database.addChapterToCourse = function(prof, chapterName, chapterAuthor, courseN
 	});
 };
 
+Database.addChapterToCourseNotes = function(student, prof, chapterName, chapterAuthor, courseName, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		let cn = courseName.replace(' ', '');
+		if (err) callback(err);
+		let s = "INSERT INTO " + sanitizeEmail(student) + cn + sanitizeEmail(prof) + "_notes VALUES ('" + chapterName + "', '" + chapterAuthor + "', null)";
+		console.log(s);
+		client.query(s);
+		callback(null, 202);
+	});
+};
+
+Database.addChapterToFolder = function(student, chapterName, chapterAuthor, folderName, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		let fn = folderName.replace(' ', '');
+		if (err) callback(err);
+		let s = "INSERT INTO " + sanitizeEmail(student) + fn + " VALUES ('" + chapterName + "', '" + chapterAuthor + "', null)";
+		console.log(s);
+		client.query(s);
+		callback(null, 202);
+	});
+};
+
 // Create a Chapter for a prof
 Database.createChapter = function(prof, chapterName, contributors, checkout_dur, pdf_url, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
