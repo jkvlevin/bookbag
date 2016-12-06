@@ -197,7 +197,7 @@ Database.searchChapters = function(searchQuery, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
 		if (err) callback(err);
 
-		let query = client.query("SELECT * FROM chapters WHERE title ILIKE '%" + searchQuery + "%'");
+		let query = client.query("SELECT * FROM chapters WHERE name ILIKE '%" + searchQuery + "%'");
 		query.on('row', function(row, result) {
 			result.addRow(row);
 		});
