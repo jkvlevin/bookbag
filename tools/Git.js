@@ -2,13 +2,14 @@
 Module to manage Github abstraction
 *******************************************************************************/
 
-var Git = require("nodegit");
 var GitHubApi = require("github");
 
 var github = new GitHubApi();
 
 var ACCOUNT_NAME = 'bookbagInc' 
 var AUTH_TOKEN = '87034183fdfcc315affd96f3f102bff4a264c877';
+
+var open = require('open');
 
 var authenticate = function() {
 	github.authenticate({
@@ -30,8 +31,16 @@ exports.createNewRepoWithUsers = function(repoName, users) {
 	github.repos.create({
 		name: repoName
 	}, function(err, res) {
-		
+		if (err) {
+			if (JSON.parse(err)["message"] === "Validation Failed") {
+				console.log(JSON.parse(err)["errors"][0].message);
+			}
 
+		}
+
+		else {
+			console.log(res);
+		}
 	});
 
 }
@@ -45,7 +54,10 @@ exports.deleteRepo = function(repoName) {
 		owner: 'bookbagInc',
 		repo: repoName
 	}, function(err, res) {
-		
+		if (err)
+			console.log(JSON.parse(err)["message"]);
+		else
+			console.log(res);
 
 	});
 }
@@ -82,37 +94,81 @@ exports.listCommitsForRepo = function(repoName) {
     	repo: repoName,
 	}, function(err, res) {
 
+		var commits = [];
+		if (err)
+    		console.log(err);
+		else {
+			for (var i = 0; i < res.length; i++) {
+				commits.push(res[i].commit.message)
+				console.log(commits[i]);
+			}
+		}
 
 	});
 }
 
 // Return the contents of a repo
-exports.getContentsOfRepo = function(repoName) {
+exports.getCurrentContentsOfRepo = function(repoName) {
 
 	authenticate();
 
-	github.repos.get({
+	github.repos.getContent({
     	owner: ACCOUNT_NAME,
     	repo: repoName,
+    	path: "",
 	}, function(err, res) {
-    	
+		if (err)
+    		console.log(JSON.stringify(err));
+		else {
+			var downloadURLs = []
 
+			for (var i = 0; i < res.length; i++) {
+				downloadURLs.push(res[i].download_url);
+				open(downloadURLs[i]);
+			}
+		}
+	});
+}
+
+// Return the contents of a repo for a specific commit
+exports.getContentsOfRepoForCommit = function(repoName, sha) {
+
+	authenticate();
+
+	github.repos.getContent({
+    	owner: ACCOUNT_NAME,
+    	repo: repoName,
+    	path: "",
+    	ref: sha,
+	}, function(err, res) {
+		if (err)
+    		console.log(JSON.stringify(err));
+		else {
+			var downloadURLs = []
+
+			for (var i = 0; i < res.length; i++) {
+				downloadURLs.push(res[i].download_url);
+				open(downloadURLs[i]);
+
+			}
+		}
 	});
 }
 
 // Commit to repo
-exports.commitToRepo = function(repoName, contents, commitMessage) {
+exports.uploadFilesToRepo = function(repoName, contents, commitMessage) {
 
 	authenticate();
-	
-	github.gitdata.createCommit({
+
+	github.repos.createFile({
 		owner: ACCOUNT_NAME,
 		repo: repoName,
+		path: "test2.pdf",
 		message: commitMessage,
-		tree: "",
-		parents: [],
-	}, function(err. res) {
-
+		content: contents,
+	}, function(err, res) {
+		console.log(err);
+		console.log(res);
 
 	});
 }
