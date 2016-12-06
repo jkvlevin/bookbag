@@ -177,14 +177,15 @@ var getCourseCalls = function(courses, coursename, prof, callback) {
 
 // Get all folder names
 app.post('/api/getfolders', function(req, res) {
-	// Auth.verify(req.email);
-	Database.getFolders(req.body.email, function(err, data) {
-		if (err) throw Error(err);
-		var folders = [];
-		getFolderData(folders, data, req.body.email, function(d) {
-			res.send(d);
-		})
-	});
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.getFolders(decoded.username, function(err, data) {
+			if (err) throw Error(err);
+			var folders = [];
+			getFolderData(folders, data, decoded.username, function(d) {
+				res.send(d);
+			})
+		});
+	}
 });
 
 var getFolderData = function(folders, folderData, email, callback) {
