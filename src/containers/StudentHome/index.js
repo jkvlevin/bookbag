@@ -1,12 +1,15 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link, browserHistory } from 'react-router';
-import { Well, Button, Glyphicon, Modal, Form, FormControl, FormGroup, InputGroup } from 'react-bootstrap';
+import { Well, Button, Glyphicon, Modal, Form, FormControl, FormGroup, InputGroup, ListGroup, ListGroupItem } from 'react-bootstrap';
 import Header from '../../components/Header';
 import Sidebar from '../../components/MenuBar/Sidebar.js';
 import HeaderMenu from '../../components/MenuBar/HeaderMenu.js';
-import Library from '../../components/Library/Library';
 import SearchIcon from 'react-icons/lib/fa/search';
+import Courselist from '../../components/StudentLibrary/Courselist';
+import CourseDisplay from '../../components/StudentLibrary/CourseDisplay';
+import Collapsible from 'react-collapsible';
+import AddIcon from 'react-icons/lib/md/add-circle-outline.js';
 import * as actions from './actions.js';
 import styles from './styles.css';
 
@@ -15,14 +18,13 @@ class StudentHome extends React.Component {
   constructor(props) {
    super(props);
 
-   this.state = { addCourseName: '', index: 0, direction: null};
+   this.state = { searchValue: ''};
 
    this.handleCoursesClick = this.handleCoursesClick.bind(this);
    this.handleBrowseClick = this.handleBrowseClick.bind(this);
    this.handleSearchClick = this.handleSearchClick.bind(this);
    this.handleSettingsClick = this.handleSettingsClick.bind(this);
-   this.handleACNChange = this.handleACNChange.bind(this);
-   this.submitAddCourse = this.submitAddCourse.bind(this);
+   this.handleSearchChange = this.handleSearchChange.bind(this);
  }
 
  componentDidMount() {
@@ -38,28 +40,27 @@ class StudentHome extends React.Component {
  }
 
  handleSearchClick() {
-   this.props.addCourseModal();
+   this.props.searchModal();
  }
 
  handleSettingsClick() {
    alert('Settings');
  }
 
- handleACNChange(event) {
-   this.setState({ addCourseName: event.target.value });
- }
-
- submitAddCourse(event) {
-   event.preventDefault();
-   this.props.addCourse(this.props.currentUser, this.state.addCourseName);
-   this.setState({ addCourseName: ''});
-   this.props.closeModal();
+ handleSearchChange(event) {
+   this.setState({ searchValue: event.target.value });
  }
 
  render() {
+    const courseNames = [];
+    for (let course in this.props.courses) {
+      courseNames.push(this.props.courses[course].courseName);
+    }
+    let hasFolders = false;
     return (
       <div className="student-container">
         <Sidebar
+          isProf={false}
           handleCoursesClick={this.handleCoursesClick}
           handleBrowseClick={this.handleBrowseClick}
           handleSearchClick={this.handleSearchClick}
@@ -67,16 +68,43 @@ class StudentHome extends React.Component {
           userName={this.props.currentUser}
         />
         <HeaderMenu currentUser={this.props.currentUser} />
-        <Library courses={this.props.courses} selectedCourse={this.props.courses[0]} hasFolders={false}/>
+        <div id="librarybar-container" className="clearfix">
+          <div id="library-menu">
+          <Collapsible trigger="Courses" transitionTime={100} overflowWhenOpen='scroll' open={true}>
+            <ListGroup style={{paddingLeft:"15px", paddingRight:"15px"}}>
+              {courseNames.map(courseName =>
+                <Courselist key={courseName} courseName={courseName} selectedCourse={this.props.courses[0].courseName} />
+              )}
+            </ListGroup>
+          </Collapsible>
+          <Collapsible trigger="Folders" transitionTime={100} overflowWhenOpen="auto">
+            <div style={{textAlign:"center", marginTop:"20px", borderBottom:"thin solid #B0B0B0"}}>
+              { hasFolders ?
+              <ListGroup style={{paddingLeft:"15px", paddingRight:"15px"}}>
 
-        <Modal show={this.props.showModal} onHide={this.props.closeModal} animation={false} style={{marginTop:"100px"}}>
+              </ListGroup>
+              : <p id="none-tag"> You have no folders. Create folders to organize and manage your own selections of Chapters. </p>
+              }
+              <Button id="addFolderBtn"><AddIcon style={{color:"#30ad62", fontSize:"26px"}}/></Button>
+            </div>
+          </Collapsible>
+          <Collapsible trigger="All Chapters" transitionTime={100} overflowWhenOpen="auto">
+          </Collapsible>
+          </div>
+
+          <div id="course-display">
+              <CourseDisplay courseName={this.props.courses[0].courseName} chapters={this.props.courses[0].chapters}/>
+          </div>
+        </div>
+
+        <Modal show={this.props.showModal} onHide={this.props.closeModal} style={{marginTop:"100px"}}>
           <Modal.Body>
-            <Form onSubmit={this.submitAddCourse}>
+            <Form>
             <FormGroup>
               <InputGroup>
-                <FormControl type="text" value={this.state.addCourseName} placeholder="Search" onChange={this.handleACNChange}/>
+                <FormControl type="text" value={this.state.searchValue} placeholder="Search" onChange={this.handleSearchChange}/>
                 <InputGroup.Button>
-                  <Button> <SearchIcon style={{color:"#2dbe60"}}/> </Button>
+                  <Button> <SearchIcon style={{color:"#30ad62"}}/> </Button>
                 </InputGroup.Button>
               </InputGroup>
             </FormGroup>
@@ -86,28 +114,6 @@ class StudentHome extends React.Component {
             </div>
           </Modal.Body>
         </Modal>
-
-        {/* <Modal show={this.props.showModal} onHide={this.props.closeModal} style={{marginTop:"100px"}}>
-            <Modal.Header closeButton>
-              <Modal.Title style={{textAlign:"center"}}>Create Course</Modal.Title>
-            </Modal.Header>
-
-            <Modal.Body>
-            <Form onSubmit={this.submitAddCourse}>
-            <FormGroup>
-              <label>Name</label>
-              <FormControl type="text" value={this.state.addCourseName} placeholder="New Course" onChange={this.handleACNChange}/>
-              <label style={{marginTop:"15px"}}>Description</label>
-              <FormControl style={{height:"100px"}} componentClass="textarea" placeholder="Give your course a memorable description" />
-            </FormGroup>
-            <FormGroup style={{textAlign:"center"}}>
-            <Button className="modal-button" style={{width:"100px", borderRadius:"20px"}} onClick={this.props.closeModal}>Cancel</Button>
-            <Button className="modal-button" style={{width:"100px", borderRadius:"20px", backgroundColor:"#008800", marginLeft:"20px", color:"white"}} onClick={this.submitAddCourse}>Save</Button>
-            </FormGroup>
-            </Form>
-          </Modal.Body>
-        </Modal> */}
-
       </div>
     );
   }
@@ -117,10 +123,9 @@ StudentHome.propTypes = {
   currentUser: PropTypes.string.isRequired,
   courses: PropTypes.array.isRequired,
   loadCourses: PropTypes.func.isRequired,
-  addCourseModal: PropTypes.func.isRequired,
+  searchModal: PropTypes.func.isRequired,
   closeModal: PropTypes.func.isRequired,
   showModal: PropTypes.bool.isRequired,
-  addCourse: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -134,9 +139,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     loadCourses: () => dispatch(actions.loadCourses()),
-    addCourseModal: () => dispatch(actions.addCourseModal()),
+    searchModal: () => dispatch(actions.searchModal()),
     closeModal: () => dispatch(actions.closeModal()),
-    addCourse: (email, name) => dispatch(actions.addCourse(email, name)),
   };
 }
 
