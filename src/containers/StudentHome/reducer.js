@@ -2,7 +2,6 @@ import * as types from '../../actionTypes';
 
 const initialState = {
   courses: [{courseName:' ', chapters: [{name:'', owner:'', contributors:'', src_url:'', pdf_url:''}]}],
-  showSearch: false,
   showModal: false,
 };
 
@@ -12,7 +11,7 @@ function studentReducer(state = initialState, action) {
       return Object.assign({}, state, {
         courses: action.courses,
       });
-    case types.ADD_COURSE_MODAL:
+    case types.SEARCH_MODAL:
       return Object.assign({}, state, {
         showModal: !state.showModal
       });
