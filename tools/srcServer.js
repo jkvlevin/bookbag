@@ -92,6 +92,21 @@ app.post('/api/prof/createcourse', function(req, res) {
 	});
 });
 
+//Create new chapter
+app.post('/api/prof/createchapter', function(req, res) {
+	Database.createChapter(req.body.prof, req.body.chapterName, req.body.contributors, req.body.checkout_dur, req.body.pdf_url, function(err, data) {
+		if (err) throw(err);
+		res.sendStatus(data);
+	});
+});
+
+app.post('/api/prof/addchaptertocourse', function(req, res) {
+	Database.addChapterToCourse(req.body.prof, req.body.chaptername, req.body.chapterauthor, req.body.coursename, function(err, data) {
+		if (err) throw(err);
+		res.sendStatus(data);
+	});
+});
+
 // Create new Folder (Both Accounts)
 app.post('/api/addfolder', function(req, res) {
 	// Auth.verify(req.email);
