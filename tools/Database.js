@@ -99,14 +99,49 @@ Database.addFolder = function(email, folderName, callback) {
 	});
 };
 
+Database.addChapterToCourse = function(prof, chapterName, chapterAuthor, courseName, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		let cn = courseName.replace(' ', '');
+		if (err) callback(err);
+		let s = "INSERT INTO " + sanitizeEmail(prof) + cn + "_chapters VALUES ('" + chapterName + "', '" + chapterAuthor + "', null)";
+		console.log(s);
+		client.query(s);
+		callback(null, 202);
+	});
+};
+
+Database.addChapterToCourseNotes = function(student, prof, chapterName, chapterAuthor, courseName, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		let cn = courseName.replace(' ', '');
+		if (err) callback(err);
+		let s = "INSERT INTO " + sanitizeEmail(student) + cn + sanitizeEmail(prof) + "_notes VALUES ('" + chapterName + "', '" + chapterAuthor + "', null)";
+		console.log(s);
+		client.query(s);
+		callback(null, 202);
+	});
+};
+
+Database.addChapterToFolder = function(student, chapterName, chapterAuthor, folderName, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		let fn = folderName.replace(' ', '');
+		if (err) callback(err);
+		let s = "INSERT INTO " + sanitizeEmail(student) + fn + " VALUES ('" + chapterName + "', '" + chapterAuthor + "', null)";
+		console.log(s);
+		client.query(s);
+		callback(null, 202);
+	});
+};
+
 // Create a Chapter for a prof
-Database.createChapter = function(prof, chapterName, contributors, checkout_dur, callback) {
+Database.createChapter = function(prof, chapterName, contributors, checkout_dur, pdf_url, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
 		if (err) callback(err);
 
 		//Retreive pdf and src urls from git module
-
-		client.query("INSERT INTO chapters VALUES (uuid_generate_v4(), " + chaptername + ", " + prof + ", " + contributors + ", " + src_url + ", " + pdf_url + ", " + "null, null, " + checkout_dur + ")");
+		let s = "INSERT INTO chapters(id, name, owner, contributors, pdf_url, checkout_dur) VALUES (uuid_generate_v4(), '" + chapterName + "', '" + prof + "', '" + contributors + "', '" + pdf_url + "', " + checkout_dur + ")";
+		console.log(s);
+		client.query(s);
+		callback(null, 202);
 	});
 };
 
