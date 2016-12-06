@@ -13,3 +13,5 @@ export const SEARCH_MODAL = 'SEARCH_MODAL';
 export const CLOSE_MODAL = 'CLOSE_MODAL';
 
 export const SWITCH_TABS = 'SWITCH_TABS';
+export const SWITCH_CHAPTER_TABS = 'SWITCH_CHAPTER_TABS';
+
