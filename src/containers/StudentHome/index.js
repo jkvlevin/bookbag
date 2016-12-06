@@ -80,7 +80,6 @@ class StudentHome extends React.Component {
        break;
      }
    }
-   console.log(newCourse);
    this.props.selectCourse(newCourse);
  }
 
@@ -92,7 +91,6 @@ class StudentHome extends React.Component {
        break;
      }
    }
-   console.log(newFolder);
    this.props.selectFolder(newFolder);
  }
 
