@@ -185,7 +185,7 @@ app.post('/api/getfolders', function(req, res) {
 				res.send(d);
 			})
 		});
-	}
+	});
 });
 
 var getFolderData = function(folders, folderData, email, callback) {
