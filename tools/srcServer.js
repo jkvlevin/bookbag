@@ -124,9 +124,17 @@ app.post('/api/student/addchaptertofolder', function(req, res) {
 // Create new Folder (Both Accounts)
 app.post('/api/addfolder', function(req, res) {
 	// Auth.verify(req.email);
-	Database.addFolder(req.body.email, req.body.folderName, function(err, data) {
-		if (err) throw(err);
-		res.end(data);
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.addFolder(decoded.username, req.body.folderName, function(err, data) {
+			if (err) throw(err);
+			Database.getFolders(decoded.username, function(err, data) {
+				if (err) throw Error(err);
+				var folders = [];
+				getFolderData(folders, data, decoded.username, function(d) {
+					res.send(d);
+				})
+			});
+		});
 	});
 });
 
