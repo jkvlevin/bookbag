@@ -108,16 +108,32 @@ app.post('/api/prof/addchaptertocourse', function(req, res) {
 });
 
 app.post('/api/student/addchaptertocoursenotes', function(req, res) {
-	Database.addChapterToCourseNotes(req.body.student, req.body.prof, req.body.chaptername, req.body.chapterauthor, req.body.coursename, function(err, data) {
-		if (err) throw(err);
-		res.sendStatus(data);
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.addChapterToCourseNotes(decoded.username, req.body.prof, req.body.chaptername, req.body.chapterauthor, req.body.coursename, function(err, data) {
+			if (err) throw(err);
+			Database.getCourses(decoded.username, function(err, data) {
+		  		if (err) throw Error(err);
+		  		var courses = [];
+		  		getCourseData(courses, data, decoded.username, function(d) {
+		  			res.send(d);
+		  		})
+		  	});
+		});
 	});
 });
 
 app.post('/api/student/addchaptertofolder', function(req, res) {
-	Database.addChapterToFolder(req.body.student, req.body.chaptername, req.body.chapterauthor, req.body.foldername, function(err, data) {
-		if (err) throw(err);
-		res.sendStatus(data);
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.addChapterToFolder(decoded.username, req.body.chaptername, req.body.chapterauthor, req.body.foldername, function(err, data) {
+			if (err) throw(err);
+			Database.getFolders(decoded.username, function(err, data) {
+				if (err) throw Error(err);
+				var folders = [];
+				getFolderData(folders, data, decoded.username, function(d) {
+					res.send(d);
+				})
+			});
+		});
 	});
 });
 
@@ -147,7 +163,7 @@ app.post('/api/student/getcourses', expjwt, function(req, res) {
   	Database.getCourses(decoded.username, function(err, data) {
   		if (err) throw Error(err);
   		var courses = [];
-  		getCourseData(courses, data, req.body.email, function(d) {
+  		getCourseData(courses, data, decoded.username, function(d) {
   			res.send(d);
   		})
   	});
