@@ -45,7 +45,6 @@ export function searchResponseSuccess(searchResponse) {
 
 
 export function addFolder(folderName) {
-  console.log(folderName);
   const token = localStorage.getItem('userToken');
   var authLine = 'Bearer ' + token;
   return function (dispatch) {
@@ -56,7 +55,8 @@ export function addFolder(folderName) {
       data: { folderName: folderName }
     }).then((response) => {
         folders = response.data;
-        loadFoldersSuccess(folders);
+        console.log(folders);
+        dispatch(loadFoldersSuccess(folders));
     });
   };
 }
@@ -78,6 +78,14 @@ export function loadFolders() {
 
 export function loadFoldersSuccess(folders) {
   return { type: types.LOAD_FOLDERS_SUCCESS, folders };
+}
+
+export function selectCourse(course) {
+  return { type: types.SELECT_COURSE, course };
+}
+
+export function selectFolder(folder) {
+  return { type: types.SELECT_FOLDER, folder };
 }
 
 export function searchModal() {

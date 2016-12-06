@@ -23,3 +23,11 @@
   width: 250px;
   border-radius: 5px;
 }
+
+.list-group-item:hover{
+  background-color: white !important;
+}
+.list-group-item:focus{
+  background-color: white !important;
+  outline: none !important;
+}
