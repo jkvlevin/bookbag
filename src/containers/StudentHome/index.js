@@ -1,13 +1,15 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link, browserHistory } from 'react-router';
-import { Well, Button, Glyphicon, Modal, Form, FormControl, FormGroup, InputGroup, ListGroup, ListGroupItem } from 'react-bootstrap';
+import { Well, Button, Glyphicon, Modal, Popover, ButtonToolbar, OverlayTrigger, Form, FormControl, FormGroup, InputGroup, ListGroup, ListGroupItem } from 'react-bootstrap';
 import Header from '../../components/Header';
 import Sidebar from '../../components/MenuBar/Sidebar.js';
 import HeaderMenu from '../../components/MenuBar/HeaderMenu.js';
 import SearchIcon from 'react-icons/lib/fa/search';
 import Courselist from '../../components/StudentLibrary/Courselist';
+import FolderList from '../../components/FolderList';
 import CourseDisplay from '../../components/StudentLibrary/CourseDisplay';
+import SearchContent from '../../components/SearchContent';
 import Collapsible from 'react-collapsible';
 import AddIcon from 'react-icons/lib/md/add-circle-outline.js';
 import * as actions from './actions.js';
@@ -18,17 +20,21 @@ class StudentHome extends React.Component {
   constructor(props) {
    super(props);
 
-   this.state = { searchValue: ''};
+   this.state = { searchValue: '', newFolderName: ''};
 
    this.handleCoursesClick = this.handleCoursesClick.bind(this);
    this.handleBrowseClick = this.handleBrowseClick.bind(this);
    this.handleSearchClick = this.handleSearchClick.bind(this);
    this.handleSettingsClick = this.handleSettingsClick.bind(this);
    this.handleSearchChange = this.handleSearchChange.bind(this);
+   this.submitSearch = this.submitSearch.bind(this);
+   this.handleFolderNameChange = this.handleFolderNameChange.bind(this);
+   this.submitAddFolder = this.submitAddFolder.bind(this);
  }
 
  componentDidMount() {
    this.props.loadCourses();
+   this.props.loadFolders();
  }
 
  handleCoursesClick() {
@@ -51,7 +57,30 @@ class StudentHome extends React.Component {
    this.setState({ searchValue: event.target.value });
  }
 
+ handleFolderNameChange(event) {
+   this.setState({ newFolderName: event.target.value });
+ }
+
+ submitSearch(event) {
+   event.preventDefault();
+   this.props.search(this.state.searchValue);
+ }
+
+ submitAddFolder(event) {
+   event.preventDefault();
+   this.props.addFolder(this.state.newFolderName);
+ }
+
  render() {
+   const popoverTop = (
+     <Popover id="popover-positioned-top" title="New Folder" style={{width:"300px"}}>
+      <Form onSubmit={this.submitAddFolder}>
+        <InputGroup>
+          <FormControl type="text" label="name" value={this.state.newFolderName} placeholder="Folder Name" onChange={this.handleFolderNameChange} style={{width:"245px"}}/>
+        </InputGroup>
+      </Form>
+     </Popover>
+   );
     const courseNames = [];
     for (let course in this.props.courses) {
       courseNames.push(this.props.courses[course].courseName);
@@ -79,13 +108,21 @@ class StudentHome extends React.Component {
           </Collapsible>
           <Collapsible trigger="Folders" transitionTime={100} overflowWhenOpen="auto">
             <div style={{textAlign:"center", marginTop:"20px", borderBottom:"thin solid #B0B0B0"}}>
-              { hasFolders ?
+              { this.props.folders.length > 0 ?
               <ListGroup style={{paddingLeft:"15px", paddingRight:"15px"}}>
-
+                <ListGroup>
+                  {this.props.folders.map(folder =>
+                    <FolderList key={folder.folderName} folderName={folder.folderName} />
+                  )}
+                </ListGroup>
               </ListGroup>
               : <p id="none-tag"> You have no folders. Create folders to organize and manage your own selections of Chapters. </p>
               }
-              <Button id="addFolderBtn"><AddIcon style={{color:"#30ad62", fontSize:"26px"}}/></Button>
+              <ButtonToolbar>
+              <OverlayTrigger trigger="click" rootClose placement="top" overlay={popoverTop}>
+                <Button id="addFolderBtn" style={{marginLeft:"40%"}}><AddIcon style={{color:"#30ad62", fontSize:"26px"}}/></Button>
+              </OverlayTrigger>
+              </ButtonToolbar>
             </div>
           </Collapsible>
           <Collapsible trigger="All Chapters" transitionTime={100} overflowWhenOpen="auto">
@@ -97,20 +134,24 @@ class StudentHome extends React.Component {
           </div>
         </div>
 
-        <Modal show={this.props.showModal} onHide={this.props.closeModal} style={{marginTop:"100px"}}>
+        <Modal show={this.props.showSearchModal} onHide={this.props.closeSearchModal} style={{marginTop:"100px"}}>
           <Modal.Body>
-            <Form>
+            <Form onSubmit={this.submitSearch}>
             <FormGroup>
               <InputGroup>
                 <FormControl type="text" value={this.state.searchValue} placeholder="Search" onChange={this.handleSearchChange}/>
                 <InputGroup.Button>
-                  <Button> <SearchIcon style={{color:"#30ad62"}}/> </Button>
+                  <Button type="submit"> <SearchIcon style={{color:"#cb6a99"}}/> </Button>
                 </InputGroup.Button>
               </InputGroup>
             </FormGroup>
             </Form>
             <div id="search-content">
-              <h4> Search content goes here </h4>
+              <ListGroup>
+                {this.props.searchContent.map(chapterName =>
+                  <SearchContent key={chapterName} chapterName={chapterName} />
+                )}
+              </ListGroup>
             </div>
           </Modal.Body>
         </Modal>
@@ -124,15 +165,24 @@ StudentHome.propTypes = {
   courses: PropTypes.array.isRequired,
   loadCourses: PropTypes.func.isRequired,
   searchModal: PropTypes.func.isRequired,
-  closeModal: PropTypes.func.isRequired,
-  showModal: PropTypes.bool.isRequired,
+  closeSearchModal: PropTypes.func.isRequired,
+  closeFolderModal: PropTypes.func.isRequired,
+  showSearchModal: PropTypes.bool.isRequired,
+  showFolderModal: PropTypes.bool.isRequired,
+  searchContent: PropTypes.array.isRequired,
+  addFolder: PropTypes.func.isRequired,
+  loadFolders: PropTypes.func.isRequired,
+  folders: PropTypes.array.isRequired
 };
 
 function mapStateToProps(state) {
   return {
     currentUser: state.appReducer.currentUser,
     courses: state.studentReducer.courses,
-    showModal: state.studentReducer.showModal,
+    showSearchModal: state.studentReducer.showSearchModal,
+    showFolderModal: state.studentReducer.showFolderModal,
+    searchContent: state.studentReducer.searchContent,
+    folders: state.studentReducer.folders
   };
 }
 
@@ -140,7 +190,12 @@ function mapDispatchToProps(dispatch) {
   return {
     loadCourses: () => dispatch(actions.loadCourses()),
     searchModal: () => dispatch(actions.searchModal()),
-    closeModal: () => dispatch(actions.closeModal()),
+    folderModal: () => dispatch(actions.folderModal()),
+    closeSearchModal: () => dispatch(actions.closeSearchModal()),
+    closeFolderModal: () => dispatch(actions.closeFolderModal()),
+    search: (searchValue) => dispatch(actions.search(searchValue)),
+    addFolder: (folderName) => dispatch(actions.addFolder(folderName)),
+    loadFolders: () => dispatch(actions.loadFolders())
   };
 }
 
