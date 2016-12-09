@@ -9,14 +9,19 @@
 
   #library-menu {
     width: 30%;
-    min-width: 270px;
-    max-width: 320px;
+    width: 270px;
     border-right: thin solid #B0B0B0;
     height: 100vh;
     float: left;
   }
 
   #course-display {
+    width: 70%;
+    height: 100vh;
+    display: flex;
+  }
+
+  #folder-display {
     width: 70%;
     height: 100vh;
     display: flex;
@@ -42,7 +47,7 @@
     position: relative;
     border: 1px solid white;
     padding: 10px;
-    background: #30ad62;
+    background: #1db954;
     color: #F8F8F8; }
     .Collapsible__trigger:after {
       content: url('./arrow-204-16.png');
@@ -57,7 +62,6 @@
     }
 
     .list-group-item {
-      border-top: none !important;
       border-left: none !important;
       border-right: none !important;
       border-radius: 0px !important;
@@ -100,7 +104,7 @@
   #chapter-menu {
     background: transparent;
     border: none;
-    color: #30ad62;
+    color: #1db954;
     font-size: 20px;
   }
   .dropdown {
@@ -145,6 +149,12 @@
     min-height: 100vh;
   }
 
+  #folder-display {
+    margin-left: 271px;
+    height: auto;
+    min-height: 100vh;
+  }
+
   .Collapsible__contentOuter {
     max-height: 450px !important;
   }
@@ -158,7 +168,7 @@
     position: relative;
     border: 1px solid white;
     padding: 10px;
-    background: #30ad62;
+    background: #1db954;
     color: #F8F8F8; }
     .Collapsible__trigger:after {
       content: url('./arrow-204-16.png');
@@ -173,7 +183,6 @@
     }
 
     .list-group-item {
-      border-top: none !important;
       border-left: none !important;
       border-right: none !important;
       border-radius: 0px !important;
@@ -211,13 +220,13 @@
   #chapter-menu {
     background: transparent;
     border: none;
-    color: #30ad62;
+    color: #1db954;
     font-size: 20px;
   }
   #chapter-list {
-    marginTop: 30px;
-    marginLeft: 25px;
-    overflowY: auto;
+    margin-top: 30px;
+    margin-left: 25px;
+    overflow-y: auto;
     height: 50%;
     margin-bottom: 50px;
   }

@@ -30,14 +30,14 @@
     border-radius: 50%;
     width: 35px;
     height: 35px;
-    color: #30ad62;
+    color: #1db954;
     padding:1px;
     margin-top: 10px;
     float:left;
   }
 
   #menu-button:hover {
-    color: #30ad62;
+    color: #1db954;
   }
 
   #menu-icon {
@@ -52,7 +52,7 @@
   #logo {
     font-size: 45px;
     text-align: center;
-    color: #30ad62;
+    color: #1db954;
   }
 }
 

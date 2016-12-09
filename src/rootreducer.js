@@ -4,13 +4,16 @@ import appReducer from './containers/App/reducer.js';
 import signupReducer from './containers/SignupPage/reducer.js';
 import studentReducer from './containers/StudentHome/reducer.js';
 import professorReducer from './containers/ProfessorHome/reducer.js'
+import profChapterWorkbenchReducer from './containers/ProfChapterWorkbench/reducer.js'
+
 
 const rootReducer = combineReducers({
   appReducer,
   loginReducer,
   signupReducer,
   studentReducer,
-  professorReducer
+  professorReducer,
+  profChapterWorkbenchReducer
 });
 
 export default rootReducer;

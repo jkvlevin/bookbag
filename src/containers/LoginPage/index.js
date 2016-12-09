@@ -46,13 +46,13 @@ class LoginPage extends React.Component {
             </FormGroup>
 
             <FormGroup>
-              <Button type="submit" className="login-button" onClick={this.handleSubmit} style={{background:"#30ad62", color:"white", borderColor:"#30ad62", width:"200px", height:"40px"}}>
+              <Button type="submit" className="login-button" onClick={this.handleSubmit} style={{background:"#1db954", color:"white", borderColor:"#1db954", width:"200px", height:"40px"}}>
                 Sign In
               </Button>
             </FormGroup>
 
             <FormGroup>
-              <p style={{color:"white"}}> Not a member yet? <a href="/signup" style={{color:"#30ad62", marginLeft:"10px"}}>Sign up now</a> </p>
+              <p style={{color:"white"}}> Not a member yet? <a href="/signup" style={{color:"#1db954", marginLeft:"10px"}}>Sign up now</a> </p>
             </FormGroup>
           </Form>
         </div>

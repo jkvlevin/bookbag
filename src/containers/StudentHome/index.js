@@ -1,13 +1,14 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link, browserHistory } from 'react-router';
-import { Well, Button, Glyphicon, Modal, Form, FormControl, FormGroup, InputGroup, ListGroup, ListGroupItem } from 'react-bootstrap';
+import { Well, Button, Glyphicon, Modal, Popover, ButtonToolbar, OverlayTrigger, Form, FormControl, FormGroup, InputGroup, ListGroup, ListGroupItem } from 'react-bootstrap';
 import Header from '../../components/Header';
 import Sidebar from '../../components/MenuBar/Sidebar.js';
 import HeaderMenu from '../../components/MenuBar/HeaderMenu.js';
 import SearchIcon from 'react-icons/lib/fa/search';
-import Courselist from '../../components/StudentLibrary/Courselist';
 import CourseDisplay from '../../components/StudentLibrary/CourseDisplay';
+import FolderDisplay from '../../components/StudentLibrary/FolderDisplay';
+import SearchContent from '../../components/SearchContent';
 import Collapsible from 'react-collapsible';
 import AddIcon from 'react-icons/lib/md/add-circle-outline.js';
 import * as actions from './actions.js';
@@ -18,17 +19,23 @@ class StudentHome extends React.Component {
   constructor(props) {
    super(props);
 
-   this.state = { searchValue: ''};
+   this.state = { searchValue: '', newFolderName: ''};
 
    this.handleCoursesClick = this.handleCoursesClick.bind(this);
    this.handleBrowseClick = this.handleBrowseClick.bind(this);
    this.handleSearchClick = this.handleSearchClick.bind(this);
    this.handleSettingsClick = this.handleSettingsClick.bind(this);
    this.handleSearchChange = this.handleSearchChange.bind(this);
+   this.submitSearch = this.submitSearch.bind(this);
+   this.handleFolderNameChange = this.handleFolderNameChange.bind(this);
+   this.submitAddFolder = this.submitAddFolder.bind(this);
+   this.onCourseSelect = this.onCourseSelect.bind(this);
+   this.onFolderSelect = this.onFolderSelect.bind(this);
  }
 
  componentDidMount() {
    this.props.loadCourses();
+   this.props.loadFolders();
  }
 
  handleCoursesClick() {
@@ -51,12 +58,53 @@ class StudentHome extends React.Component {
    this.setState({ searchValue: event.target.value });
  }
 
+ handleFolderNameChange(event) {
+   this.setState({ newFolderName: event.target.value });
+ }
+
+ submitSearch(event) {
+   event.preventDefault();
+   this.props.search(this.state.searchValue);
+ }
+
+ submitAddFolder(event) {
+   event.preventDefault();
+   this.props.addFolder(this.state.newFolderName);
+ }
+
+ onCourseSelect(event) {
+   let newCourse;
+   for(let course in this.props.courses) {
+     if (this.props.courses[course].courseName === event.target.name) {
+       newCourse = this.props.courses[course];
+       break;
+     }
+   }
+   this.props.selectCourse(newCourse);
+ }
+
+ onFolderSelect(event) {
+   let newFolder;
+   for(let folder in this.props.folders) {
+     if (this.props.folders[folder].folderName === event.target.name) {
+       newFolder = this.props.folders[folder];
+       break;
+     }
+   }
+   this.props.selectFolder(newFolder);
+ }
+
  render() {
-    const courseNames = [];
-    for (let course in this.props.courses) {
-      courseNames.push(this.props.courses[course].courseName);
-    }
-    let hasFolders = false;
+    const popoverTop = (
+     <Popover id="popover-positioned-top" title="New Folder" style={{width:"300px"}}>
+      <Form onSubmit={this.submitAddFolder}>
+        <InputGroup>
+          <FormControl type="text" label="name" value={this.state.newFolderName} placeholder="Folder Name" onChange={this.handleFolderNameChange} style={{width:"245px"}}/>
+        </InputGroup>
+      </Form>
+     </Popover>
+    );
+
     return (
       <div className="student-container">
         <Sidebar
@@ -68,49 +116,70 @@ class StudentHome extends React.Component {
           userName={this.props.currentUser}
         />
         <HeaderMenu currentUser={this.props.currentUser} />
+
         <div id="librarybar-container" className="clearfix">
           <div id="library-menu">
+
           <Collapsible trigger="Courses" transitionTime={100} overflowWhenOpen='scroll' open={true}>
-            <ListGroup style={{paddingLeft:"15px", paddingRight:"15px"}}>
-              {courseNames.map(courseName =>
-                <Courselist key={courseName} courseName={courseName} selectedCourse={this.props.courses[0].courseName} />
+            <ListGroup style={{paddingLeft:"15px", paddingRight:"15px", marginTop:"-1px"}}>
+              {this.props.courses.map(course =>
+                (course.courseName === this.props.selectedCourse.courseName && this.props.isCourseSelected) ? <ListGroupItem onClick={this.onCourseSelect} key={course.courseName} name={course.courseName} style={{borderTop:"none !important", color:"#1db954", fontSize:"15px"}}> {course.courseName}</ListGroupItem> :
+                <ListGroupItem onClick={this.onCourseSelect} key={course.courseName} name={course.courseName} style={{fontSize:"14px"}}> {course.courseName}</ListGroupItem>
               )}
             </ListGroup>
           </Collapsible>
-          <Collapsible trigger="Folders" transitionTime={100} overflowWhenOpen="auto">
-            <div style={{textAlign:"center", marginTop:"20px", borderBottom:"thin solid #B0B0B0"}}>
-              { hasFolders ?
-              <ListGroup style={{paddingLeft:"15px", paddingRight:"15px"}}>
 
+          <Collapsible trigger="Folders" transitionTime={100} overflowWhenOpen="auto">
+              { this.props.folders.length > 0 ?
+              <ListGroup style={{paddingLeft:"15px", paddingRight:"15px", marginTop:"-1px"}}>
+                {this.props.folders.map(folder =>
+                  (folder.folderName === this.props.selectedFolder.folderName && !this.props.isCourseSelected) ? <ListGroupItem onClick={this.onFolderSelect} key={folder.folderName} name={folder.folderName} style={{borderTop:"none !important", color:"#1db954", fontSize:"14px"}}>{folder.folderName}</ListGroupItem> :
+                  <ListGroupItem onClick={this.onFolderSelect} key={folder.folderName} name={folder.folderName} style={{fontSize:"13px"}}>{folder.folderName}</ListGroupItem>
+                )}
               </ListGroup>
               : <p id="none-tag"> You have no folders. Create folders to organize and manage your own selections of Chapters. </p>
               }
-              <Button id="addFolderBtn"><AddIcon style={{color:"#30ad62", fontSize:"26px"}}/></Button>
-            </div>
+              <ButtonToolbar>
+              <OverlayTrigger trigger="click" rootClose placement="top" overlay={popoverTop}>
+                <Button id="addFolderBtn" style={{marginLeft:"40%"}}><AddIcon style={{color:"#1db954", fontSize:"26px"}}/></Button>
+              </OverlayTrigger>
+              </ButtonToolbar>
           </Collapsible>
-          <Collapsible trigger="All Chapters" transitionTime={100} overflowWhenOpen="auto">
-          </Collapsible>
+
+          {/* <Collapsible trigger="All Chapters" transitionTime={100} overflowWhenOpen="auto">
+          </Collapsible> */}
           </div>
 
-          <div id="course-display">
-              <CourseDisplay courseName={this.props.courses[0].courseName} chapters={this.props.courses[0].chapters}/>
-          </div>
+          { this.props.isCourseSelected ?
+            <div id="course-display">
+                <CourseDisplay courseName={this.props.selectedCourse.courseName} chapters={this.props.selectedCourse.chapters}/>
+            </div> :
+            <div id="folder-display">
+                <FolderDisplay folderName={this.props.selectedFolder.folderName} chapters={this.props.selectedFolder.chapters}/>
+            </div>
+        }
+
+
         </div>
 
-        <Modal show={this.props.showModal} onHide={this.props.closeModal} style={{marginTop:"100px"}}>
+        <Modal show={this.props.showSearchModal} onHide={this.props.closeSearchModal} style={{marginTop:"100px"}}>
           <Modal.Body>
-            <Form>
+            <Form onSubmit={this.submitSearch}>
             <FormGroup>
               <InputGroup>
                 <FormControl type="text" value={this.state.searchValue} placeholder="Search" onChange={this.handleSearchChange}/>
                 <InputGroup.Button>
-                  <Button> <SearchIcon style={{color:"#30ad62"}}/> </Button>
+                  <Button type="submit"> <SearchIcon style={{color:"#cb6a99"}}/> </Button>
                 </InputGroup.Button>
               </InputGroup>
             </FormGroup>
             </Form>
             <div id="search-content">
-              <h4> Search content goes here </h4>
+              <ListGroup>
+                {this.props.searchContent.map(chapterName =>
+                  <SearchContent key={chapterName} chapterName={chapterName} />
+                )}
+              </ListGroup>
             </div>
           </Modal.Body>
         </Modal>
@@ -124,15 +193,30 @@ StudentHome.propTypes = {
   courses: PropTypes.array.isRequired,
   loadCourses: PropTypes.func.isRequired,
   searchModal: PropTypes.func.isRequired,
-  closeModal: PropTypes.func.isRequired,
-  showModal: PropTypes.bool.isRequired,
+  closeSearchModal: PropTypes.func.isRequired,
+  closeFolderModal: PropTypes.func.isRequired,
+  showSearchModal: PropTypes.bool.isRequired,
+  showFolderModal: PropTypes.bool.isRequired,
+  searchContent: PropTypes.array.isRequired,
+  addFolder: PropTypes.func.isRequired,
+  loadFolders: PropTypes.func.isRequired,
+  folders: PropTypes.array.isRequired,
+  isCourseSelected: PropTypes.bool.isRequired,
+  selectFolder: PropTypes.func.isRequired,
+  selectCourse: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state) {
   return {
     currentUser: state.appReducer.currentUser,
     courses: state.studentReducer.courses,
-    showModal: state.studentReducer.showModal,
+    showSearchModal: state.studentReducer.showSearchModal,
+    showFolderModal: state.studentReducer.showFolderModal,
+    searchContent: state.studentReducer.searchContent,
+    folders: state.studentReducer.folders,
+    selectedFolder: state.studentReducer.selectedFolder,
+    selectedCourse: state.studentReducer.selectedCourse,
+    isCourseSelected: state.studentReducer.isCourseSelected
   };
 }
 
@@ -140,7 +224,14 @@ function mapDispatchToProps(dispatch) {
   return {
     loadCourses: () => dispatch(actions.loadCourses()),
     searchModal: () => dispatch(actions.searchModal()),
-    closeModal: () => dispatch(actions.closeModal()),
+    folderModal: () => dispatch(actions.folderModal()),
+    closeSearchModal: () => dispatch(actions.closeSearchModal()),
+    closeFolderModal: () => dispatch(actions.closeFolderModal()),
+    search: (searchValue) => dispatch(actions.search(searchValue)),
+    addFolder: (folderName) => dispatch(actions.addFolder(folderName)),
+    loadFolders: () => dispatch(actions.loadFolders()),
+    selectFolder: (folder) => dispatch(actions.selectFolder(folder)),
+    selectCourse: (course) => dispatch(actions.selectCourse(course))
   };
 }
 
