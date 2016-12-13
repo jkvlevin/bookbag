@@ -21,7 +21,6 @@ function studentReducer(state = initialState, action) {
     case types.LOAD_FOLDERS_SUCCESS:
       return Object.assign({}, state, {
         folders: action.folders,
-        selectedFolder: action.folders[0]
       });
     case types.SELECT_COURSE:
       return Object.assign({}, state, {

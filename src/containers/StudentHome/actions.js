@@ -54,8 +54,7 @@ export function addFolder(folderName) {
       headers: { Authorization : authLine},
       data: { folderName: folderName }
     }).then((response) => {
-        folders = response.data;
-        console.log(folders);
+        const folders = response.data;
         dispatch(loadFoldersSuccess(folders));
     });
   };

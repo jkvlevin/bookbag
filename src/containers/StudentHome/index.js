@@ -70,6 +70,7 @@ class StudentHome extends React.Component {
  submitAddFolder(event) {
    event.preventDefault();
    this.props.addFolder(this.state.newFolderName);
+   this.setState({ newFolderName: '' });
  }
 
  onCourseSelect(event) {
@@ -121,7 +122,7 @@ class StudentHome extends React.Component {
           <div id="library-menu">
 
           <Collapsible trigger="Courses" transitionTime={100} overflowWhenOpen='scroll' open={true}>
-            <ListGroup style={{paddingLeft:"15px", paddingRight:"15px", marginTop:"-1px"}}>
+            <ListGroup style={{paddingLeft:"15px", paddingRight:"15px", marginTop:"-1px", minHeight:"40%"}}>
               {this.props.courses.map(course =>
                 (course.courseName === this.props.selectedCourse.courseName && this.props.isCourseSelected) ? <ListGroupItem onClick={this.onCourseSelect} key={course.courseName} name={course.courseName} style={{borderTop:"none !important", color:"#1db954", fontSize:"15px"}}> {course.courseName}</ListGroupItem> :
                 <ListGroupItem onClick={this.onCourseSelect} key={course.id} name={course.courseName} style={{fontSize:"14px"}}> {course.courseName}</ListGroupItem>
@@ -129,15 +130,15 @@ class StudentHome extends React.Component {
             </ListGroup>
           </Collapsible>
 
-          <Collapsible trigger="Folders" transitionTime={100} overflowWhenOpen="auto">
+          <Collapsible trigger="Folders" transitionTime={100} overflowWhenOpen="auto" open={true}>
               { this.props.folders.length > 0 ?
-              <ListGroup style={{paddingLeft:"15px", paddingRight:"15px", marginTop:"-1px"}}>
+              <ListGroup style={{paddingLeft:"15px", paddingRight:"15px", marginTop:"-1px", minHeight:"40%"}}>
                 {this.props.folders.map(folder =>
                   (folder.foldername === this.props.selectedFolder.foldername && !this.props.isCourseSelected) ? <ListGroupItem onClick={this.onFolderSelect} key={folder.foldername} name={folder.foldername} style={{borderTop:"none !important", color:"#1db954", fontSize:"14px"}}>{folder.foldername}</ListGroupItem> :
                   <ListGroupItem onClick={this.onFolderSelect} key={folder.foldername} name={folder.foldername} style={{fontSize:"13px"}}>{folder.foldername}</ListGroupItem>
                 )}
               </ListGroup>
-              : <p id="none-tag"> You have no folders. Create folders to organize and manage your own selections of Chapters. </p>
+              : <p id="none-tag" style={{textAlign:"center", marginTop:"15px"}}> You have no folders. Create folders to organize and manage your own selections of Chapters. </p>
               }
               <ButtonToolbar>
               <OverlayTrigger trigger="click" rootClose placement="top" overlay={popoverTop}>
