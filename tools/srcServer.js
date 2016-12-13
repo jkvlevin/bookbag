@@ -179,10 +179,11 @@ app.post('/api/addfolder', function(req, res) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.addFolder(decoded.username, req.body.folderName, function(err, data1) {
 			if (err) throw(err);
+			console.log(req.body.folderName);
 			Database.getFolders(decoded.username, function(err, data2) {
 		  		if (err) throw Error(err);
 		  		var folders = [];
-
+		  		console.log(data2);
 		  		async.each(data2, function(item, callback) {
 		  			Database.getFolderChapters(decoded.username, item.foldername, function(err, folderdata) {
 						if (err) callback(err);

@@ -93,14 +93,13 @@ Database.addFolder = function(email, folderName, callback) {
 	    let fn = folderName.replace(' ', '');
 
 		// Insert the course into the student's courselist
-		let insertString = "INSERT INTO " + sanitizeEmail(email) + "_folders VALUES ('" + fn + "')";
-		client.query(insertString);
-
-		// Create a new table that holds all the chapters in this course
-	    let createString = "CREATE TABLE " + sanitizeEmail(email) + fn + " (name varchar(160), prof varchar(160), url varchar(2083))";
-		client.query(createString);
-		done();
-		callback(null, "success");
+		client.query("INSERT INTO " + sanitizeEmail(email) + "_folders VALUES ('" + fn + "')", function() {
+			// Create a new table that holds all the chapters in this course
+			client.query("CREATE TABLE " + sanitizeEmail(email) + fn + " (name varchar(160), prof varchar(160), url varchar(2083))", function() {
+					done();
+					callback(null, "success");
+			});
+		});
 	});
 };
 
