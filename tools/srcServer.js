@@ -124,9 +124,22 @@ app.post('/api/student/addchaptertocoursenotes', function(req, res) {
 			Database.getCourses(decoded.username, function(err, data) {
 		  		if (err) throw Error(err);
 		  		var courses = [];
-		  		getCourseData(courses, data, decoded.username, function(d) {
-		  			res.send(d);
-		  		})
+
+		  		async.each(data, function(item, callback) {
+		  			Database.getCourseChapters(item.prof, item.coursename, function(err, data) {
+						if (err) callback(err);
+						else {
+							courses.push({
+								courseName: item.coursename,
+								chapters : data
+							});
+						}
+						callback();
+					});
+		  		}, function(err) {
+		  			if (err) throw Error(err);
+		  			res.send(courses);
+		  		});
 		  	});
 		});
 	});
@@ -137,12 +150,25 @@ app.post('/api/student/addchaptertofolder', function(req, res) {
 		Database.addChapterToFolder(decoded.username, req.body.chaptername, req.body.chapterauthor, req.body.foldername, function(err, data) {
 			if (err) throw(err);
 			Database.getFolders(decoded.username, function(err, data) {
-				if (err) throw Error(err);
-				var folders = [];
-				getFolderData(folders, data, decoded.username, function(d) {
-					res.send(d);
-				})
-			});
+		  		if (err) throw Error(err);
+		  		var folders = [];
+
+		  		async.each(data, function(item, callback) {
+		  			Database.getFolderChapters(decoded.username, item.foldername, function(err, data) {
+						if (err) callback(err);
+						else {
+							folders.push({
+								foldername: item.foldername,
+								chapters : data
+							});
+						}
+						callback();
+					});
+		  		}, function(err) {
+		  			if (err) throw Error(err);
+		  			res.send(folders);
+		  		});
+		  	});
 		});
 	});
 });
@@ -154,13 +180,25 @@ app.post('/api/addfolder', function(req, res) {
 		Database.addFolder(decoded.username, req.body.folderName, function(err, data) {
 			if (err) throw(err);
 			Database.getFolders(decoded.username, function(err, data) {
-				if (err) throw Error(err);
-				var folders = [];
-				getFolderData(folders, data, decoded.username, function(d) {
-					console.log(d);
-					res.send(d);
-				})
-			});
+		  		if (err) throw Error(err);
+		  		var folders = [];
+
+		  		async.each(data, function(item, callback) {
+		  			Database.getFolderChapters(decoded.username, item.foldername, function(err, data) {
+						if (err) callback(err);
+						else {
+							folders.push({
+								foldername: item.foldername,
+								chapters : data
+							});
+						}
+						callback();
+					});
+		  		}, function(err) {
+		  			if (err) throw Error(err);
+		  			res.send(folders);
+		  		});
+		  	});
 		});
 	});
 });
@@ -221,29 +259,14 @@ app.post('/api/getfolders', function(req, res) {
   });
 });
 
-var getFolderData = function(folders, folderData, email, callback) {
-	for (var folder in folderData) {
-		getFolderCalls(folders, folderData[folder].foldername, email, function(data) {
-			folders.push(data);
-			console.log(folders.length + " " + folderData.length);
-			if (folders.length == folderData.length) {
-				callback(folders);
-			}
-		});
-	}
-};
-
-var getFolderCalls = function(courses, foldername, email, callback) {
-	console.log("foldername is " + foldername);
-	Database.getFolderChapters(email, foldername, function(err, data) {
-		if (err) throw Error(err);
-		console.log("sending " + foldername);
-		callback({
-			folderName: foldername,
-			chapters : data
-		});
-	});
-};
+app.post('/api/getcoursenotes', function(req, res) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+  	Database.getCourseNotes(decoded.username, req.prof, req.courseName, function(err, data) {
+  		if (err) throw Error(err);
+  		res.send(data);
+  	});
+  });
+});
 
 /******************************************************************************
 Search APIs

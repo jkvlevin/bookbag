@@ -199,6 +199,22 @@ Database.getCourseChapters = function(prof, courseName, callback) {
 	});
 };
 
+Database.getCourseNotes = function(user, prof, courseName, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+		let cn = courseName.replace(' ', '');
+		let notesTable = sanitizeEmail(user) + cn + sanitizeEmail(prof) + "_notes";
+		let query = client.query("SELECT name, url FROM " + notesTable + " where prof IS NULL");
+		query.on('row', function(row, result) {
+			result.addRow(row);
+		});
+		query.on('end', function(result) {
+			done();
+			callback(null, result.rows);
+		})
+	});
+};
+
 // Get all of a user's folders and return them
 Database.getFolders = function(email, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
@@ -299,7 +315,7 @@ Database.removeCourse = function(email, prof, courseName, callback) {
 
 		client.query('DROP TABLE' + email + courseName + prof + "_notes");
 		client.query("DELETE FROM " + email + "_courses WHERE name = '" + courseName + "'");
-		client.query("UPDATE courses SET subscribers = subscribers + 1 WHERE name = '" + courseName + "' AND prof = '" + prof + "'");
+		client.query("UPDATE courses SET subscribers = subscribers - 1 WHERE name = '" + courseName + "' AND prof = '" + prof + "'");
 		callback(null, 200);
 	});
 };
