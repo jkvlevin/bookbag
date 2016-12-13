@@ -177,19 +177,19 @@ app.post('/api/student/addchaptertofolder', function(req, res) {
 app.post('/api/addfolder', function(req, res) {
 	// Auth.verify(req.email);
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		Database.addFolder(decoded.username, req.body.folderName, function(err, data) {
+		Database.addFolder(decoded.username, req.body.folderName, function(err, data1) {
 			if (err) throw(err);
-			Database.getFolders(decoded.username, function(err, data) {
+			Database.getFolders(decoded.username, function(err, data2) {
 		  		if (err) throw Error(err);
 		  		var folders = [];
 
-		  		async.each(data, function(item, callback) {
-		  			Database.getFolderChapters(decoded.username, item.foldername, function(err, data) {
+		  		async.each(data2, function(item, callback) {
+		  			Database.getFolderChapters(decoded.username, item.foldername, function(err, folderdata) {
 						if (err) callback(err);
 						else {
 							folders.push({
 								foldername: item.foldername,
-								chapters : data
+								chapters : folderdata
 							});
 						}
 						callback();
