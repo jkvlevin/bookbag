@@ -70,6 +70,7 @@ export function loadFolders() {
       headers: { Authorization : authLine},
     }).then((response) => {
       const folders = response.data;
+      console.log(folders);
       dispatch(loadFoldersSuccess(folders));
     });
   };

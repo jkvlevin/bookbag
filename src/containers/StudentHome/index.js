@@ -170,16 +170,17 @@ class StudentHome extends React.Component {
               <InputGroup>
                 <FormControl type="text" value={this.state.searchValue} placeholder="Search" onChange={this.handleSearchChange}/>
                 <InputGroup.Button>
-                  <Button type="submit"> <SearchIcon style={{color:"#cb6a99"}}/> </Button>
+                  <Button type="submit"> <SearchIcon style={{color:"#1db954"}}/> </Button>
                 </InputGroup.Button>
               </InputGroup>
             </FormGroup>
             </Form>
             <div id="search-content">
               <ListGroup>
-                {this.props.searchContent.map(chapterName =>
-                  <SearchContent key={chapterName} chapterName={chapterName} />
-                )}
+                {this.props.searchContent.length > 0 ?
+                  this.props.searchContent.map(chapterName =>
+                    <SearchContent key={chapterName} chapterName={chapterName} />
+                  ) : ''}
               </ListGroup>
             </div>
           </Modal.Body>

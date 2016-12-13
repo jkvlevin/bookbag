@@ -4,7 +4,7 @@ const initialState = {
   courses: [{courseName:' ', chapters: [{id:'', name:'', owner:'', contributors:'', src_url:'', pdf_url:''}]}],
   showSearchModal: false,
   showFolderModal: false,
-  searchContent: [''],
+  searchContent: [],
   folders: [{folderName:' ', chapters: [{id: '', name:'', owner:'', contributors:'', src_url:'', pdf_url:''}]}],
   selectedCourse: {courseName:' ', chapters: [{id:'', name:'', owner:'', contributors:'', src_url:'', pdf_url:''}]},
   selectedFolder: {folderName:' ', chapters: [{id: '', name:'', owner:'', contributors:'', src_url:'', pdf_url:''}]},
@@ -43,7 +43,7 @@ function studentReducer(state = initialState, action) {
     case types.CLOSE_SEARCH_MODAL:
       return Object.assign({}, state, {
         showSearchModal: false,
-        searchContent: ['']
+        searchContent: []
       });
     case types.CLOSE_FOLDER_MODAL:
       return Object.assign({}, state, {
