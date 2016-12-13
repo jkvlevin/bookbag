@@ -86,7 +86,7 @@ class StudentHome extends React.Component {
  onFolderSelect(event) {
    let newFolder;
    for(let folder in this.props.folders) {
-     if (this.props.folders[folder].folderName === event.target.name) {
+     if (this.props.folders[folder].foldername === event.target.name) {
        newFolder = this.props.folders[folder];
        break;
      }
@@ -124,7 +124,7 @@ class StudentHome extends React.Component {
             <ListGroup style={{paddingLeft:"15px", paddingRight:"15px", marginTop:"-1px"}}>
               {this.props.courses.map(course =>
                 (course.courseName === this.props.selectedCourse.courseName && this.props.isCourseSelected) ? <ListGroupItem onClick={this.onCourseSelect} key={course.courseName} name={course.courseName} style={{borderTop:"none !important", color:"#1db954", fontSize:"15px"}}> {course.courseName}</ListGroupItem> :
-                <ListGroupItem onClick={this.onCourseSelect} key={course.courseName} name={course.courseName} style={{fontSize:"14px"}}> {course.courseName}</ListGroupItem>
+                <ListGroupItem onClick={this.onCourseSelect} key={course.id} name={course.courseName} style={{fontSize:"14px"}}> {course.courseName}</ListGroupItem>
               )}
             </ListGroup>
           </Collapsible>
@@ -133,8 +133,8 @@ class StudentHome extends React.Component {
               { this.props.folders.length > 0 ?
               <ListGroup style={{paddingLeft:"15px", paddingRight:"15px", marginTop:"-1px"}}>
                 {this.props.folders.map(folder =>
-                  (folder.folderName === this.props.selectedFolder.folderName && !this.props.isCourseSelected) ? <ListGroupItem onClick={this.onFolderSelect} key={folder.folderName} name={folder.folderName} style={{borderTop:"none !important", color:"#1db954", fontSize:"14px"}}>{folder.folderName}</ListGroupItem> :
-                  <ListGroupItem onClick={this.onFolderSelect} key={folder.folderName} name={folder.folderName} style={{fontSize:"13px"}}>{folder.folderName}</ListGroupItem>
+                  (folder.foldername === this.props.selectedFolder.foldername && !this.props.isCourseSelected) ? <ListGroupItem onClick={this.onFolderSelect} key={folder.foldername} name={folder.foldername} style={{borderTop:"none !important", color:"#1db954", fontSize:"14px"}}>{folder.foldername}</ListGroupItem> :
+                  <ListGroupItem onClick={this.onFolderSelect} key={folder.foldername} name={folder.foldername} style={{fontSize:"13px"}}>{folder.foldername}</ListGroupItem>
                 )}
               </ListGroup>
               : <p id="none-tag"> You have no folders. Create folders to organize and manage your own selections of Chapters. </p>
@@ -155,7 +155,7 @@ class StudentHome extends React.Component {
                 <CourseDisplay courseName={this.props.selectedCourse.courseName} chapters={this.props.selectedCourse.chapters}/>
             </div> :
             <div id="folder-display">
-                <FolderDisplay folderName={this.props.selectedFolder.folderName} chapters={this.props.selectedFolder.chapters}/>
+                <FolderDisplay folderName={this.props.selectedFolder.foldername} chapters={this.props.selectedFolder.chapters}/>
             </div>
         }
 
