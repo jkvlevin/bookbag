@@ -107,7 +107,9 @@ app.post('/api/prof/createcourse', function(req, res) {
 app.post('/api/prof/createchapter', function(req, res) {
 	Database.createChapter(req.body.prof, req.body.chapterName, req.body.contributors, req.body.checkout_dur, req.body.pdf_url, function(err, data) {
 		if (err) throw(err);
-		res.sendStatus(data);
+		Git.createNewRepoWithUsers(req.body.chapterName, function(e, d) {
+			res.sendStatus(d);
+		})
 	});
 });
 
