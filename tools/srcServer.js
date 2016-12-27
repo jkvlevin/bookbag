@@ -275,6 +275,14 @@ app.post('/api/prof/getchapterhistory', expjwt, function(req, res) {
   });
 });
 
+app.post('/api/prof/getchaptercontents', expjwt, function(req, res) {
+  jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+  	Git.getLatestContentsOfRepo(sanitizeRepoName(req.body.chapterName), function(e, d) {
+  		res.send(d);
+  	});
+  });
+});
+
 /******************************************************************************
 Search APIs
 *******************************************************************************/
