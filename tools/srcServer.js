@@ -50,7 +50,12 @@ app.get('*', function(req, res) {
 
 var git = require('./Git.js')
 
-//git.createNewRepoWithUsers('Test2', 'test');
+git.createNewRepoWithUsers('Test3', function(e,d) { 
+	if (e) 
+		console.log(e);
+	else 
+		console.log(d);
+});
 //git.deleteRepo('Test');
 //var contents = git.getLatestContentsOfRepo('Test2');
 //git.listCommitsForRepo('Test2');

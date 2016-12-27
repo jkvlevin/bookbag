@@ -42,7 +42,6 @@ Git.createNewRepoWithUsers = function(repoName, callback) {
 	}, function(err, res) {
 		if (err) {
 			if (JSON.parse(err)["message"] === "Validation Failed") {
-				//console.log(JSON.parse(err)["errors"][0].message);
 				callback(JSON.parse(err)["errors"][0].message);
 			}
 			else {
@@ -58,7 +57,7 @@ Git.createNewRepoWithUsers = function(repoName, callback) {
 }
 
 // Delete a repo and all user links associated with it
-Git.deleteRepo = function(repoName) {
+Git.deleteRepo = function(repoName, callback) {
 
 	authenticate();
 
@@ -66,10 +65,12 @@ Git.deleteRepo = function(repoName) {
 		owner: 'bookbagInc',
 		repo: repoName
 	}, function(err, res) {
-		if (err)
-			console.log(JSON.parse(err)["message"]);
+		if (err) {
+			//console.log(JSON.parse(err)["message"]);
+			callback(JSON.parse(err)["message"]);
+		}
 		else
-			console.log(res);
+			callback(null, res);
 
 	});
 }
