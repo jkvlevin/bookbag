@@ -8,7 +8,7 @@ var GitHubApi = require("github");
 
 var github = new GitHubApi();
 
-var ACCOUNT_USER = 'bookbagInc' 
+var ACCOUNT_NAME = 'bookbagInc' 
 var ACCOUNT_PASS = 'bookbag69'
 
 var open = require('open');
@@ -22,7 +22,7 @@ var authenticate = function() {
 	// });
 	github.authenticate({
 	    type: "basic",
-	    username: ACCOUNT_USER,
+	    username: ACCOUNT_NAME,
 	    password: ACCOUNT_PASS
 	});
 }
@@ -127,7 +127,7 @@ Git.getLatestContentsOfRepo = function(repoName, callback) {
 }
 
 // Return the contents of a repo for a specific commit
-Git.getContentsOfRepoForCommit = function(repoName, sha) {
+Git.getContentsOfRepoForCommit = function(repoName, sha, callback) {
 
 	authenticate();
 
@@ -138,14 +138,14 @@ Git.getContentsOfRepoForCommit = function(repoName, sha) {
     	ref: sha,
 	}, function(err, res) {
 		if (err)
-    		console.log(JSON.stringify(err));
+    		callback(err);
 		else {
 			var downloadURLs = []
 
-			for (var i = 0; i < res.length; i++) {
+			for (var i = 0; i < res.length; i++) 
 				downloadURLs.push(res[i].download_url);
-				//open(downloadURLs[i]);
-			}
+
+			callback(err, downloadURLs);
 		}
 	});
 }
