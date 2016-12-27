@@ -47,8 +47,6 @@ app.get('*', function(req, res) {
   res.sendFile(path.join( __dirname, '../src/index.html'));
 });
 
-var git = require('./Git.js')
-
 
 /******************************************************************************
 Login/Account APIs

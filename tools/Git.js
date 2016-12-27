@@ -8,8 +8,8 @@ var GitHubApi = require("github");
 
 var github = new GitHubApi();
 
-var ACCOUNT_NAME = 'bookbagInc' 
-//var AUTH_TOKEN = '38ea0b3940b4084df03a467c96871002e12052fa';
+var ACCOUNT_USER = 'bookbagInc' 
+var ACCOUNT_PASS = 'bookbag69'
 
 var open = require('open');
 var fs   = require('fs');
@@ -22,9 +22,9 @@ var authenticate = function() {
 	// });
 	github.authenticate({
 	    type: "basic",
-	    username: 'bookbagInc',
-	    password: 'bookbag69'
-});
+	    username: ACCOUNT_USER,
+	    password: ACCOUNT_PASS
+	});
 }
 
 /******************************************************************************
@@ -104,7 +104,7 @@ Git.listCommitsForRepo = function(repoName, callback) {
 }
 
 // Return the contents of a repo
-Git.getLatestContentsOfRepo = function(repoName) {
+Git.getLatestContentsOfRepo = function(repoName, callback) {
 
 	authenticate();
 
@@ -114,15 +114,14 @@ Git.getLatestContentsOfRepo = function(repoName) {
     	path: "",
 	}, function(err, res) {
 		if (err)
-    		console.log(JSON.stringify(err));
+    		callback(err);
 		else {
 			var downloadURLs = [];
 
-			for (var i = 0; i < res.length; i++) {
+			for (var i = 0; i < res.length; i++) 
 				downloadURLs.push(res[i].download_url);
-				//open(downloadURLs[i]);
-			}
-			console.log(downloadURLs);
+
+			callback(err, downloadURLs);
 		}
 	});
 }
@@ -208,8 +207,11 @@ Git.uploadFilesToRepo = function(repoName, contents, fileName, commitMessage, ca
 		message: commitMessage,
 		content: contents,
 	}, function(err, res) {
-		console.log(err);
-		console.log(res);
+		
+		if (err)
+			callback(err);
+		else
+			callback(null, 200);
 
 	});
 }
