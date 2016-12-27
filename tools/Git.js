@@ -8,7 +8,7 @@ var GitHubApi = require("github");
 
 var github = new GitHubApi();
 
-var ACCOUNT_USER = 'bookbagInc' 
+var ACCOUNT_NAME = 'bookbagInc' 
 var ACCOUNT_PASS = 'bookbag69'
 
 var open = require('open');
@@ -22,7 +22,7 @@ var authenticate = function() {
 	// });
 	github.authenticate({
 	    type: "basic",
-	    username: ACCOUNT_USER,
+	    username: ACCOUNT_NAME,
 	    password: ACCOUNT_PASS
 	});
 }
