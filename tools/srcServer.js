@@ -308,3 +308,19 @@ app.post('/api/student/removecourse', function(req, res) {
 		res.sendStatus(data);
 	});
 });
+
+app.post('/api/prof/deletechapter', function(req, res) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+  	Database.deleteChapter(req.body.owner, req.body.chapterName, function(err, data) {
+  		if (err) throw(err);
+  		Git.deleteRepo(sanitizeRepoName(req.body.chapterName), function(e, d) {
+  			if (e) throw(e);
+  			res.sendStatus(200);
+  		})
+  	});
+  });
+});
+
+function sanitizeRepoName(repoName) {
+	return repoName.replace(' ', '-');
+}

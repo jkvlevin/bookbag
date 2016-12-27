@@ -335,6 +335,16 @@ Database.deleteCourse = function(prof, courseName, callback) {
 	});
 };
 
+Database.deleteChapter = function(prof, chapterName, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+
+		client.query("DELETE FROM chapters WHERE name = '" + chapterName + "' and owner = '" + prof + "'");
+		done();
+		callback(null, 200);
+	});
+}
+
 /******************************************************************************
 Helper Functions
 *******************************************************************************/
