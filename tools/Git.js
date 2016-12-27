@@ -50,7 +50,7 @@ Git.createNewRepoWithUsers = function(repoName, callback) {
 		}
 
 		else {
-			callback(null, res);
+			callback(null, 200);
 		}
 	});
 
@@ -66,11 +66,10 @@ Git.deleteRepo = function(repoName, callback) {
 		repo: repoName
 	}, function(err, res) {
 		if (err) {
-			//console.log(JSON.parse(err)["message"]);
 			callback(JSON.parse(err)["message"]);
 		}
 		else
-			callback(null, res);
+			callback(null, 200);
 
 	});
 }
