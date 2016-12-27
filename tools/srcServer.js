@@ -6,6 +6,8 @@ import open from 'open';
 import jwt from 'jsonwebtoken';
 import expressJWT from 'express-jwt';
 import async from 'async';
+import multer from 'multer';
+import fs from 'fs';
 
 /* eslint-disable no-console */
 
@@ -15,6 +17,7 @@ const compiler = webpack(config);
 let Database = require('./Database.js');
 let bodyParser = require('body-parser');
 let Git = require('./Git.js');
+var upload = multer({ dest: 'uploads/' });
 
 var expjwt = expressJWT({ secret : "JWT Secret"});
 
@@ -195,6 +198,16 @@ app.post('/api/addfolder', function(req, res) {
 		  		});
 		  	});
 		});
+	});
+});
+
+app.post('/api/prof/upload', expjwt, upload.single('pdf'), function(req,res) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		var pdfData = fs.readFile(req.file.path, 'base64', function(err, data){
+			Git.uploadFilesToRepo(sanitizeRepoName(req.body.chapterName), data, req.file.originalname, req.body.commitMessage, function(e, d) {
+				res.sendStatus(200);
+		});
+		})
 	});
 });
 

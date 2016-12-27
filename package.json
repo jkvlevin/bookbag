@@ -28,6 +28,7 @@
     "jquery": "2.2.3",
     "jsdom": "8.5.0",
     "jsonwebtoken": "^7.1.9",
+    "multer": "^1.2.1",
     "nock": "8.0.0",
     "nodegit": "^0.16.0",
     "open": "0.0.5",
