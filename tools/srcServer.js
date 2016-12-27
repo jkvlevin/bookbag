@@ -14,7 +14,6 @@ const compiler = webpack(config);
 
 let Database = require('./Database.js');
 let bodyParser = require('body-parser');
-let Git = require('./Git.js');
 // var Auth = require('Auth')
 
 var expjwt = expressJWT({ secret : "JWT Secret"});
@@ -56,11 +55,6 @@ git.createNewRepoWithUsers('Test3', function(e,d) {
 	else 
 		console.log(d);
 });
-//git.deleteRepo('Test');
-//var contents = git.getLatestContentsOfRepo('Test2');
-//git.listCommitsForRepo('Test2');
-//git.getLatestContentsOfRepo('Test2');
-//git.revertRepoToOldCommit('Test2', "bf5198b4d1bc3b60dcd8067c93abf157ca7b5916");
 
 /******************************************************************************
 Login/Account APIs
@@ -113,7 +107,7 @@ app.post('/api/prof/createchapter', function(req, res) {
 	Database.createChapter(req.body.prof, req.body.chapterName, req.body.contributors, req.body.checkout_dur, req.body.pdf_url, function(err, data) {
 		if (err) throw(err);
 		Git.createNewRepoWithUsers(req.body.chapterName, function(e, d) {
-			res.sendStatus(200);
+			res.sendStatus(d);
 		})
 	});
 });
