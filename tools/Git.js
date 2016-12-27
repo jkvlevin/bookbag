@@ -9,17 +9,22 @@ var GitHubApi = require("github");
 var github = new GitHubApi();
 
 var ACCOUNT_NAME = 'bookbagInc' 
-var AUTH_TOKEN = '38ea0b3940b4084df03a467c96871002e12052fa';
+//var AUTH_TOKEN = '38ea0b3940b4084df03a467c96871002e12052fa';
 
 var open = require('open');
 var fs   = require('fs');
 var request = require('request').defaults({ encoding: null });
 
 var authenticate = function() {
+	// github.authenticate({
+	//     type: "oauth",
+	//     token: AUTH_TOKEN
+	// });
 	github.authenticate({
-	    type: "oauth",
-	    token: AUTH_TOKEN
-	});
+	    type: "basic",
+	    username: 'bookbagInc',
+	    password: 'bookbag69'
+});
 }
 
 /******************************************************************************
@@ -27,7 +32,7 @@ Repo creation and contributor management
 *******************************************************************************/
 
 // Create a repo with an owner and users, return the repo object
-Git.createNewRepoWithUsers = function(repoName, users, callback) {
+Git.createNewRepoWithUsers = function(repoName, callback) {
 
 	authenticate();
 
@@ -37,14 +42,16 @@ Git.createNewRepoWithUsers = function(repoName, users, callback) {
 	}, function(err, res) {
 		if (err) {
 			if (JSON.parse(err)["message"] === "Validation Failed") {
-				console.log(JSON.parse(err)["errors"][0].message);
+				//console.log(JSON.parse(err)["errors"][0].message);
 				callback(JSON.parse(err)["errors"][0].message);
 			}
-
+			else {
+				callback(JSON.parse(err)["message"]);
+			}
 		}
 
 		else {
-			
+			callback(null, res);
 		}
 	});
 
@@ -131,6 +138,7 @@ Git.getLatestContentsOfRepo = function(repoName) {
 				downloadURLs.push(res[i].download_url);
 				//open(downloadURLs[i]);
 			}
+			console.log(downloadURLs);
 		}
 	});
 }
