@@ -51,7 +51,7 @@ Git.createNewRepoWithUsers = function(repoName, callback) {
 		}
 
 		else {
-			callback(null, res);
+			callback(null, 200);
 		}
 	});
 
