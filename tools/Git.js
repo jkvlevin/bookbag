@@ -196,7 +196,7 @@ Git.revertRepoToOldCommit = function(repoName, sha) {
 
 
 // Commit to repo
-Git.uploadFilesToRepo = function(repoName, contents, fileName, commitMessage, callback) {
+Git.uploadFileToRepo = function(repoName, contents, fileName, commitMessage, callback) {
 
 	authenticate();
 
