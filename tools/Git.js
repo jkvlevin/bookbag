@@ -2,6 +2,8 @@
 Module to manage Github abstraction
 *******************************************************************************/
 
+var Git = [];
+
 var GitHubApi = require("github");
 
 var github = new GitHubApi();
@@ -25,7 +27,7 @@ Repo creation and contributor management
 *******************************************************************************/
 
 // Create a repo with an owner and users, return the repo object
-exports.createNewRepoWithUsers = function(repoName, users) {
+Git.createNewRepoWithUsers = function(repoName, users, callback) {
 
 	authenticate();
 
@@ -36,19 +38,20 @@ exports.createNewRepoWithUsers = function(repoName, users) {
 		if (err) {
 			if (JSON.parse(err)["message"] === "Validation Failed") {
 				console.log(JSON.parse(err)["errors"][0].message);
+				callback(JSON.parse(err)["errors"][0].message);
 			}
 
 		}
 
 		else {
-			console.log(res);
+			
 		}
 	});
 
 }
 
 // Delete a repo and all user links associated with it
-exports.deleteRepo = function(repoName) {
+Git.deleteRepo = function(repoName) {
 
 	authenticate();
 
@@ -65,17 +68,17 @@ exports.deleteRepo = function(repoName) {
 }
 
 // Add a user to an existing repo
-exports.addUserToRepo = function(user, repoName) {
+Git.addUserToRepo = function(user, repoName) {
 
 }
 
 // Remove a user from an existing repo
-exports.removeUserFromRepo = function(user, repoName) {
+Git.removeUserFromRepo = function(user, repoName) {
 
 }
 
 // Return all of a user’s repos
-exports.getAllReposForUser = function(user) {
+Git.getAllReposForUser = function(user) {
 
 }
 
@@ -87,7 +90,7 @@ Repo data management
 *******************************************************************************/
 
 // Return all the commits for a given repo
-exports.listCommitsForRepo = function(repoName) {
+Git.listCommitsForRepo = function(repoName) {
 
 	authenticate();
 
@@ -110,7 +113,7 @@ exports.listCommitsForRepo = function(repoName) {
 }
 
 // Return the contents of a repo
-exports.getLatestContentsOfRepo = function(repoName) {
+Git.getLatestContentsOfRepo = function(repoName) {
 
 	authenticate();
 
@@ -133,7 +136,7 @@ exports.getLatestContentsOfRepo = function(repoName) {
 }
 
 // Return the contents of a repo for a specific commit
-exports.getContentsOfRepoForCommit = function(repoName, sha) {
+Git.getContentsOfRepoForCommit = function(repoName, sha) {
 
 	authenticate();
 
@@ -156,7 +159,7 @@ exports.getContentsOfRepoForCommit = function(repoName, sha) {
 	});
 }
 
-exports.revertRepoToOldCommit = function(repoName, sha) {
+Git.revertRepoToOldCommit = function(repoName, sha) {
 
 	authenticate();
 
@@ -202,7 +205,7 @@ exports.revertRepoToOldCommit = function(repoName, sha) {
 
 
 // Commit to repo
-exports.uploadFilesToRepo = function(repoName, contents, commitMessage) {
+Git.uploadFilesToRepo = function(repoName, contents, commitMessage) {
 
 	authenticate();
 
@@ -221,16 +224,17 @@ exports.uploadFilesToRepo = function(repoName, contents, commitMessage) {
 
 // Checkout management
 
-exports.checkoutRepoByUser = function(user, repoName) {
+Git.checkoutRepoByUser = function(user, repoName) {
 
 }
 
-exports.checkinRepoByUser = function(user, repoName) {
+Git.checkinRepoByUser = function(user, repoName) {
 
 }
 
-exports.isCheckedOut = function(repoName) {
+Git.isCheckedOut = function(repoName) {
 
 }
 
 
+module.exports = Git;
