@@ -97,7 +97,7 @@ Repo data management
 *******************************************************************************/
 
 // Return all the commits for a given repo
-Git.listCommitsForRepo = function(repoName) {
+Git.listCommitsForRepo = function(repoName, callback) {
 
 	authenticate();
 
@@ -108,12 +108,12 @@ Git.listCommitsForRepo = function(repoName) {
 
 		var commits = [];
 		if (err)
-    		console.log(err);
+    		callback(err);
 		else {
-			for (var i = 0; i < res.length; i++) {
+			for (var i = 0; i < res.length; i++) 
 				commits.push(res[i].commit.message)
-				//console.log(commits[i]);
-			}
+
+			callback(null, 200);
 		}
 
 	});
