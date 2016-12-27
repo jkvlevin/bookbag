@@ -14,7 +14,7 @@ const compiler = webpack(config);
 
 let Database = require('./Database.js');
 let bodyParser = require('body-parser');
-// var Auth = require('Auth')
+let Git = require('./Git.js');
 
 var expjwt = expressJWT({ secret : "JWT Secret"});
 
@@ -267,6 +267,18 @@ app.post('/api/getcoursenotes', function(req, res) {
   	Database.getCourseNotes(decoded.username, req.prof, req.courseName, function(err, data) {
   		if (err) throw Error(err);
   		res.send(data);
+  	});
+  });
+});
+
+/******************************************************************************
+Prof Retrieval APIs
+*******************************************************************************/
+
+app.post('/api/prof/getchapterhistory', expjwt, function(req, res) {
+  jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+  	Git.listCommitsForRepo(sanitizeRepoName(req.body.chapterName), function(e, d) {
+  		res.send(d);
   	});
   });
 });

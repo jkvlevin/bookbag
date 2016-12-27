@@ -74,24 +74,6 @@ Git.deleteRepo = function(repoName, callback) {
 	});
 }
 
-// Add a user to an existing repo
-Git.addUserToRepo = function(user, repoName) {
-
-}
-
-// Remove a user from an existing repo
-Git.removeUserFromRepo = function(user, repoName) {
-
-}
-
-// Return all of a user’s repos
-Git.getAllReposForUser = function(user) {
-
-}
-
-
-
-
 /******************************************************************************
 Repo data management
 *******************************************************************************/
@@ -113,7 +95,7 @@ Git.listCommitsForRepo = function(repoName, callback) {
 			for (var i = 0; i < res.length; i++) 
 				commits.push(res[i].commit.message)
 
-			callback(null, 200);
+			callback(null, commits);
 		}
 
 	});
