@@ -49,12 +49,6 @@ app.get('*', function(req, res) {
 
 var git = require('./Git.js')
 
-git.createNewRepoWithUsers('Test3', function(e,d) { 
-	if (e) 
-		console.log(e);
-	else 
-		console.log(d);
-});
 
 /******************************************************************************
 Login/Account APIs

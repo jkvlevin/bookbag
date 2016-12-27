@@ -92,8 +92,10 @@ Git.listCommitsForRepo = function(repoName, callback) {
 		if (err)
     		callback(err);
 		else {
-			for (var i = 0; i < res.length; i++) 
-				commits.push(res[i].commit.message)
+			for (var i = 0; i < res.length; i++) {
+				var commit = {message: res[i].commit.message, date: res[i].commit.author.date, sha: res[i].sha}
+				commits.push(commit)
+			}
 
 			callback(null, commits);
 		}
@@ -195,14 +197,14 @@ Git.revertRepoToOldCommit = function(repoName, sha) {
 
 
 // Commit to repo
-Git.uploadFilesToRepo = function(repoName, contents, commitMessage) {
+Git.uploadFilesToRepo = function(repoName, contents, fileName, commitMessage, callback) {
 
 	authenticate();
 
 	github.repos.createFile({
 		owner: ACCOUNT_NAME,
 		repo: repoName,
-		path: "test2.pdf",
+		path: fileName,
 		message: commitMessage,
 		content: contents,
 	}, function(err, res) {
