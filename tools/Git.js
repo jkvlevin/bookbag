@@ -208,8 +208,40 @@ Git.uploadFileToRepo = function(repoName, contents, fileName, commitMessage, cal
 		content: contents,
 	}, function(err, res) {
 		
-		if (err)
-			callback(err);
+
+		if (err) {
+
+			github.repos.getCommits({
+				owner: ACCOUNT_NAME,
+		    	repo: repoName,
+			}, function(err, res) {
+
+				var sha;
+				if (err)
+		    		callback(err);
+				else {
+					sha = res[0].sha;
+
+					github.repos.updateFile({
+						owner: ACCOUNT_NAME,
+						repo: repoName,
+						path: fileName,
+						message: commitMessage,
+						content: contents,
+						sha: sha
+					}, function(err, res) {
+
+						if (err) 
+							callback(err);
+
+						else
+							callback(null, 200);
+					});
+				}
+
+			});
+		}
+
 		else
 			callback(null, 200);
 
