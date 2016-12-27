@@ -211,17 +211,18 @@ Git.uploadFileToRepo = function(repoName, contents, fileName, commitMessage, cal
 
 		if (err) {
 
-			github.repos.getCommits({
+			github.repos.getContent({
 				owner: ACCOUNT_NAME,
 		    	repo: repoName,
+		    	path: fileName
 			}, function(err, res) {
 
 				var sha;
 				if (err)
 		    		callback(err);
 				else {
-					sha = res[0].sha;
-
+					sha = res.sha;
+					
 					github.repos.updateFile({
 						owner: ACCOUNT_NAME,
 						repo: repoName,
