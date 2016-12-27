@@ -78,7 +78,7 @@ class SignupPage extends React.Component {
           </FormGroup>
 
           <FormGroup>
-            <Button type="submit" className="login-button" onClick={this.handleSubmit} style={{background:"#30ad62", borderColor:"#30ad62", color:"white", width:"150px", height:"40px", marginTop:"20px"}}>
+            <Button type="submit" className="login-button" onClick={this.handleSubmit} style={{background:"#1db954", borderColor:"#1db954", color:"white", width:"150px", height:"40px", marginTop:"20px"}}>
               Create Account
             </Button>
           </FormGroup>

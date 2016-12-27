@@ -18,7 +18,7 @@
   font-size: 18px;
   color: white;
   width: 100px;
-  background-color: #30ad62;
+  background-color: #1db954;
 }
 
 #divider {
@@ -43,7 +43,7 @@
 }
 
 #profBtn:hover {
-  background-color:	#30ad62;
+  background-color:	#1db954;
 }
 
 #stdBtn {
@@ -60,5 +60,5 @@
 }
 
 #stdBtn:hover {
-  background-color: #30ad62;
+  background-color: #1db954;
 }

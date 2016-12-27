@@ -7,8 +7,8 @@ import MenuIcon from 'react-icons/lib/md/keyboard-control'
 const ChapterList = ({ name, owner, pdfUrl, id }) => {
   return (
     <div>
-      <ListGroupItem><h4>{name}</h4> - <h5>{owner}</h5><DropdownButton title={<MenuIcon style={{marginBottom:"5px"}}/>} noCaret id="chapter-menu">
-          <MenuItem eventKey="1">Add Chapter Notes</MenuItem>
+      <ListGroupItem><a href={pdfUrl} target="_blank"><h4>{name}</h4></a> - <h5>{owner}</h5><DropdownButton title={<MenuIcon style={{marginBottom:"8px"}}/>} noCaret id="chapter-menu">
+          <MenuItem eventKey="1">Add to Course Notes</MenuItem>
           <MenuItem eventKey="2">Add to Folder</MenuItem>
         </DropdownButton></ListGroupItem>
     </div>
@@ -18,7 +18,7 @@ const ChapterList = ({ name, owner, pdfUrl, id }) => {
 ChapterList.propTypes = {
   name: PropTypes.string.isRequired,
   owner: PropTypes.string.isRequired,
-  pdfUrl: PropTypes.string,
+  pdfUrl: PropTypes.string.isRequired,
   id: PropTypes.string,
 };
 

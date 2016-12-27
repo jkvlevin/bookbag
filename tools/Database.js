@@ -22,10 +22,11 @@ Account Queries
 
 // Log in a user
 Database.validateUser = function(email, password, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 		let query = client.query("SELECT * FROM users WHERE email = '" + email + "'");
 		query.on('row', function(row, result) {
+			done();
 			if(row.password == password) callback(null, 200);
 			else if(row.password != password) callback(null, 202);
 		});
@@ -34,7 +35,7 @@ Database.validateUser = function(email, password, callback) {
 
 // Add a new student
 Database.addStudent = function(email, name, password, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 		// Insert the new user into users
 		client.query("INSERT INTO users (id, email, name, password, prof) VALUES (uuid_generate_v4(), '" + email + "' , '" + name + "' , '" + password + "', FALSE)");
@@ -42,6 +43,7 @@ Database.addStudent = function(email, name, password, callback) {
 		client.query("CREATE TABLE " + sanitizeEmail(email) + "_courses (coursename varchar(160), prof varchar(160))");
 		// Add _folders table
 		client.query("CREATE TABLE " + sanitizeEmail(email) + "_folders (foldername varchar(160))");
+		done();
 		callback(null, "success");
 	});
 };
@@ -52,7 +54,7 @@ Creation Queries
 
 // Allows a professor to create a course
 Database.createCourse = function(name, prof, desc, keys, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 		let cn = name.replace(' ', '');
 
@@ -60,13 +62,14 @@ Database.createCourse = function(name, prof, desc, keys, callback) {
 
 		client.query("INSERT INTO courses (id, name, prof, description, keywords, subscribers) VALUES (uuid_generate_v4(), '" + name + "', '" + prof + "', '" + desc + "', '" + keys + "', " + 0 + ")");
 		client.query("CREATE TABLE " + sanitizeEmail(prof) + cn + "_chapters (name varchar(160), prof varchar(160), url varchar(2083))");
+		done();
 		callback(null, "success");
 	});
 }
 
 // Add a course to a student's library
 Database.addCourse = function(email, courseName, prof, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
 	    let cn = courseName.replace(' ', '');
@@ -77,70 +80,71 @@ Database.addCourse = function(email, courseName, prof, callback) {
 		// Create a new table that holds all the student's notes for the course
 	    let createString = "CREATE TABLE " + sanitizeEmail(email) + cn + sanitizeEmail(prof) + "_notes (name varchar(160), prof varchar(160), url varchar(2083))";
 		client.query(createString);
+		done();
 		callback(null, "success");
 	});
 };
 
 // Add a new folder to a student's library
 Database.addFolder = function(email, folderName, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
 	    let fn = folderName.replace(' ', '');
 
 		// Insert the course into the student's courselist
-		let insertString = "INSERT INTO " + sanitizeEmail(email) + "_folders VALUES ('" + fn + "')";
-		client.query(insertString);
-
-		// Create a new table that holds all the chapters in this course
-	    let createString = "CREATE TABLE " + sanitizeEmail(email) + fn + " (name varchar(160), prof varchar(160), url varchar(2083))";
-		client.query(createString);
-		callback(null, "success");
+		client.query("INSERT INTO " + sanitizeEmail(email) + "_folders VALUES ('" + fn + "')", function() {
+			// Create a new table that holds all the chapters in this course
+			client.query("CREATE TABLE " + sanitizeEmail(email) + fn + " (name varchar(160), prof varchar(160), url varchar(2083))", function() {
+					done();
+					callback(null, "success");
+			});
+		});
 	});
 };
 
 Database.addChapterToCourse = function(prof, chapterName, chapterAuthor, courseName, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		let cn = courseName.replace(' ', '');
 		if (err) callback(err);
 		let s = "INSERT INTO " + sanitizeEmail(prof) + cn + "_chapters VALUES ('" + chapterName + "', '" + chapterAuthor + "', null)";
-		console.log(s);
 		client.query(s);
+		done();
 		callback(null, 202);
 	});
 };
 
 Database.addChapterToCourseNotes = function(student, prof, chapterName, chapterAuthor, courseName, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		let cn = courseName.replace(' ', '');
 		if (err) callback(err);
 		let s = "INSERT INTO " + sanitizeEmail(student) + cn + sanitizeEmail(prof) + "_notes VALUES ('" + chapterName + "', '" + chapterAuthor + "', null)";
-		console.log(s);
 		client.query(s);
+		done();
 		callback(null, 202);
 	});
 };
 
 Database.addChapterToFolder = function(student, chapterName, chapterAuthor, folderName, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		let fn = folderName.replace(' ', '');
 		if (err) callback(err);
 		let s = "INSERT INTO " + sanitizeEmail(student) + fn + " VALUES ('" + chapterName + "', '" + chapterAuthor + "', null)";
-		console.log(s);
 		client.query(s);
+		done();
 		callback(null, 202);
 	});
 };
 
 // Create a Chapter for a prof
 Database.createChapter = function(prof, chapterName, contributors, checkout_dur, pdf_url, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
 		//Retreive pdf and src urls from git module
 		let s = "INSERT INTO chapters(id, name, owner, contributors, pdf_url, checkout_dur) VALUES (uuid_generate_v4(), '" + chapterName + "', '" + prof + "', '" + contributors + "', '" + pdf_url + "', " + checkout_dur + ")";
-		console.log(s);
 		client.query(s);
+		done();
 		callback(null, 202);
 	});
 };
@@ -163,7 +167,7 @@ Retreival Queries
 
 // Get all of a user's courses and return them
 Database.getCourses = function(email, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
 		let query = client.query("SELECT * FROM " + sanitizeEmail(email) + "_courses");
@@ -171,6 +175,7 @@ Database.getCourses = function(email, callback) {
 			result.addRow(row);
 		});
 		query.on('end', function(result) {
+			done();
 			callback(null, result.rows);
 		});
 	});
@@ -178,7 +183,7 @@ Database.getCourses = function(email, callback) {
 
 // Get all of the chapters in a give student's course
 Database.getCourseChapters = function(prof, courseName, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 		let cn = courseName.replace(' ', '');
 		let courseTable = sanitizeEmail(prof) + cn + "_chapters";
@@ -187,14 +192,31 @@ Database.getCourseChapters = function(prof, courseName, callback) {
 			result.addRow(row);
 		});
 		query.on('end', function(result) {
+			done();
 			callback(null, result.rows);
 		});
 	});
 };
 
+Database.getCourseNotes = function(user, prof, courseName, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+		let cn = courseName.replace(' ', '');
+		let notesTable = sanitizeEmail(user) + cn + sanitizeEmail(prof) + "_notes";
+		let query = client.query("SELECT name, url FROM " + notesTable + " where prof IS NULL");
+		query.on('row', function(row, result) {
+			result.addRow(row);
+		});
+		query.on('end', function(result) {
+			done();
+			callback(null, result.rows);
+		})
+	});
+};
+
 // Get all of a user's folders and return them
 Database.getFolders = function(email, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
 		let query = client.query("SELECT * FROM " + sanitizeEmail(email) + "_folders");
@@ -202,6 +224,7 @@ Database.getFolders = function(email, callback) {
 			result.addRow(row);
 		});
 		query.on('end', function(result) {
+			done();
 			callback(null, result.rows);
 		});
 	});
@@ -209,15 +232,17 @@ Database.getFolders = function(email, callback) {
 
 // Get all of the chapters in a give student's folder
 Database.getFolderChapters = function(email, folderName, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 		let fn = folderName.replace(' ', '');
 		let folderTable = sanitizeEmail(email) + fn;
-		let query = client.query('SELECT id, chapters.name, owner, contributors, src_url, pdf_url, checkout_user, checkout_exp, checkout_dur FROM chapters INNER JOIN ' + folderTable + ' on chapters.name = ' + folderTable + '.name AND ' + folderTable + ".prof IS NOT NULL");
+		let s = "SELECT id, chapters.name, owner, contributors, src_url, pdf_url, checkout_user, checkout_exp, checkout_dur FROM chapters INNER JOIN " + folderTable + " on chapters.name = " + folderTable + ".name AND " + folderTable + ".prof IS NOT NULL";
+		let query = client.query(s);
 		query.on('row', function(row, result) {
 			result.addRow(row);
 		});
 		query.on('end', function(result) {
+			done();
 			callback(null, result.rows);
 		});
 	});
@@ -289,7 +314,7 @@ Database.removeCourse = function(email, prof, courseName, callback) {
 
 		client.query('DROP TABLE' + email + courseName + prof + "_notes");
 		client.query("DELETE FROM " + email + "_courses WHERE name = '" + courseName + "'");
-		client.query("UPDATE courses SET subscribers = subscribers + 1 WHERE name = '" + courseName + "' AND prof = '" + prof + "'");
+		client.query("UPDATE courses SET subscribers = subscribers - 1 WHERE name = '" + courseName + "' AND prof = '" + prof + "'");
 		callback(null, 200);
 	});
 };
