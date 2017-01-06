@@ -108,12 +108,14 @@ Git.getLatestContentsOfRepo = function(repoName, callback) {
     		callback(JSON.parse(err)["message"]);
 		}
 		else {
-			var downloadURLs = [];
+			var contents = [];
 
-			for (var i = 0; i < res.length; i++) 
-				downloadURLs.push(res[i].download_url);
+			for (var i = 0; i < res.length; i++) {
+				var content = {filename: res[i].name, downloadURL: res[i].download_url};
+				contents.push(content);
+			}
 
-			callback(null, downloadURLs);
+			callback(null, contents);
 		}
 	});
 }
@@ -132,12 +134,14 @@ Git.getContentsOfRepoForCommit = function(repoName, sha, callback) {
 		if (err)
     		callback(JSON.parse(err)["message"]);
 		else {
-			var downloadURLs = []
+			var contents = [];
 
-			for (var i = 0; i < res.length; i++) 
-				downloadURLs.push(res[i].download_url);
+			for (var i = 0; i < res.length; i++) {
+				var content = {filename: res[i].name, downloadURL: res[i].download_url};
+				contents.push(content);
+			}
 
-			callback(null, downloadURLs);
+			callback(null, contents);
 		}
 	});
 }
