@@ -57,11 +57,23 @@ app.use(function(err, req, res, next) {
     });
 });
 
+// var ptonVerify = require('./auth/ptonVerify.js');
+
+// ptonVerify.verifyProf('Yuan', 'K', function(err, res) {
+
+// 	if (err)
+// 		console.log(err);
+// 	else 
+// 		console.log(res);
+
+// });
+
+
 /******************************************************************************
 Login/Account APIs
 *******************************************************************************/
 
-//login code
+// Log In User
 app.post('/api/login', function(req, res, next) {
 	Database.validateUser(req.body.email, req.body.password, function(err, data) {
 		if (err) return next(err);
@@ -106,14 +118,14 @@ Creation APIs
 // Add course to library
 app.post('/api/student/addcourse', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		Database.addCourse(decoded.id, req.body.courseName, req.body.prof, req.body.profname, function(err, data) {
+		Database.addCourse(decoded.id, req.body.course, function(err, data) {
 			if (err) return next(err);
 			res.end(data);
 		});
 	});
 });
 
-// Create new Course (Prof-only)
+// Create new Course
 app.post('/api/prof/createcourse', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.createCourse(req.body.name, decoded.id, req.body.description, req.body.keywords, decoded.name, function(err, data) {

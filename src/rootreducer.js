@@ -3,8 +3,9 @@ import loginReducer from './containers/LoginPage/reducer.js';
 import appReducer from './containers/App/reducer.js';
 import signupReducer from './containers/SignupPage/reducer.js';
 import studentReducer from './containers/StudentHome/reducer.js';
-import professorReducer from './containers/ProfessorHome/reducer.js'
-import profChapterWorkbenchReducer from './containers/ProfChapterWorkbench/reducer.js'
+import professorReducer from './containers/ProfessorHome/reducer.js';
+import chapterReducer from './containers/ProfChapter/reducer.js';
+import courseReducer from './containers/ProfCourse/reducer.js';
 
 
 const rootReducer = combineReducers({
@@ -13,7 +14,8 @@ const rootReducer = combineReducers({
   signupReducer,
   studentReducer,
   professorReducer,
-  profChapterWorkbenchReducer
+  chapterReducer,
+  courseReducer
 });
 
 export default rootReducer;

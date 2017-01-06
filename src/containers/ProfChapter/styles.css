@@ -1,0 +1,62 @@
+#chapter-container {
+  height: 100vh;
+  width: 100vw;
+  background-color: white;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  /*float: left;*/
+  overflow-y: auto;
+  padding: 0;
+}
+#chapter-home-container {
+  margin-left: 170px;
+  position: fixed;
+  display: block;
+  z-index: 300;
+  width: 100%;
+  text-align: center;
+}
+
+#button-options {
+  height: 60px;
+  width: 76%;
+  margin-top: 30px;
+  margin-left: 45px;
+  border-bottom: thin solid #DDDDDD;
+}
+
+#version-list {
+  margin-left: 40px;
+  margin-top: 30px;
+  width: 14%;
+  height: 65vh;
+  border: thin solid #DDDDDD;
+  overflow: auto;
+  float: left;
+  border-radius: 5px;
+}
+
+#file-title {
+  float: left;
+  margin-left: 25px;
+  width: 62%;
+  height: 25px;
+}
+
+#chapter-files {
+  margin-left: 20px;
+  margin-top: 30px;
+  width: 62%;
+  height: 61vh;
+  border: thin solid #DDDDDD;
+  overflow: auto;
+  float: left;
+  border-radius: 5px;
+}
+
+.btn-group.open .dropdown-toggle {
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+}

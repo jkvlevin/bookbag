@@ -14,11 +14,14 @@ const CourseDisplay = ({ courseName, chapters }) => {
         </ListGroup>
         <h1 style={{marginLeft:"25px", fontSize:"18px", color:"#807F83"}}> Course Notes </h1>
         <div id="course-notes" style={{height:"50%", overflowY:"auto"}}>
-          {/* <Nav bsStyle="tabs" activeKey="1" id="library-nav">
+          <Nav bsStyle="tabs" activeKey="1" id="library-nav">
             <NavItem eventKey="1">Lecture 1</NavItem>
             <NavItem eventKey="2">Lecture 2</NavItem>
             <NavItem eventKey="3">Lecture 3</NavItem>
-          </Nav> */}
+          </Nav>
+          <div style={{marginTop:"20px", marginLeft:"10px"}}>
+            <h5><a>Tricks for Determining Computability</a> - Sedgewick</h5>
+          </div>
         </div>
       </div>
     </div>
