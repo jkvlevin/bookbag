@@ -10,40 +10,59 @@
   overflow-y: auto;
   padding: 0;
 }
-#workbench-home-container {
-  margin-left: 170px;
-  position: fixed;
-  display: block;
-  z-index: 300;
-  width: 100%;
+
+#nav-container {
+  margin-left: 220px;
   text-align: center;
+  height: 100px;
+  width: 77%;
+  overflow: visible;
 }
-#chapters {
-  margin-top: 25px;
-  margin-left: 5%;
-  height: 33vw;
-  width:75vw;
-  background-color: red;
+
+#workbench-home-container {
+  margin-left: 200px;
+  margin-top: 10px;
+  width: 80%;
+  min-height: 68vh;
+  text-align: center;
+  border: thin solid #DDDDDD;
+  border-radius: 5px;
 }
+
+#add-button {
+  border-color: white;
+  margin-top: 20px;
+}
+
+
 #in-progress {
   float: left;
   height:100%;
-  width:48%;
-  background-color: blue;
-  margin-right: 4%;
+  width:46%;
 }
 
 #published {
   float: left;
+  margin-left: 2%;
   height:100%;
-  width:48%;
-  background-color: yellow;
+  width:46%;
 }
 
-#courses {
-  margin-top: 25px;
-  margin-left: 5%;
-  height: 33vw;
-  width:75vw;
-  background-color: green;
+#add-button:hover {
+  background-color: white;
+}
+
+#add-button:focus {
+  outline: none !important;
+  background-color: white;
+}
+
+.btn-group.open .dropdown-toggle {
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+}
+
+.dropdown-menu {
+  margin-left: 350px !important;
+  margin-top: 0px !important;
 }

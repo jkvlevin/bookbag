@@ -1,0 +1,192 @@
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { Link, browserHistory } from 'react-router';
+import { ListGroup, ListGroupItem, Modal, Form, FormGroup, FormControl, InputGroup, Button } from 'react-bootstrap';
+import Sidebar from '../../components/MenuBar/Sidebar.js';
+import SearchContent from '../../components/SearchContent';
+import SearchIcon from 'react-icons/lib/fa/search';
+import VersionList from '../../components/ProfessorWorkbench/VersionList.js';
+import FileList from '../../components/ProfessorWorkbench/FileList.js';
+import UserIcon from 'react-icons/lib/fa/user';
+import CheckoutIcon from 'react-icons/lib/md/assignment-turned-in';
+import PublishIcon from 'react-icons/lib/md/publish';
+import * as actions from './actions.js';
+import styles from './styles.css';
+
+
+class ProfChapter extends React.Component {
+  constructor(props) {
+   super(props);
+
+   this.state = { searchValue: ''};
+
+   this.handleCoursesClick = this.handleCoursesClick.bind(this);
+   this.handleBrowseClick = this.handleBrowseClick.bind(this);
+   this.handleSearchClick = this.handleSearchClick.bind(this);
+   this.handleSettingsClick = this.handleSettingsClick.bind(this);
+   this.handleSearchChange = this.handleSearchChange.bind(this);
+   this.submitSearch = this.submitSearch.bind(this);
+ }
+
+  handleCoursesClick() {
+    browserHistory.push('/professor');
+  }
+
+  handleBrowseClick() {
+    alert('Browse');
+  }
+
+  handleSearchClick() {
+    this.props.searchModal();
+  }
+
+  handleSettingsClick() {
+    alert('Settings');
+  }
+
+  handleSearchChange(event) {
+    this.setState({ searchValue: event.target.value });
+  }
+
+  submitSearch(event) {
+    event.preventDefault();
+    this.props.search(this.state.searchValue);
+  }
+
+
+
+ render() {
+   const versionlist = [
+      {
+        name: "v1",
+        id: "1",
+        contributor:"dick butt"
+      },
+      {
+        name: "v2",
+        id: "2",
+        contributor:"dick butt junior"
+      },
+      {
+        name: "v3",
+        id: "3",
+        contributor:"recursive dick butt"
+      }
+   ];
+   const isOwner = true;
+   const vD = "1";
+   const filelist = [
+     {
+       name:"balls.pdf",
+       id:"1",
+       isPdf: true
+     },
+     {
+       name:"triceracocks.pdf",
+       id:"2",
+       isPdf: true
+     },
+     {
+       name:"sitonmyface.latex",
+       id:"3",
+       isPdf: false
+     }
+   ];
+    return (
+      <div id="chapter-container">
+        <Sidebar
+          isProf={true}
+          handleCoursesClick={this.handleCoursesClick}
+          handleBrowseClick={this.handleBrowseClick}
+          handleSearchClick={this.handleSearchClick}
+          handleSettingsClick={this.handleSettingsClick}
+          userName={this.props.currentUser}
+        />
+        <h1 style={{marginLeft:"220px", marginTop:"25px", fontSize:"22px", color:"#878787"}}> Chapter Name </h1>
+
+        <div id="chapter-home-container">
+
+          <div id="button-options">
+              <div style={{float:"left", marginLeft:"60px", marginTop:"10px", fontSize:"25px"}}><UserIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>Contributors</h4></div>
+              { isOwner ? <div style={{float:"right", marginRight:"60px", marginTop:"10px", fontSize:"25px"}}><PublishIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>Publish</h4></div> : ""}
+              <div style={{float:"right", marginRight:"60px", marginTop:"10px", fontSize:"25px"}}><CheckoutIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>Checkout</h4></div>
+          </div>
+
+          <div id="version-list">
+            <ListGroup>
+              {versionlist.map(version =>
+                <VersionList key={version.id} name={version.name} id={version.id} contributor={version.contributor} versionDisplayed={vD}/>
+              )}
+            </ListGroup>
+          </div>
+
+          <div id="file-title">
+            <h4 style={{float:"left", fontSize:"20px", marginTop:"25px", marginLeft:"5px"}}> v1 </h4>
+            <p style={{float:"left", marginLeft:"45px", marginTop:"25px", fontSize:"12px"}}> my message goes here </p>
+            <h5 style={{float:"right", marginTop:"25px", marginRight:"30px"}}> time stamp here </h5>
+          </div>
+
+          <div id="chapter-files">
+            <ListGroup>
+              {filelist.map(file =>
+                <FileList key={file.id} name={file.name} id={file.id} isPdf={file.isPdf}/>
+              )}
+            </ListGroup>
+          </div>
+
+          <Modal show={this.props.showSearchModal} onHide={this.props.closeSearchModal} style={{marginTop:"100px"}}>
+            <Modal.Body>
+              <Form onSubmit={this.submitSearch}>
+              <FormGroup>
+                <InputGroup>
+                  <FormControl type="text" value={this.state.searchValue} placeholder="Search" onChange={this.handleSearchChange}/>
+                  <InputGroup.Button>
+                    <Button type="submit"> <SearchIcon style={{color:"#1db954"}}/> </Button>
+                  </InputGroup.Button>
+                </InputGroup>
+              </FormGroup>
+              </Form>
+              <div id="search-content">
+                <ListGroup>
+                  {this.props.searchContent.length > 0 ?
+                    this.props.searchContent.map(chapterName =>
+                      <SearchContent key={chapterName} chapterName={chapterName} />
+                    ) : ''}
+                </ListGroup>
+              </div>
+            </Modal.Body>
+          </Modal>
+
+        </div>
+      </div>
+    );
+  }
+}
+
+ProfChapter.propTypes = {
+  currentUser: PropTypes.string.isRequired,
+  searchModal: PropTypes.func.isRequired,
+  closeSearchModal: PropTypes.func.isRequired,
+  showSearchModal: PropTypes.bool.isRequired,
+  searchContent: PropTypes.array.isRequired,
+};
+
+function mapStateToProps(state) {
+  return {
+    currentUser: state.appReducer.currentUser,
+    showSearchModal: state.chapterReducer.showSearchModal,
+    searchContent: state.chapterReducer.searchContent,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    searchModal: () => dispatch(actions.searchModal()),
+    closeSearchModal: () => dispatch(actions.closeSearchModal()),
+    search: (searchValue) => dispatch(actions.search(searchValue)),
+
+  };
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProfChapter);

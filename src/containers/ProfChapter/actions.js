@@ -1,10 +1,6 @@
 import * as types from '../../actionTypes';
 import axios from 'axios';
 
-export function switchTabs(tab) {
-  return { type: types.SWITCH_TABS, tab };
-}
-
 export function search(searchValue) {
   const token = localStorage.getItem('userToken');
   var authLine = 'Bearer ' + token;
