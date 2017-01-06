@@ -5,6 +5,7 @@ Module to Manage Database Connection & Queries
 let pg = require('pg');
 let Database = [];
 const DATABASE_URL = 'postgres://xtlscmgxzqrpjq:su76vkQ798qEeiMi1MxsclLq_2@ec2-184-73-196-82.compute-1.amazonaws.com:5432/d3qu3p1gh95p7l';
+var bcrypt  = require('bcrypt-nodejs');
 
 /******************************************************************************
 Initial Database Connection
@@ -36,6 +37,7 @@ Database.validateUser = function(email, password, callback) {
 
 // Add a new student
 Database.addStudent = function(email, name, password, callback) {
+
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
@@ -45,14 +47,22 @@ Database.addStudent = function(email, name, password, callback) {
 				let errorString = email + " is taken";
 				callback(errorString);
 			} else {
-				// Insert the new user into users
-				client.query("INSERT INTO users (id, email, name, password, prof) VALUES (uuid_generate_v4(), '" + email + "' , '" + name + "' , '" + password + "', FALSE)");
-				// Add _courses table
-				client.query("CREATE TABLE " + sanitizeEmail(email) + "_courses (coursename varchar(160), prof varchar(160))");
-				// Add _folders table
-				client.query("CREATE TABLE " + sanitizeEmail(email) + "_folders (foldername varchar(160))");
-				done();
-				callback(null, "success");
+
+				bcrypt.hash(password, null, null, function(e, hash) { 
+
+					if (e) callback(e);
+
+					else {
+						// Insert the new user into users
+						client.query("INSERT INTO users (id, email, name, password, prof) VALUES (uuid_generate_v4(), '" + email + "' , '" + name + "' , '" + hash + "', FALSE)");
+						// Add _courses table
+						client.query("CREATE TABLE " + sanitizeEmail(email) + "_courses (coursename varchar(160), prof varchar(160))");
+						// Add _folders table
+						client.query("CREATE TABLE " + sanitizeEmail(email) + "_folders (foldername varchar(160))");
+						done();
+						callback(null, "success");
+					}
+				});
 			}
 		});
 	});
