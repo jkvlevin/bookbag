@@ -32,8 +32,12 @@ Database.validateUser = function(email, password, callback) {
 		let query = client.query("SELECT * FROM users WHERE email = '" + email + "'");
 		query.on('row', function(row, result) {
 			done();
-			if (row.password == password) callback(null, 200);
-			else callback("password or username does not match");
+
+			bcrypt.compare(password, row.password, function(e, res) {
+				if 		(e)    callback("hash error");
+				else if (res)  callback(null, 200);
+				else if (!res) callback("password or username does not match");
+			});
 		});
 		query.on('end', function(result) {
 			if (result.rowCount == 0) callback("user does not exist");
@@ -54,21 +58,23 @@ Database.addStudent = function(email, name, password, callback) {
 				callback(errorString);
 			} else {
 
-				bcrypt.hash(password, null, null, function(e, hash) { 
+				if (e) {
+					console.log(e);
+					callback(e);
+				}
 
-					if (e) callback(e);
+				else {
+					console.log(hash);
 
-					else {
-						// Insert the new user into users
-						client.query("INSERT INTO users (id, email, name, password, prof) VALUES (uuid_generate_v4(), '" + email + "' , '" + name + "' , '" + hash + "', FALSE)");
-						// Add _courses table
-						client.query("CREATE TABLE " + sanitizeEmail(email) + "_courses (coursename varchar(160), prof varchar(160))");
-						// Add _folders table
-						client.query("CREATE TABLE " + sanitizeEmail(email) + "_folders (foldername varchar(160))");
-						done();
-						callback(null, "success");
-					}
-				});
+					// Insert the new user into users
+					client.query("INSERT INTO users (id, email, name, password, prof) VALUES (uuid_generate_v4(), '" + email + "' , '" + name + "' , '" + hash + "', FALSE)");
+					// Add _courses table
+					client.query("CREATE TABLE " + sanitizeEmail(email) + "_courses (coursename varchar(160), prof varchar(160))");
+					// Add _folders table
+					client.query("CREATE TABLE " + sanitizeEmail(email) + "_folders (foldername varchar(160))");
+					done();
+					callback(null, "success");
+				}
 			}
 		});
 	});
