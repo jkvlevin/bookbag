@@ -57,32 +57,6 @@ app.use(function(err, req, res, next) {
     });
 });
 
-var ptonVerify = require('./auth/ptonVerify.js');
-
-ptonVerify.verifyProf('Yuan', 'K', function(err, res) {
-
-	if (err)
-		console.log(err);
-	else 
-		console.log(res);
-
-});
-
-// Git.listCommitsForRepo('Test2', function(e,d) {
-// 	if (e)
-// 		console.log(e);
-// 	else 
-// 		console.log(d);
-// })
-
-// Git.getContentsOfRepoForCommit('Test2', '19d84070ef4d814ef005c432faa270cd04ad4713',  function(e,d) {
-// 	if (e)
-// 		console.log(e);
-// 	else 
-// 		console.log(d);
-// });
-
-
 /******************************************************************************
 Login/Account APIs
 *******************************************************************************/

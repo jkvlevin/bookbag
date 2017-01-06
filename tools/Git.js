@@ -8,13 +8,8 @@ var GitHubApi = require("github");
 
 var github = new GitHubApi();
 
-<<<<<<< HEAD
 var ACCOUNT_NAME = 'bookbagInc' 
 var ACCOUNT_PASS = 'textFUTUREbook1'
-=======
-var ACCOUNT_NAME = 'bookbagInc';
-var ACCOUNT_PASS = 'textFUTUREbook1';
->>>>>>> ea1ed569f88b3e8139acf7415107545b32d15a16
 
 var authenticate = function() {
 	github.authenticate({
@@ -29,7 +24,7 @@ Repo creation and contributor management
 *******************************************************************************/
 
 // Create a repo with the desired repo name
-Git.createNewRepoWithUsers = function(repoName, callback) {
+Git.createNewRepo = function(repoName, callback) {
 
 	authenticate();
 
