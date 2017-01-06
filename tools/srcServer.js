@@ -68,20 +68,6 @@ ptonVerify.verifyProf('Yuan', 'K', function(err, res) {
 
 });
 
-// Git.listCommitsForRepo('Test2', function(e,d) {
-// 	if (e)
-// 		console.log(e);
-// 	else 
-// 		console.log(d);
-// })
-
-// Git.getContentsOfRepoForCommit('Test2', '19d84070ef4d814ef005c432faa270cd04ad4713',  function(e,d) {
-// 	if (e)
-// 		console.log(e);
-// 	else 
-// 		console.log(d);
-// });
-
 
 /******************************************************************************
 Login/Account APIs
@@ -91,7 +77,7 @@ Login/Account APIs
 app.post('/api/login', function(req, res, next) {
 	Database.validateUser(req.body.email, req.body.password, function(err, data) {
 		if (err) return next(err);
-		jwt.sign({username : req.body.email, id : data}, 'JWT Secret', {expiresIn : "12h"}, function(err, token) {
+		jwt.sign({username : req.body.email, name : data.name, id : data.id}, 'JWT Secret', {expiresIn : "12h"}, function(err, token) {
 				res.status(200).json({token});
 			});
 	});
@@ -105,7 +91,23 @@ app.post('/api/student/createaccount', function(req, res, next) {
 
 	Database.addStudent(email, name, password, function(err, data) {
 		if (err) return next(err);
-		res.status(data).json({message: "account created successfully"});
+		jwt.sign({username : email, name : name, id : data}, 'JWT Secret', {expiresIn : "12h"}, function(err, token) {
+			res.status(200).json({token});
+		});
+	});
+});
+
+// Create Prof Account
+app.post('/api/prof/createaccount', function(req, res, next) {
+	let name = req.body.name;
+	let password = req.body.password;
+	let email = req.body.email;
+
+	Database.addProf(email, name, password, function(err, data) {
+		if (err) return next(err);
+		jwt.sign({username : email, name : name, id : data}, 'JWT Secret', {expiresIn : "12h"}, function(err, token) {
+			res.status(200).json({token});
+		});
 	});
 });
 
@@ -115,43 +117,52 @@ Creation APIs
 
 // Add course to library
 app.post('/api/student/addcourse', function(req, res, next) {
-	Database.addCourse(req.body.student, req.body.courseName, req.body.prof, req.body.profname, function(err, data) {
-		if (err) return next();
-		res.end(data);
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.addCourse(decoded.id, req.body.courseName, req.body.prof, req.body.profname, function(err, data) {
+			if (err) return next(err);
+			res.end(data);
+		});
 	});
 });
 
 // Create new Course (Prof-only)
 app.post('/api/prof/createcourse', function(req, res, next) {
-	Database.createCourse(req.body.name, req.body.prof, req.body.description, req.body.keywords, req.body.profname, function(err, data) {
-		if (err) return next();
-		res.end(data);
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.createCourse(req.body.name, decoded.id, req.body.description, req.body.keywords, decoded.name, function(err, data) {
+			if (err) return next(err);
+			res.end(data);
+		});
 	});
 });
 
 //Create new chapter
 app.post('/api/prof/createchapter', function(req, res, next) {
-	Database.createChapter(req.body.prof, req.body.chapterName, req.body.contributors, req.body.checkout_dur, req.body.pdf_url, req.body.profname, function(err, data) {
-		if (err) return next();
-		Git.createNewRepoWithUsers(req.body.chapterName, function(e, d) {
-			res.sendStatus(d);
-		})
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.createChapter(decoded.id, req.body.chapterName, req.body.contributors, req.body.checkout_dur, req.body.pdf_url, req.body.profname, function(err, data) {
+			if (err) return next(err);
+			Git.createNewRepo(decoded.id, function(e, d) {
+				if (e) return next(err);
+				res.sendStatus(d);
+			})
+		});
 	});
 });
 
 app.post('/api/prof/addchaptertocourse', function(req, res, next) {
-	Database.addChapterToCourse(req.body.prof, req.body.chaptername, req.body.chapterauthor, req.body.coursename, function(err, data) {
-		if (err) return next();
-		res.sendStatus(data);
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.addChapterToCourse(decoded.id, req.body.chapter, req.body.course, function(err, data) {
+			if (err) return next(err);
+			res.sendStatus(data);
+		});
 	});
 });
 
 app.post('/api/student/addchaptertocoursenotes', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.addChapterToCourseNotes(decoded.id, req.body.prof, req.body.chaptername, req.body.chapterauthor, req.body.coursename, function(err, data) {
-			if (err) return next();
+			if (err) return next(err);
 			Database.getCourses(decoded.id, function(err, data) {
-		  		if (err) throw Error(err);
+		  		if (err) return next(err);
 		  		var courses = [];
 
 		  		async.each(data, function(item, callback) {
@@ -177,7 +188,7 @@ app.post('/api/student/addchaptertocoursenotes', function(req, res, next) {
 app.post('/api/student/addchaptertofolder', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.addChapterToFolder(decoded.id, req.body.chaptername, req.body.chapterauthor, req.body.foldername, function(err, data) {
-			if (err) return next();
+			if (err) return next(err);
 			Database.getFolders(decoded.id, function(err, data) {
 		  		if (err) throw Error(err);
 		  		var folders = [];
@@ -207,7 +218,7 @@ app.post('/api/addfolder', function(req, res, next) {
 	// Auth.verify(req.email);
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.addFolder(decoded.id, req.body.folderName, function(err, data1) {
-			if (err) return next();
+			if (err) return next(err);
 
 			Database.getFolders(decoded.id, function(err, data2) {
 		  		if (err) throw Error(err);
@@ -267,7 +278,6 @@ app.post('/api/student/getcourses', expjwt, function(req, res, next) {
   			Database.getCourseChapters(item.prof, item.coursename, function(err, data) {
 				if (err) callback(err);
 				else {
-					console.log(data);
 					courses.push({
 						courseName: item.coursename,
 						chapters : data
@@ -353,7 +363,7 @@ Search APIs
 app.post('/api/search', function(req, res, next) {
 	// Auth.verify(req.email);
 	Database.searchChapters(req.body.searchQuery, function(err, data) {
-		if (err) return next();
+		if (err) return next(err);
 		res.end(data);
 	});
 });
@@ -381,7 +391,7 @@ app.post('/api/student/removecourse', function(req, res, next) {
 app.post('/api/prof/deletechapter', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
   	Database.deleteChapter(req.body.owner, req.body.chapterName, function(err, data) {
-  		if (err) return next();
+  		if (err) return next(err);
   		Git.deleteRepo(sanitizeRepoName(req.body.chapterName), function(e, d) {
   			if (e) throw(e);
   			res.sendStatus(200);
