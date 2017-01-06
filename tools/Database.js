@@ -24,6 +24,7 @@ Account Queries
 Database.validateUser = function(email, password, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
+
 		let query = client.query("SELECT * FROM users WHERE email = '" + email + "'");
 		query.on('row', function(row, result) {
 			done();
@@ -37,14 +38,23 @@ Database.validateUser = function(email, password, callback) {
 Database.addStudent = function(email, name, password, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
-		// Insert the new user into users
-		client.query("INSERT INTO users (id, email, name, password, prof) VALUES (uuid_generate_v4(), '" + email + "' , '" + name + "' , '" + password + "', FALSE)");
-		// Add _courses table
-		client.query("CREATE TABLE " + sanitizeEmail(email) + "_courses (coursename varchar(160), prof varchar(160))");
-		// Add _folders table
-		client.query("CREATE TABLE " + sanitizeEmail(email) + "_folders (foldername varchar(160))");
-		done();
-		callback(null, "success");
+
+		client.query("SELECT EXISTS(SELECT * FROM users WHERE email = '" + email + "')").on('row', function(row, result) {
+			if (row["exists"] == true) {
+				done();
+				let errorString = email + " is taken";
+				callback(errorString);
+			} else {
+				// Insert the new user into users
+				client.query("INSERT INTO users (id, email, name, password, prof) VALUES (uuid_generate_v4(), '" + email + "' , '" + name + "' , '" + password + "', FALSE)");
+				// Add _courses table
+				client.query("CREATE TABLE " + sanitizeEmail(email) + "_courses (coursename varchar(160), prof varchar(160))");
+				// Add _folders table
+				client.query("CREATE TABLE " + sanitizeEmail(email) + "_folders (foldername varchar(160))");
+				done();
+				callback(null, "success");
+			}
+		});
 	});
 };
 
@@ -57,8 +67,6 @@ Database.createCourse = function(name, prof, desc, keys, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 		let cn = name.replace(' ', '');
-
-		// GIT CODE HERE
 
 		client.query("INSERT INTO courses (id, name, prof, description, keywords, subscribers) VALUES (uuid_generate_v4(), '" + name + "', '" + prof + "', '" + desc + "', '" + keys + "', " + 0 + ")");
 		client.query("CREATE TABLE " + sanitizeEmail(prof) + cn + "_chapters (name varchar(160), prof varchar(160), url varchar(2083))");
@@ -78,8 +86,7 @@ Database.addCourse = function(email, courseName, prof, callback) {
 		client.query("INSERT INTO " + sanitizeEmail(email) + "_courses VALUES ('" + cn + "', '"+ prof + "')");
 
 		// Create a new table that holds all the student's notes for the course
-	    let createString = "CREATE TABLE " + sanitizeEmail(email) + cn + sanitizeEmail(prof) + "_notes (name varchar(160), prof varchar(160), url varchar(2083))";
-		client.query(createString);
+		client.query("CREATE TABLE " + sanitizeEmail(email) + cn + sanitizeEmail(prof) + "_notes (name varchar(160), prof varchar(160), url varchar(2083))");
 		done();
 		callback(null, "success");
 	});
@@ -103,6 +110,7 @@ Database.addFolder = function(email, folderName, callback) {
 	});
 };
 
+// Allows a professor to add a chapter to a course
 Database.addChapterToCourse = function(prof, chapterName, chapterAuthor, courseName, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		let cn = courseName.replace(' ', '');
@@ -114,6 +122,7 @@ Database.addChapterToCourse = function(prof, chapterName, chapterAuthor, courseN
 	});
 };
 
+// Allows a student to add a chapter to course notes
 Database.addChapterToCourseNotes = function(student, prof, chapterName, chapterAuthor, courseName, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		let cn = courseName.replace(' ', '');
@@ -125,6 +134,7 @@ Database.addChapterToCourseNotes = function(student, prof, chapterName, chapterA
 	});
 };
 
+// Allows a student to add a chapter to a folder
 Database.addChapterToFolder = function(student, chapterName, chapterAuthor, folderName, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		let fn = folderName.replace(' ', '');

@@ -238,7 +238,7 @@ Git.uploadFileToRepo = function(repoName, contents, fileName, commitMessage, cal
 						content: contents,
 						sha: sha
 					}, function(err, res) {
-
+						console.log(res);
 						if (err) 
 							callback(JSON.parse(err)["message"]);
 

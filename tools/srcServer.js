@@ -203,7 +203,8 @@ app.post('/api/addfolder', function(req, res) {
 app.post('/api/prof/upload', expjwt, upload.single('pdf'), function(req,res) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		var pdfData = fs.readFile(req.file.path, 'base64', function(err, data){
-			Git.uploadFilesToRepo(sanitizeRepoName(req.body.chapterName), data, req.file.originalname, req.body.commitMessage, function(e, d) {
+			Git.uploadFileToRepo(sanitizeRepoName(req.body.chapterName), data, req.file.originalname, req.body.commitMessage, function(e, d) {
+				if (e) console.log(e);
 				fs.unlink(req.file.path);
 				res.sendStatus(200);
 		});
