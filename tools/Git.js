@@ -114,7 +114,11 @@ Git.getLatestContentsOfRepo = function(repoName, callback) {
 			var contents = [];
 
 			for (var i = 0; i < res.length; i++) {
-				var content = {filename: res[i].name, downloadURL: res[i].download_url};
+				var ext = res[i].name.split('.');
+				var isPDF;
+				if   (ext.length == 1) isPDF = false;
+				else isPDF = ext[ext.length - 1] === 'pdf';
+				var content = {filename: res[i].name, downloadURL: res[i].download_url, isPDF: isPDF};
 				contents.push(content);
 			}
 
@@ -140,7 +144,11 @@ Git.getContentsOfRepoForCommit = function(repoName, sha, callback) {
 			var contents = [];
 
 			for (var i = 0; i < res.length; i++) {
-				var content = {filename: res[i].name, downloadURL: res[i].download_url};
+				var ext = res[i].name.split('.');
+				var isPDF;
+				if   (ext.length == 1) isPDF = false;
+				else isPDF = ext[ext.length - 1] === 'pdf';
+				var content = {filename: res[i].name, downloadURL: res[i].download_url, isPDF: isPDF};
 				contents.push(content);
 			}
 

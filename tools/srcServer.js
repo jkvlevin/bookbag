@@ -57,18 +57,6 @@ app.use(function(err, req, res, next) {
     });
 });
 
-var ptonVerify = require('./auth/ptonVerify.js');
-
-ptonVerify.verifyProf('Yuan', 'K', function(err, res) {
-
-	if (err)
-		console.log(err);
-	else 
-		console.log(res);
-
-});
-
-
 /******************************************************************************
 Login/Account APIs
 *******************************************************************************/
