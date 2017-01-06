@@ -4,6 +4,8 @@ Module to manage Github abstraction
 
 var Git = [];
 
+const separator = '****';
+
 var GitHubApi = require("github");
 
 var github = new GitHubApi();
@@ -84,7 +86,8 @@ Git.listCommitsForRepo = function(repoName, callback) {
     		callback(JSON.parse(err)["message"]);
 		else {
 			for (var i = 0; i < res.length; i++) {
-				var commit = {versionID: res.length - i, message: res[i].commit.message, date: res[i].commit.author.date, sha: res[i].sha};
+				var messageWithUser = res[i].commit.message.split(separator);
+				var commit = {author: messageWithUser[0], version: res.length - i, message: messageWithUser[1], date: res[i].commit.author.date, sha: res[i].sha};
 				commits.push(commit);
 			}
 
@@ -147,7 +150,7 @@ Git.getContentsOfRepoForCommit = function(repoName, sha, callback) {
 }
 
 // Revert the repo to an older commit, specified by 'sha'
-Git.revertRepoToOldCommit = function(repoName, sha, message, callback) {
+Git.revertRepoToOldCommit = function(repoName, sha, commitMessage, author, callback) {
 
 	authenticate();
 
@@ -175,7 +178,7 @@ Git.revertRepoToOldCommit = function(repoName, sha, message, callback) {
 					github.gitdata.createCommit({
 						owner: ACCOUNT_NAME,
 						repo: repoName,
-						message: message,
+						message: author + separator + commitMessage,
 						tree: tree,
 						parents: [parent]
 					}, function(err, res) {
@@ -207,7 +210,7 @@ Git.revertRepoToOldCommit = function(repoName, sha, message, callback) {
 
 
 // Upload file to repo
-Git.uploadFileToRepo = function(repoName, contents, fileName, commitMessage, callback) {
+Git.uploadFileToRepo = function(repoName, contents, fileName, commitMessage, author, callback) {
 
 	authenticate();
 
@@ -215,13 +218,12 @@ Git.uploadFileToRepo = function(repoName, contents, fileName, commitMessage, cal
 		owner: ACCOUNT_NAME,
 		repo: repoName,
 		path: fileName,
-		message: commitMessage,
+		message: author + separator + commitMessage,
 		content: contents,
 	}, function(err, res) {
 		
 
 		if (err) {
-
 			github.repos.getContent({
 				owner: ACCOUNT_NAME,
 		    	repo: repoName,
@@ -238,12 +240,11 @@ Git.uploadFileToRepo = function(repoName, contents, fileName, commitMessage, cal
 						owner: ACCOUNT_NAME,
 						repo: repoName,
 						path: fileName,
-						message: commitMessage,
+						message: author + separator + commitMessage,
 						content: contents,
 						sha: sha
 					}, function(err, res) {
-						console.log(res);
-						if (err) 
+						if (err)
 							callback(JSON.parse(err)["message"]);
 
 						else
