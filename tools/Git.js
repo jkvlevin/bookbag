@@ -84,7 +84,7 @@ Git.listCommitsForRepo = function(repoName, callback) {
     		callback(JSON.parse(err)["message"]);
 		else {
 			for (var i = 0; i < res.length; i++) {
-				var commit = {message: res[i].commit.message, date: res[i].commit.author.date, sha: res[i].sha};
+				var commit = {versionID: res.length - i, message: res[i].commit.message, date: res[i].commit.author.date, sha: res[i].sha};
 				commits.push(commit);
 			}
 
