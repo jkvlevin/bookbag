@@ -9,7 +9,7 @@ var GitHubApi = require("github");
 var github = new GitHubApi();
 
 var ACCOUNT_NAME = 'bookbagInc' 
-var ACCOUNT_PASS = 'bookbag69'
+var ACCOUNT_PASS = 'textFUTUREbook1'
 
 var authenticate = function() {
 	github.authenticate({
@@ -269,6 +269,5 @@ Git.checkinRepoByUser = function(email, repoName, callback) {
 Git.isCheckedOut = function(repoName, callback) {
 
 }
-
 
 module.exports = Git;
