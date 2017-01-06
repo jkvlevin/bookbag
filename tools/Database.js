@@ -50,7 +50,6 @@ Database.validateUser = function(email, password, callback) {
 
 // Add a new student
 Database.addStudent = function(email, name, password, callback) {
-
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
@@ -66,9 +65,10 @@ Database.addStudent = function(email, name, password, callback) {
 				client.query("SELECT * FROM users WHERE email = '" + email + "'").on('end', function(result) {
 					let uuid = result.rows[0]["id"];
 					// Add _courses table
-					client.query("CREATE TABLE \"" + uuid + "_courses\" (coursename varchar(160), prof text, profname varchar(160))");
+					client.query("CREATE TABLE \"" + uuid + "_courses\" (id text)");
 					// Add _folders table
-					client.query("CREATE TABLE \"" + uuid + "_folders\" (foldername varchar(160))");
+					client.query("CREATE TABLE \"" + uuid + "_folders\" (id text)");
+					client.query("CREATE TRIGGER trigger_users_genid BEFORE INSERT ON" + uuid + "_folders FOR EACH ROW EXECUTE PROCEDURE unique_short_id()");
 					done();
 					callback(null, uuid);
 				});
@@ -79,7 +79,6 @@ Database.addStudent = function(email, name, password, callback) {
 
 // Add a new prof
 Database.addProf = function(email, name, password, callback) {
-
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
@@ -97,7 +96,8 @@ Database.addProf = function(email, name, password, callback) {
 					// Add _courses table
 					client.query("CREATE TABLE \"" + uuid + "_working_courses\" (id text)");
 					// Add _folders table
-					client.query("CREATE TABLE \"" + uuid + "_folders\" (foldername varchar(160))");
+					client.query("CREATE TABLE \"" + uuid + "_folders\" (id text, name varchar(160))");
+					client.query("CREATE TRIGGER trigger_users_genid BEFORE INSERT ON" + uuid + "_folders FOR EACH ROW EXECUTE PROCEDURE unique_short_id()");
 					done();
 					callback(null, uuid);
 				});
@@ -129,23 +129,20 @@ Database.createCourse = function(name, prof, desc, keys, profname, callback) {
 }
 
 // Add a course to a student's library
-Database.addCourse = function(student, courseName, prof, profname, callback) {
+Database.addCourse = function(student, course, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
-		let cn = courseName.replace(' ', '');
-
 		// Insert the course into the student's courselist
-		client.query("INSERT INTO \"" + student + "_courses\" VALUES ('" + courseName + "', '"+ prof + "', '" + profname + "')");
+		client.query("INSERT INTO \"" + student + "_courses\" VALUES ('" + course + "')");
 
 		// Create a new table that holds all the student's notes for the course
-		client.query("SELECT * FROM courses WHERE prof = '" + prof + "' AND name = '" + courseName + "'", function (err, result) {
-			if (err) callback(err);
+		client.query("CREATE TABLE \"" + student + course + "_notes\" (id text, url varchar(2083))");
 
-			client.query("CREATE TABLE \"" + student + result.rows[0].id + "_notes\" (name varchar(160), prof text, profname varchar(160), url varchar(2083))");
-			done();
-			callback(null, "success");
-		})
+		client.query("UPDATE courses SET subscribers = subscribers + 1 WHERE id = '" + course + "'");
+
+		done();
+		callback(null, "success");
 	});
 };
 
@@ -154,14 +151,12 @@ Database.addFolder = function(student, folderName, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
-	    let fn = folderName.replace(' ', '');
-
 		// Insert the course into the student's courselist
-		client.query("INSERT INTO \"" + student + "_folders\" VALUES ('" + folderName + "')", function() {
-			// Create a new table that holds all the chapters in this course
-			client.query("CREATE TABLE " + student + fn + " (name varchar(160), prof text, profname varchar(160), url varchar(2083))", function() {
-					done();
-					callback(null, "success");
+		client.query("INSERT INTO \"" + student + "_folders\"(name) VALUES ('" + folderName + "') RETURNING id", function(err, result) {
+			// Create a new table that holds all the chapters in this folder
+			client.query("CREATE TABLE " + student + result.rows[0].id + "_chapters (id text, url varchar(2083))", function() {
+				done();
+				callback(null, "success");
 			});
 		});
 	});
