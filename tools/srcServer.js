@@ -50,7 +50,6 @@ app.get('*', function(req, res) {
   res.sendFile(path.join( __dirname, '../src/index.html'));
 });
 
-
 /******************************************************************************
 Login/Account APIs
 *******************************************************************************/
@@ -211,6 +210,14 @@ app.post('/api/prof/upload', expjwt, upload.single('pdf'), function(req,res) {
 		});
 		})
 	});
+});
+
+app.post('/api/prof/revertchaptertopreviousversion', expjwt, function(req, res) {
+  jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+  	Git.revertRepoToOldCommit(sanitizeRepoName(req.body.chapterName), req.body.sha, req.body.commitMessage, function(e, d) {
+  		res.send(d);
+  	});
+  });
 });
 
 /******************************************************************************

@@ -11,15 +11,7 @@ var github = new GitHubApi();
 var ACCOUNT_NAME = 'bookbagInc' 
 var ACCOUNT_PASS = 'bookbag69'
 
-var open = require('open');
-var fs   = require('fs');
-var request = require('request').defaults({ encoding: null });
-
 var authenticate = function() {
-	// github.authenticate({
-	//     type: "oauth",
-	//     token: AUTH_TOKEN
-	// });
 	github.authenticate({
 	    type: "basic",
 	    username: ACCOUNT_NAME,
@@ -31,12 +23,11 @@ var authenticate = function() {
 Repo creation and contributor management
 *******************************************************************************/
 
-// Create a repo with an owner and users, return the repo object
+// Create a repo with the desired repo name
 Git.createNewRepoWithUsers = function(repoName, callback) {
 
 	authenticate();
 
-	// If not, create the repo
 	github.repos.create({
 		name: repoName
 	}, function(err, res) {
@@ -56,7 +47,7 @@ Git.createNewRepoWithUsers = function(repoName, callback) {
 
 }
 
-// Delete a repo and all user links associated with it
+// Delete a repo
 Git.deleteRepo = function(repoName, callback) {
 
 	authenticate();
@@ -90,11 +81,11 @@ Git.listCommitsForRepo = function(repoName, callback) {
 
 		var commits = [];
 		if (err)
-    		callback(err);
+    		callback(JSON.parse(err)["message"]);
 		else {
 			for (var i = 0; i < res.length; i++) {
-				var commit = {message: res[i].commit.message, date: res[i].commit.author.date, sha: res[i].sha}
-				commits.push(commit)
+				var commit = {message: res[i].commit.message, date: res[i].commit.author.date, sha: res[i].sha};
+				commits.push(commit);
 			}
 
 			callback(null, commits);
@@ -113,15 +104,16 @@ Git.getLatestContentsOfRepo = function(repoName, callback) {
     	repo: repoName,
     	path: "",
 	}, function(err, res) {
-		if (err)
-    		callback(err);
+		if (err) {
+    		callback(JSON.parse(err)["message"]);
+		}
 		else {
 			var downloadURLs = [];
 
 			for (var i = 0; i < res.length; i++) 
 				downloadURLs.push(res[i].download_url);
 
-			callback(err, downloadURLs);
+			callback(null, downloadURLs);
 		}
 	});
 }
@@ -138,64 +130,79 @@ Git.getContentsOfRepoForCommit = function(repoName, sha, callback) {
     	ref: sha,
 	}, function(err, res) {
 		if (err)
-    		callback(err);
+    		callback(JSON.parse(err)["message"]);
 		else {
 			var downloadURLs = []
 
 			for (var i = 0; i < res.length; i++) 
 				downloadURLs.push(res[i].download_url);
 
-			callback(err, downloadURLs);
+			callback(null, downloadURLs);
 		}
 	});
 }
 
-Git.revertRepoToOldCommit = function(repoName, sha) {
+// Revert the repo to an older commit, specified by 'sha'
+Git.revertRepoToOldCommit = function(repoName, sha, message, callback) {
 
 	authenticate();
 
-	github.repos.getContent({
-    	owner: ACCOUNT_NAME,
+	github.repos.getCommits({
+		owner: ACCOUNT_NAME,
     	repo: repoName,
-    	path: "",
-    	ref: sha,
 	}, function(err, res) {
+
 		if (err)
-    		console.log(JSON.stringify(err));
+    		callback(JSON.parse(err)["message"]);
 		else {
+			var parent = res[0].sha;
 
-			var downloadURLs = []
+			github.gitdata.getCommit({
+				owner: ACCOUNT_NAME,
+				repo: repoName,
+				sha: sha
+			}, function(err, res) {
+				if (err)
+					callback(JSON.parse(err)["message"]);
 
-			for (var i = 0; i < res.length; i++) {
-				var downloadURL = res[i].download_url;
-				var urlSplit = downloadURL.split("/");
-				var fileName = urlSplit[urlSplit.length - 1];
-				console.log("filename: " + fileName);
+				else {
+					var tree = res.tree.sha;
 
-				request.get(downloadURL, function (error, response, body) {
-				    if (!error && response.statusCode == 200) {
-				        var data = "data:" + response.headers["content-type"] + ";base64," + new Buffer(body).toString('base64');
-				        console.log(data + "\n\n\n\n");
-				        github.repos.createFile({
-							owner: ACCOUNT_NAME,
-							repo: repoName,
-							path: fileName,
-							message: "Reverting file: " + fileName + " to prior commit!",
-							content: data,
-						}, function(err, res) {
-								console.log(err);
-								console.log(res);
+					github.gitdata.createCommit({
+						owner: ACCOUNT_NAME,
+						repo: repoName,
+						message: message,
+						tree: tree,
+						parents: [parent]
+					}, function(err, res) {
+						if (err)
+							callback(JSON.parse(err)["message"]);
+						else {
 
-						});
-				    }
-				});
-			}
+							github.gitdata.updateReference({
+								owner: ACCOUNT_NAME,
+								repo: repoName,
+								ref: 'heads/master',
+								sha: res.sha,
+								force: true
+							}, function(err, res) {
+								if (err) {
+									callback(JSON.parse(err)["message"]);
+								}
+								else {
+									callback(null, 200);
+								}
+							});
+						}
+					});
+				}
+			});
 		}
 	});
 }
 
 
-// Commit to repo
+// Upload file to repo
 Git.uploadFileToRepo = function(repoName, contents, fileName, commitMessage, callback) {
 
 	authenticate();
@@ -219,10 +226,10 @@ Git.uploadFileToRepo = function(repoName, contents, fileName, commitMessage, cal
 
 				var sha;
 				if (err)
-		    		callback(err);
+		    		callback(JSON.parse(err)["message"]);
 				else {
 					sha = res.sha;
-					
+
 					github.repos.updateFile({
 						owner: ACCOUNT_NAME,
 						repo: repoName,
@@ -233,7 +240,7 @@ Git.uploadFileToRepo = function(repoName, contents, fileName, commitMessage, cal
 					}, function(err, res) {
 						console.log(res);
 						if (err) 
-							callback(err);
+							callback(JSON.parse(err)["message"]);
 
 						else
 							callback(null, 200);
@@ -251,15 +258,15 @@ Git.uploadFileToRepo = function(repoName, contents, fileName, commitMessage, cal
 
 // Checkout management
 
-Git.checkoutRepoByUser = function(user, repoName) {
+Git.checkoutRepoByUser = function(email, repoName, callback) {
 
 }
 
-Git.checkinRepoByUser = function(user, repoName) {
+Git.checkinRepoByUser = function(email, repoName, callback) {
 
 }
 
-Git.isCheckedOut = function(repoName) {
+Git.isCheckedOut = function(repoName, callback) {
 
 }
 
