@@ -8,8 +8,8 @@ var GitHubApi = require("github");
 
 var github = new GitHubApi();
 
-var ACCOUNT_NAME = 'bookbagInc' 
-var ACCOUNT_PASS = 'bookbag69'
+var ACCOUNT_NAME = 'bookbagInc';
+var ACCOUNT_PASS = 'textFUTUREbook1';
 
 var authenticate = function() {
 	github.authenticate({
