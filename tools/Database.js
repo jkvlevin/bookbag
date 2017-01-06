@@ -68,7 +68,7 @@ Database.addStudent = function(email, name, password, callback) {
 					client.query("CREATE TABLE \"" + uuid + "_courses\" (id text)");
 					// Add _folders table
 					client.query("CREATE TABLE \"" + uuid + "_folders\" (id text)");
-					client.query("CREATE TRIGGER trigger_users_genid BEFORE INSERT ON" + uuid + "_folders FOR EACH ROW EXECUTE PROCEDURE unique_short_id()");
+					client.query("CREATE TRIGGER trigger_users_genid BEFORE INSERT ON \"" + uuid + "_folders\" FOR EACH ROW EXECUTE PROCEDURE unique_short_id()");
 					done();
 					callback(null, uuid);
 				});
@@ -97,7 +97,7 @@ Database.addProf = function(email, name, password, callback) {
 					client.query("CREATE TABLE \"" + uuid + "_working_courses\" (id text)");
 					// Add _folders table
 					client.query("CREATE TABLE \"" + uuid + "_folders\" (id text, name varchar(160))");
-					client.query("CREATE TRIGGER trigger_users_genid BEFORE INSERT ON" + uuid + "_folders FOR EACH ROW EXECUTE PROCEDURE unique_short_id()");
+					client.query("CREATE TRIGGER trigger_users_genid BEFORE INSERT ON \"" + uuid + "_folders\" FOR EACH ROW EXECUTE PROCEDURE unique_short_id()");
 					done();
 					callback(null, uuid);
 				});
@@ -227,11 +227,11 @@ Retreival Queries
 
 
 // Get all of a user's courses and return them
-Database.getCourses = function(email, callback) {
+Database.getCourses = function(student, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
-		let query = client.query("SELECT * FROM " + sanitizeEmail(email) + "_courses");
+		let query = client.query("SELECT * FROM \"" + student + "_courses\"");
 		query.on('row', function(row, result) {
 			result.addRow(row);
 		});
@@ -243,12 +243,12 @@ Database.getCourses = function(email, callback) {
 };
 
 // Get all of the chapters in a give student's course
-Database.getCourseChapters = function(prof, courseName, callback) {
+Database.getCourseChapters = function(course, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
-		let cn = courseName.replace(' ', '');
-		let courseTable = sanitizeEmail(prof) + cn + "_chapters";
-		let query = client.query('SELECT id, chapters.name, owner, contributors, pdf_url, checkout_user, checkout_exp, checkout_dur FROM chapters INNER JOIN ' + courseTable + ' on chapters.name = ' + courseTable + '.name AND ' + courseTable + ".prof IS NOT NULL");
+
+		let courseTable = course + "_chapters";
+		let query = client.query("SELECT chapters.id, chapters.name, owner, contributors, pdf_url, checkout_user, checkout_exp, checkout_dur FROM chapters INNER JOIN \"" + courseTable + "\" on chapters.id = \"" + courseTable + "\".id");
 		query.on('row', function(row, result) {
 			result.addRow(row);
 		});

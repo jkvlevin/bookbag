@@ -166,7 +166,7 @@ app.post('/api/student/addchaptertocoursenotes', function(req, res, next) {
 		  		var courses = [];
 
 		  		async.each(data, function(item, callback) {
-		  			Database.getCourseChapters(item.prof, item.coursename, function(err, data) {
+		  			Database.getCourseChapters(item.id, function(err, data) {
 						if (err) callback(err);
 						else {
 							courses.push({
@@ -275,7 +275,7 @@ app.post('/api/student/getcourses', expjwt, function(req, res, next) {
   		var courses = [];
 
   		async.each(data, function(item, callback) {
-  			Database.getCourseChapters(item.prof, item.coursename, function(err, data) {
+  			Database.getCourseChapters(item.id, function(err, data) {
 				if (err) callback(err);
 				else {
 					courses.push({
