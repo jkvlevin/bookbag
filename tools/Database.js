@@ -30,12 +30,19 @@ Database.validateUser = function(email, password, callback) {
 		}
 
 		let query = client.query("SELECT * FROM users WHERE email = '" + email + "'");
+			
+		// bcrypt.compare(password, row.password, function(e, res) {
+		// 	if 		(e)    callback("hash error");
+		// 	else if (res)  callback(null, 200);
+		// 	else if (!res) callback("password or username does not match");
+		// });
 
 		query.on('end', function(result) {
 			if (result.rowCount == 0) callback("user does not exist");
 			let uuid = result.rows[0]["id"];
+			let name = result.rows[0]["name"];
 			done();
-			if (result.rows[0].password == password) callback(null, uuid);
+			if (result.rows[0].password == password) callback(null, {id : uuid, name : name});
 			else callback("password or username does not match");
 		})
 	});
@@ -53,7 +60,6 @@ Database.addStudent = function(email, name, password, callback) {
 				let errorString = email + " is taken";
 				callback(errorString);
 			} else {
-
 				// Insert the new user into users
 				client.query("INSERT INTO users (email, name, password, prof) VALUES ('" + email + "' , '" + name + "' , '" + password + "', FALSE)");
 
@@ -64,7 +70,36 @@ Database.addStudent = function(email, name, password, callback) {
 					// Add _folders table
 					client.query("CREATE TABLE \"" + uuid + "_folders\" (foldername varchar(160))");
 					done();
-					callback(null, 200);
+					callback(null, uuid);
+				});
+			}
+		});
+	});
+};
+
+// Add a new prof
+Database.addProf = function(email, name, password, callback) {
+
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+
+		client.query("SELECT EXISTS(SELECT * FROM users WHERE email = '" + email + "')").on('row', function(row, result) {
+			if (row["exists"] == true) {
+				done();
+				let errorString = email + " is taken";
+				callback(errorString);
+			} else {
+				// Insert the new user into users
+				client.query("INSERT INTO users (email, name, password, prof) VALUES ('" + email + "' , '" + name + "' , '" + password + "', TRUE)");
+
+				client.query("SELECT * FROM users WHERE email = '" + email + "'").on('end', function(result) {
+					let uuid = result.rows[0]["id"];
+					// Add _courses table
+					client.query("CREATE TABLE \"" + uuid + "_working_courses\" (id text)");
+					// Add _folders table
+					client.query("CREATE TABLE \"" + uuid + "_folders\" (foldername varchar(160))");
+					done();
+					callback(null, uuid);
 				});
 			}
 		});
@@ -81,10 +116,15 @@ Database.createCourse = function(name, prof, desc, keys, profname, callback) {
 		if (err) callback(err);
 		let cn = name.replace(' ', '');
 
-		client.query("INSERT INTO courses (name, prof, description, keywords, subscribers, profname) VALUES ('" + name + "', '" + prof + "', '" + desc + "', '" + keys + "', " + 0 + ", '" + profname + "')");
-		client.query("CREATE TABLE \"" + prof + cn + "_chapters\" (name varchar(160), prof text, profname varchar (160), url varchar(2083))");
-		done();
-		callback(null, "success");
+		client.query("INSERT INTO courses (name, prof, description, keywords, subscribers, profname) VALUES ('" + name + "', '" + prof + "', '" + desc + "', '" + keys + "', " + 0 + ", '" + profname + "') RETURNING id", function(err, result) {
+			if (err) callback(err);
+
+			client.query("CREATE TABLE \"" + result.rows[0].id + "_chapters\" (id text, url varchar(2083))");
+
+			client.query("INSERT INTO \"" + prof + "_working_courses\" VALUES ('" + result.rows[0].id + "')");
+			done();
+			callback(null, "success");
+		});
 	});
 }
 
@@ -99,9 +139,13 @@ Database.addCourse = function(student, courseName, prof, profname, callback) {
 		client.query("INSERT INTO \"" + student + "_courses\" VALUES ('" + courseName + "', '"+ prof + "', '" + profname + "')");
 
 		// Create a new table that holds all the student's notes for the course
-		client.query("CREATE TABLE \"" + student + prof + cn + "_notes\" (name varchar(160), prof text, profname varchar(160), url varchar(2083))");
-		done();
-		callback(null, "success");
+		client.query("SELECT * FROM courses WHERE prof = '" + prof + "' AND name = '" + courseName + "'", function (err, result) {
+			if (err) callback(err);
+
+			client.query("CREATE TABLE \"" + student + result.rows[0].id + "_notes\" (name varchar(160), prof text, profname varchar(160), url varchar(2083))");
+			done();
+			callback(null, "success");
+		})
 	});
 };
 
@@ -124,14 +168,13 @@ Database.addFolder = function(student, folderName, callback) {
 };
 
 // Allows a professor to add a chapter to a course
-Database.addChapterToCourse = function(prof, chapterName, chapterAuthor, courseName, callback) {
+Database.addChapterToCourse = function(chapter, course, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
-		let cn = courseName.replace(' ', '');
 		if (err) callback(err);
-		let s = "INSERT INTO " + sanitizeEmail(prof) + cn + "_chapters VALUES ('" + chapterName + "', '" + chapterAuthor + "', null)";
+		let s = "INSERT INTO \"" + course + "_chapters\" VALUES ('" + chapter + "', null)";
 		client.query(s);
 		done();
-		callback(null, 202);
+		callback(null, 200);
 	});
 };
 
@@ -168,7 +211,7 @@ Database.createChapter = function(prof, chapterName, contributors, checkout_dur,
 		let s = "INSERT INTO chapters(name, owner, contributors, pdf_url, checkout_dur, ownername) VALUES ('" + chapterName + "', '" + prof + "', '" + contributors + "', '" + pdf_url + "', " + checkout_dur + ", '" + profname + "')";
 		client.query(s);
 		done();
-		callback(null, 202);
+		callback(null, 200);
 	});
 };
 
@@ -210,7 +253,7 @@ Database.getCourseChapters = function(prof, courseName, callback) {
 		if (err) callback(err);
 		let cn = courseName.replace(' ', '');
 		let courseTable = sanitizeEmail(prof) + cn + "_chapters";
-		let query = client.query('SELECT id, chapters.name, owner, contributors, src_url, pdf_url, checkout_user, checkout_exp, checkout_dur FROM chapters INNER JOIN ' + courseTable + ' on chapters.name = ' + courseTable + '.name AND ' + courseTable + ".prof IS NOT NULL");
+		let query = client.query('SELECT id, chapters.name, owner, contributors, pdf_url, checkout_user, checkout_exp, checkout_dur FROM chapters INNER JOIN ' + courseTable + ' on chapters.name = ' + courseTable + '.name AND ' + courseTable + ".prof IS NOT NULL");
 		query.on('row', function(row, result) {
 			result.addRow(row);
 		});
@@ -259,7 +302,7 @@ Database.getFolderChapters = function(email, folderName, callback) {
 		if (err) callback(err);
 		let fn = folderName.replace(' ', '');
 		let folderTable = sanitizeEmail(email) + fn;
-		let s = "SELECT id, chapters.name, owner, contributors, src_url, pdf_url, checkout_user, checkout_exp, checkout_dur FROM chapters INNER JOIN " + folderTable + " on chapters.name = " + folderTable + ".name AND " + folderTable + ".prof IS NOT NULL";
+		let s = "SELECT id, chapters.name, owner, contributors, pdf_url, checkout_user, checkout_exp, checkout_dur FROM chapters INNER JOIN " + folderTable + " on chapters.name = " + folderTable + ".name AND " + folderTable + ".prof IS NOT NULL";
 		let query = client.query(s);
 		query.on('row', function(row, result) {
 			result.addRow(row);
