@@ -107,9 +107,6 @@
     color: #1db954;
     font-size: 20px;
   }
-  .dropdown {
-    float: right;
-  }
   .dropdown-menu {
     margin-left: -120px !important;
     margin-top: -50px !important;

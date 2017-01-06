@@ -1,17 +1,12 @@
 import * as types from '../../actionTypes';
 
 const initialState = {
-  activeTab: 1,
   showSearchModal: false,
   searchContent: [],
 };
 
-function professorReducer(state = initialState, action) {
+function chapterReducer(state = initialState, action) {
   switch (action.type) {
-    case types.SWITCH_TABS:
-      return Object.assign({}, state, {
-        activeTab: action.tab,
-      });
     case types.SEARCH_MODAL:
       return Object.assign({}, state, {
         showSearchModal: !state.showSearchModal
@@ -30,4 +25,4 @@ function professorReducer(state = initialState, action) {
   }
 }
 
-export default professorReducer;
+export default chapterReducer;

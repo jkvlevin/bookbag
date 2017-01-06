@@ -1,0 +1,31 @@
+#course-container {
+  height: 100vh;
+  width: 100vw;
+  background-color: white;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  /*float: left;*/
+  overflow-y: auto;
+  padding: 0;
+}
+
+#button-options {
+  text-align: center;
+}
+
+#course-chapter-list {
+  margin-top: 25px;
+  width: 77.5%;
+  min-height: 58vh;
+  margin-left: 40px;
+  border: thin solid #DDDDDD;
+  overflow: auto;
+  border-radius: 5px;
+}
+
+.btn-group.open .dropdown-toggle {
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+}
