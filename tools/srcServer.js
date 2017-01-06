@@ -22,7 +22,7 @@ var upload = multer({ dest: 'uploads/' });
 var expjwt = expressJWT({ secret : "JWT Secret"});
 
 /******************************************************************************
-Server Setup
+Server Setup and Middleware
 *******************************************************************************/
 
 let server = app.listen(process.env.PORT || 8080, function () {
@@ -50,18 +50,25 @@ app.get('*', function(req, res) {
   res.sendFile(path.join( __dirname, '../src/index.html'));
 });
 
+// Error Middleware
+app.use(function(err, req, res, next) {
+    res.status(202).send({
+        error: err
+    });
+});
+
 /******************************************************************************
 Login/Account APIs
 *******************************************************************************/
 
 //login code
-app.post('/api/login', function(req, res) {
-  Database.validateUser(req.body.email, req.body.password, function(err, data) {
-  	if (err) console.log(err);
-  	jwt.sign({username : req.body.email}, 'JWT Secret', {expiresIn : "12h"}, function(err, token) {
-  		res.status(data).json({token});
-  	});
-  });
+app.post('/api/login', function(req, res, next) {
+	Database.validateUser(req.body.email, req.body.password, function(err, data) {
+		if (err) return next(err);
+		jwt.sign({username : req.body.email}, 'JWT Secret', {expiresIn : "12h"}, function(err, token) {
+				res.status(data).json({token});
+			});
+	});
 });
 
 // Create Student Account
