@@ -24,14 +24,20 @@ Account Queries
 // Log in a user
 Database.validateUser = function(email, password, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
-		if (err) callback(err);
+		if (err) {
+			done();
+			callback(err);
+		}
 
 		let query = client.query("SELECT * FROM users WHERE email = '" + email + "'");
 		query.on('row', function(row, result) {
 			done();
-			if(row.password == password) callback(null, 200);
-			else if(row.password != password) callback(null, 202);
+			if (row.password == password) callback(null, 200);
+			else callback("password or username does not match");
 		});
+		query.on('end', function(result) {
+			if (result.rowCount == 0) callback("user does not exist");
+		})
 	});
 };
 
