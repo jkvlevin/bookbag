@@ -247,8 +247,8 @@ app.post('/api/addfolder', function(req, res, next) {
 app.post('/api/prof/upload', expjwt, upload.single('pdf'), function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		var pdfData = fs.readFile(req.file.path, 'base64', function(err, data){
-			Git.uploadFileToRepo(sanitizeRepoName(req.body.chapterName), data, req.file.originalname, req.body.commitMessage, function(e, d) {
-				if (e) console.log(e);
+			Git.uploadFileToRepo(sanitizeRepoName(req.body.chapterName), data, req.file.originalname, req.body.commitMessage, decoded.name, function(e, d) {
+				if (e) return next(e);
 				fs.unlink(req.file.path);
 				res.sendStatus(200);
 		});
@@ -258,7 +258,7 @@ app.post('/api/prof/upload', expjwt, upload.single('pdf'), function(req, res, ne
 
 app.post('/api/prof/revertchaptertopreviousversion', expjwt, function(req, res, next) {
   jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-  	Git.revertRepoToOldCommit(sanitizeRepoName(req.body.chapterName), req.body.sha, req.body.commitMessage, function(e, d) {
+  	Git.revertRepoToOldCommit(sanitizeRepoName(req.body.chapterName), req.body.sha, req.body.commitMessage, decoded.name, function(e, d) {
   		res.send(d);
   	});
   });
