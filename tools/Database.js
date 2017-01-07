@@ -280,11 +280,11 @@ Database.getCourseNotes = function(user, prof, courseName, callback) {
 };
 
 // Get all of a user's folders and return them
-Database.getFolders = function(email, callback) {
+Database.getFolders = function(student, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
-		let query = client.query("SELECT * FROM " + sanitizeEmail(email) + "_folders");
+		let query = client.query("SELECT * FROM \"" + student + "_folders\"");
 		query.on('row', function(row, result) {
 			result.addRow(row);
 		});
@@ -296,12 +296,11 @@ Database.getFolders = function(email, callback) {
 };
 
 // Get all of the chapters in a give student's folder
-Database.getFolderChapters = function(email, folderName, callback) {
+Database.getFolderChapters = function(student, folder, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
-		let fn = folderName.replace(' ', '');
-		let folderTable = sanitizeEmail(email) + fn;
-		let s = "SELECT id, chapters.name, owner, contributors, pdf_url, checkout_user, checkout_exp, checkout_dur FROM chapters INNER JOIN " + folderTable + " on chapters.name = " + folderTable + ".name AND " + folderTable + ".prof IS NOT NULL";
+		let folderTable = student + folder;
+		let s = "SELECT chapters.id, chapters.name, owner, contributors, pdf_url, checkout_user, checkout_exp, checkout_dur FROM chapters INNER JOIN \"" + folderTable + "\" on chapters.id = \"" + folderTable + "\".id";
 		let query = client.query(s);
 		query.on('row', function(row, result) {
 			result.addRow(row);

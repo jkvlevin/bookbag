@@ -290,7 +290,7 @@ app.post('/api/student/getcourses', expjwt, function(req, res, next) {
 app.post('/api/getfolders', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
   	Database.getFolders(decoded.id, function(err, data) {
-  		if (err) throw Error(err);
+  		if (err) next(err);
   		var folders = [];
 
   		async.each(data, function(item, callback) {
