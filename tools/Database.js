@@ -202,12 +202,12 @@ Database.addChapterToFolder = function(student, chapterName, chapterAuthor, fold
 };
 
 // Create a Chapter for a prof
-Database.createChapter = function(prof, chapterName, contributors, checkout_dur, pdf_url, profname, callback) {
+Database.createChapter = function(prof, chapterName, contributors, checkout_dur, pdf_url, profname, keywords, description, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
 		//Retreive pdf and src urls from git module
-		let s = "INSERT INTO chapters(name, owner, contributors, pdf_url, checkout_dur, ownername) VALUES ('" + chapterName + "', '" + prof + "', '" + contributors + "', '" + pdf_url + "', " + checkout_dur + ", '" + profname + "')";
+		let s = "INSERT INTO chapters(name, owner, contributors, pdf_url, checkout_dur, ownername, keywords, description) VALUES ('" + chapterName + "', '" + prof + "', '" + contributors + "', '" + pdf_url + "', " + checkout_dur + ", '" + profname + "', '" + keywords + "', '" + description + "')";
 		client.query(s);
 		done();
 		callback(null, 200);
@@ -266,6 +266,7 @@ Database.getCourseChapters = function(course, callback) {
 	});
 };
 
+// Retreive a Student's course notes
 Database.getCourseNotes = function(user, prof, courseName, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
@@ -324,7 +325,22 @@ Database.searchChapters = function(searchQuery, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
 		if (err) callback(err);
 
-		let query = client.query("SELECT * FROM chapters WHERE name ILIKE '%" + searchQuery + "%'");
+		let query = client.query("SELECT * FROM chapters WHERE name ILIKE '%" + searchQuery + "%' OR description ILIKE '%" + searchQuery + "%'");
+		query.on('row', function(row, result) {
+			result.addRow(row);
+		});
+		query.on('end', function(result) {
+			callback(null, JSON.stringify(result.rows, null, "    "));
+		});
+	});
+};
+
+// Search a user's query and return the results
+Database.searchCourses = function(searchQuery, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		if (err) callback(err);
+
+		let query = client.query("SELECT * FROM courses WHERE name ILIKE '%" + searchQuery + "%' OR description ILIKE '%" + searchQuery + "%' OR profname ILIKE '%" + searchQuery + "%'");
 		query.on('row', function(row, result) {
 			result.addRow(row);
 		});
@@ -374,13 +390,13 @@ Database.deleteStudent = function(student, callback) {
 };
 
 // Remove course from a student's library
-Database.removeCourse = function(email, prof, courseName, callback) {
+Database.removeCourse = function(student, course, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
 		if (err) callback(err);
 
-		client.query('DROP TABLE' + email + courseName + prof + "_notes");
-		client.query("DELETE FROM " + email + "_courses WHERE name = '" + courseName + "'");
-		client.query("UPDATE courses SET subscribers = subscribers - 1 WHERE name = '" + courseName + "' AND prof = '" + prof + "'");
+		client.query("DROP TABLE \"" + student + course + "_notes\"");
+		client.query("DELETE FROM \"" + student + "_courses\" WHERE id = '" + course + "'");
+		client.query("UPDATE courses SET subscribers = subscribers - 1 WHERE id = '" + course + "'");
 		callback(null, 200);
 	});
 };

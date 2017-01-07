@@ -50,16 +50,16 @@ app.get('*', function(req, res) {
   res.sendFile(path.join( __dirname, '../src/index.html'));
 });
 
-// var ptonVerify = require('./auth/ptonVerify.js');
+var ptonVerify = require('./auth/ptonVerify.js');
 
-// ptonVerify.verifyProf('Yuan', 'K', function(err, res) {
+ptonVerify.verifyProf('Yuan', 'K', function(err, res) {
 
-// 	if (err)
-// 		console.log(err);
-// 	else
-// 		console.log(res);
+	if (err)
+		console.log(err);
+	else
+		console.log(res);
 
-// });
+});
 
 
 /******************************************************************************
@@ -131,7 +131,7 @@ app.post('/api/prof/createcourse', function(req, res, next) {
 //Create new chapter
 app.post('/api/prof/createchapter', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		Database.createChapter(decoded.id, req.body.chapterName, req.body.contributors, req.body.checkout_dur, req.body.pdf_url, req.body.profname, function(err, data) {
+		Database.createChapter(decoded.id, req.body.chapterName, req.body.contributors, req.body.checkout_dur, req.body.pdf_url, req.body.profname, req.body.keywords, req.body.description, function(err, data) {
 			if (err) return next(err);
 			Git.createNewRepo(decoded.id, function(e, d) {
 				if (e) return next(err);
@@ -252,6 +252,7 @@ app.post('/api/prof/upload', expjwt, upload.single('pdf'), function(req, res, ne
 app.post('/api/prof/revertchaptertopreviousversion', expjwt, function(req, res, next) {
   jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
   	Git.revertRepoToOldCommit(sanitizeRepoName(req.body.chapterName), req.body.sha, req.body.commitMessage, decoded.name, function(e, d) {
+  		if (e) return next(e);
   		res.send(d);
   	});
   });
@@ -328,6 +329,7 @@ Prof Retrieval APIs
 app.post('/api/prof/getchapterhistory', expjwt, function(req, res, next) {
   jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
   	Git.listCommitsForRepo(req.body.chapterId, function(e, d) {
+  		if (e) return next(e);
   		res.send(d);
   	});
   });
@@ -336,6 +338,7 @@ app.post('/api/prof/getchapterhistory', expjwt, function(req, res, next) {
 app.post('/api/prof/getchaptercontents', expjwt, function(req, res, next) {
   jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
   	Git.getLatestContentsOfRepo(req.body.chapterId, function(e, d) {
+  		if (e) return next(e);
   		res.send(d);
   	});
   });
@@ -344,6 +347,7 @@ app.post('/api/prof/getchaptercontents', expjwt, function(req, res, next) {
 app.post('/api/prof/getchaptercontentsprevious', expjwt, function(req, res, next) {
   jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
   	Git.getContentsOfRepoForCommit(req.body.chapterId, req.body.sha, function(e, d) {
+  		if (e) return next(e);
   		res.send(d);
   	});
   });
@@ -353,9 +357,19 @@ app.post('/api/prof/getchaptercontentsprevious', expjwt, function(req, res, next
 Search APIs
 *******************************************************************************/
 
-app.post('/api/search', function(req, res, next) {
+// Search the Database for Chapters
+app.post('/api/searchchapters', function(req, res, next) {
 	// Auth.verify(req.email);
 	Database.searchChapters(req.body.searchQuery, function(err, data) {
+		if (err) return next(err);
+		res.end(data);
+	});
+});
+
+// Search the Database for Chapters
+app.post('/api/searchcourses', function(req, res, next) {
+	// Auth.verify(req.email);
+	Database.searchCourses(req.body.searchQuery, function(err, data) {
 		if (err) return next(err);
 		res.end(data);
 	});
@@ -365,28 +379,33 @@ app.post('/api/search', function(req, res, next) {
 Deletion APIs
 *******************************************************************************/
 
+// Delete a Student's Account
 app.post('/api/student/delete', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.deleteStudent(decoded.id, function(err, data) {
-			if (err) next(err);
+			if (err) return next(err);
 			res.send(data);
 		});
 	});
 });
 
+// Remove Course from a Student's Library
 app.post('/api/student/removecourse', function(req, res, next) {
-	Database.removeCourse(req.body.email, req.body.prof, req.body.courseName, function(err, data) {
-		if (err) console.log(err);
-		res.sendStatus(data);
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.removeCourse(decoded.id, req.body.course, function(err, data) {
+			if (err) return next(err);
+			res.sendStatus(data);
+		});
 	});
 });
 
+// Delete a Chapter from Bookbag
 app.post('/api/prof/deletechapter', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
   	Database.deleteChapter(req.body.owner, req.body.chapterName, function(err, data) {
   		if (err) return next(err);
   		Git.deleteRepo(sanitizeRepoName(req.body.chapterName), function(e, d) {
-  			if (e) throw(e);
+  			if (e) return next(err);
   			res.sendStatus(200);
   		})
   	});
@@ -397,7 +416,7 @@ function sanitizeRepoName(repoName) {
 	return repoName.replace(' ', '-');
 }
 
-// Error Middlewarer
+// Error Middleware
 app.use(function(err, req, res, next) {
     res.status(202).json({
         error: err
