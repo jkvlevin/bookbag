@@ -60,7 +60,7 @@ Database.validateUser = function(email, password, callback) {
 };
 
 // Add a new student
-Database.addStudent = function(email, name, password, callback) {
+Database.addStudent = function(email, firstname, lastname, password, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
@@ -76,7 +76,7 @@ Database.addStudent = function(email, name, password, callback) {
 					if (e)
 						callback(e);
 
-					client.query("INSERT INTO users (email, name, password, prof) VALUES ('" + email + "' , '" + name + "' , '" + hash + "', FALSE)");
+					client.query("INSERT INTO users (email, firstname, lastname, password, prof) VALUES ('" + email + "' , '" + firstname + "' , '" + lastname + "', '" + hash + "', FALSE)");
 
 					client.query("SELECT * FROM users WHERE email = '" + email + "'").on('end', function(result) {
 						let uuid = result.rows[0]["id"];
@@ -95,7 +95,7 @@ Database.addStudent = function(email, name, password, callback) {
 };
 
 // Add a new prof
-Database.addProf = function(email, name, password, callback) {
+Database.addProf = function(email, firstname, lastname, password, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
@@ -110,7 +110,7 @@ Database.addProf = function(email, name, password, callback) {
 				Hash.hashPassword(password, function(e, hash) {
 					if (e) callback(e);
 
-					client.query("INSERT INTO users (email, name, password, prof) VALUES ('" + email + "' , '" + name + "' , '" + hash + "', TRUE)");
+					client.query("INSERT INTO users (email, firstname, lastname, password, prof) VALUES ('" + email + "' , '" + firstname + "' , '" + lastname + "', '" + hash + "', TRUE)");
 
 					client.query("SELECT * FROM users WHERE email = '" + email + "'").on('end', function(result) {
 						let uuid = result.rows[0]["id"];

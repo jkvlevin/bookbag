@@ -66,13 +66,14 @@ app.post('/api/login', function(req, res, next) {
 
 // Create Student Account
 app.post('/api/student/createaccount', function(req, res, next) {
-	let name = req.body.name;
+	let firstname = req.body.firstName;
+	let lastname = req.body.lastName;
 	let password = req.body.password;
 	let email = req.body.email;
 
-	Database.addStudent(email, name, password, function(err, data) {
+	Database.addStudent(email, firstname, lastname, password, function(err, data) {
 		if (err) return next(err);
-		jwt.sign({username : email, name : name, id : data}, 'JWT Secret', {expiresIn : "12h"}, function(err, token) {
+		jwt.sign({username : email, firstname : firstname, lastname: lastname, id : data}, 'JWT Secret', {expiresIn : "12h"}, function(err, token) {
 			res.status(200).json({token, name: data.name, prof : false});
 		});
 	});
@@ -80,13 +81,14 @@ app.post('/api/student/createaccount', function(req, res, next) {
 
 // Create Prof Account
 app.post('/api/prof/createaccount', function(req, res, next) {
-	let name = req.body.name;
+	let firstname = req.body.firstName;
+	let lastname = req.body.lastName;
 	let password = req.body.password;
 	let email = req.body.email;
 
-	Database.addProf(email, name, password, function(err, data) {
+	Database.addProf(email, firstname, lastname, password, function(err, data) {
 		if (err) return next(err);
-		jwt.sign({username : email, name : name, id : data}, 'JWT Secret', {expiresIn : "12h"}, function(err, token) {
+		jwt.sign({username : email, firstname : firstname, lastname: lastname, id : data}, 'JWT Secret', {expiresIn : "12h"}, function(err, token) {
 			res.status(200).json({token, name: data.name, prof : true});
 		});
 	});
@@ -109,9 +111,9 @@ app.post('/api/student/addcourse', function(req, res, next) {
 // Create new Course
 app.post('/api/prof/createcourse', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		Database.createCourse(req.body.name, decoded.id, req.body.description, req.body.keywords, decoded.name, function(err, data) {
+		Database.createCourse(req.body.name, decoded.id, req.body.description, req.body.keywords, decoded.firstname + decoded.lastname, function(err, data) {
 			if (err) return next(err);
-			
+
 			Database.getWorkingCourses(decoded.id, function(err, data) {
 				if (err) return next(err);
 		  		var publicCourses = [];
@@ -148,7 +150,7 @@ app.post('/api/prof/createcourse', function(req, res, next) {
 //Create new chapter
 app.post('/api/prof/createchapter', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		Database.createChapter(decoded.id, req.body.chapterName, req.body.contributors, req.body.checkout_dur, "", decoded.name, req.body.keywords, req.body.description, function(err, data) {
+		Database.createChapter(decoded.id, req.body.chapterName, req.body.contributors, req.body.checkout_dur, "", decoded.firstname + decoded.lastname, req.body.keywords, req.body.description, function(err, data) {
 			if (err) return next(err);
 			Git.createNewRepo(data, function(e, d) {
 				if (e) return next(err);
@@ -276,7 +278,7 @@ app.post('/api/addfolder', function(req, res, next) {
 app.post('/api/prof/upload', expjwt, upload.single('pdf'), function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		var pdfData = fs.readFile(req.file.path, 'base64', function(err, data){
-			Git.uploadFileToRepo(sanitizeRepoName(req.body.chapterName), data, req.file.originalname, req.body.commitMessage, decoded.name, function(e, d) {
+			Git.uploadFileToRepo(sanitizeRepoName(req.body.chapterName), data, req.file.originalname, req.body.commitMessage, decoded.firstname + decoded.lastnamename, function(e, d) {
 				if (e) return next(e);
 				fs.unlink(req.file.path);
 				res.sendStatus(200);
@@ -287,7 +289,7 @@ app.post('/api/prof/upload', expjwt, upload.single('pdf'), function(req, res, ne
 
 app.post('/api/prof/revertchaptertopreviousversion', expjwt, function(req, res, next) {
   jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-  	Git.revertRepoToOldCommit(sanitizeRepoName(req.body.chapterName), req.body.sha, req.body.commitMessage, decoded.name, function(e, d) {
+  	Git.revertRepoToOldCommit(sanitizeRepoName(req.body.chapterName), req.body.sha, req.body.commitMessage, decoded.firstname + decoded.lastname, function(e, d) {
   		if (e) return next(e);
   		res.send(d);
   	});
