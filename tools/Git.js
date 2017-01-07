@@ -10,8 +10,10 @@ var GitHubApi = require("github");
 
 var github = new GitHubApi();
 
-var ACCOUNT_NAME = 'bookbagInc' 
-var ACCOUNT_PASS = 'textFUTUREbook1'
+const ACCOUNT_NAME = 'bookbagInc' 
+const ACCOUNT_PASS = 'textFUTUREbook1'
+
+const PUBLIC_PDF_NAME_CONVENTION = 'public.pdf';
 
 var authenticate = function() {
 	github.authenticate({
@@ -81,8 +83,12 @@ Git.listCommitsForRepo = function(repoName, callback) {
 	}, function(err, res) {
 
 		var commits = [];
-		if (err)
-    		callback(JSON.parse(err)["message"]);
+		if (err) {
+			if (JSON.parse(err)["message"] === "Git Repository is empty.")
+				callback(null, []);
+			else
+	    		callback(JSON.parse(err)["message"]);
+	    }
 		else {
 			for (var i = 0; i < res.length; i++) {
 				var date = new Date(res[i].commit.author.date);
@@ -109,7 +115,10 @@ Git.getLatestContentsOfRepo = function(repoName, callback) {
     	path: "",
 	}, function(err, res) {
 		if (err) {
-    		callback(JSON.parse(err)["message"]);
+			if (JSON.parse(err)["message"] === "This repository is empty.")
+				callback(null, []);
+			else
+	    		callback(JSON.parse(err)["message"]);
 		}
 		else {
 			var contents = [];
@@ -139,8 +148,12 @@ Git.getContentsOfRepoForCommit = function(repoName, sha, callback) {
     	path: "",
     	ref: sha,
 	}, function(err, res) {
-		if (err)
-    		callback(JSON.parse(err)["message"]);
+		if (err) {
+			if (JSON.parse(err)["message"] === "This repository is empty.")
+				callback(null, []);
+			else
+	    		callback(JSON.parse(err)["message"]);
+		}
 		else {
 			var contents = [];
 
@@ -287,14 +300,18 @@ Git.getPublicPdfForRepo = function() {
 			var pdfURL = '';
 			for (var i = 0; i < res.length; i++) {
 
-				var ext = res[i].name.split('.');
-				if (ext.length > 1) {
-					if (ext[ext.length - 1] === 'pdf') {
-						pdfURL = res[i].download_url;
-						break;
-					}
-
+				if (res[i].name === PUBLIC_PDF_NAME_CONVENTION) {
+					pdfURL = res[i].download_url;
+					break;
 				}
+				// var ext = res[i].name.split('.');
+				// if (ext.length > 1) {
+				// 	if (ext[ext.length - 1] === 'pdf') {
+				// 		pdfURL = res[i].download_url;
+				// 		break;
+				// 	}
+
+				// }
 			}
 
 			callback(null, pdfURL);
