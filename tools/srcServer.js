@@ -111,6 +111,7 @@ app.post('/api/prof/createcourse', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.createCourse(req.body.name, decoded.id, req.body.description, req.body.keywords, decoded.name, function(err, data) {
 			if (err) return next(err);
+			
 			Database.getWorkingCourses(decoded.id, function(err, data) {
 				if (err) return next(err);
 		  		var publicCourses = [];
