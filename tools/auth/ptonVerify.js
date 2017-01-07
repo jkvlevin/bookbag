@@ -10,7 +10,6 @@ ptonVerify.verifyProf = function(firstName, lastName, email, callback) {
 	makeRequest(firstName, lastName, keyword, email, function(e, d) {
 
 		if (d) {
-			console.log(keyword);
 			callback(null, true);
 			return;
 		}
@@ -20,7 +19,6 @@ ptonVerify.verifyProf = function(firstName, lastName, email, callback) {
 			keyword = 'lecture';
 			makeRequest(firstName, lastName, keyword, email, function(e, d) {
 				if (d) {
-					console.log(keyword);
 					callback(null, true);
 					return;
 				}
@@ -30,10 +28,7 @@ ptonVerify.verifyProf = function(firstName, lastName, email, callback) {
 					keyword = 'research';
 					makeRequest(firstName, lastName, keyword, email, function(e, d) {
 						if (e) callback("cannot verify professor");
-						else {
-							console.log(keyword);
-							callback(null, true);
-						}
+						else   callback(null, true);
 
 					});
 				}
@@ -70,15 +65,12 @@ var makeRequest = function(firstName, lastName, keyword, email, callback) {
 		res.on('end', () => {
 			body = body.toLowerCase();
 			if (!body.includes("Results 0") && body.includes(name.toLowerCase()) && body.includes(email.toLowerCase())) {
-
 				callback(null, true);
 				return;
 			}
 
 			// If not a professor, check if lecturer
-			else {
-				callback("cannot verify " + keyword);
-			}
+			else callback("cannot verify " + keyword);
 		});
 
 	}).on('error', (e) => {
