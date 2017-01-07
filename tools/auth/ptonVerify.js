@@ -3,6 +3,8 @@ var http = require('http');
 
 var ptonVerify = [];
 
+// Checks if professor defined by firstName, lastName, and email is returned on a search
+// of Princeton's Advanced People Search, case insensitive. Checks against keyword professor, lecturer, and researcher
 ptonVerify.verifyProf = function(firstName, lastName, email, callback) {
 
 	// Check if professor
