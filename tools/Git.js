@@ -83,8 +83,12 @@ Git.listCommitsForRepo = function(repoName, callback) {
 	}, function(err, res) {
 
 		var commits = [];
-		if (err)
-    		callback(JSON.parse(err)["message"]);
+		if (err) {
+			if (JSON.parse(err)["message"] === "Git Repository is empty.")
+				callback(null, []);
+			else
+	    		callback(JSON.parse(err)["message"]);
+	    }
 		else {
 			for (var i = 0; i < res.length; i++) {
 				var date = new Date(res[i].commit.author.date);
@@ -111,7 +115,10 @@ Git.getLatestContentsOfRepo = function(repoName, callback) {
     	path: "",
 	}, function(err, res) {
 		if (err) {
-    		callback(JSON.parse(err)["message"]);
+			if (JSON.parse(err)["message"] === "This repository is empty.")
+				callback(null, []);
+			else
+	    		callback(JSON.parse(err)["message"]);
 		}
 		else {
 			var contents = [];
@@ -141,8 +148,12 @@ Git.getContentsOfRepoForCommit = function(repoName, sha, callback) {
     	path: "",
     	ref: sha,
 	}, function(err, res) {
-		if (err)
-    		callback(JSON.parse(err)["message"]);
+		if (err) {
+			if (JSON.parse(err)["message"] === "This repository is empty.")
+				callback(null, []);
+			else
+	    		callback(JSON.parse(err)["message"]);
+		}
 		else {
 			var contents = [];
 
