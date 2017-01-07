@@ -59,7 +59,7 @@ app.post('/api/login', function(req, res, next) {
 	Database.validateUser(req.body.email, req.body.password, function(err, data) {
 		if (err) return next(err, null, res, null);
 		jwt.sign({username : req.body.email, name : data.name, id : data.id}, 'JWT Secret', {expiresIn : "12h"}, function(err, token) {
-				res.status(200).json({token, name: data.name, prof : data.prof});
+				res.status(200).json({token, name: firstname + " " + lastname, prof : data.prof});
 			});
 	});
 });
@@ -74,7 +74,7 @@ app.post('/api/student/createaccount', function(req, res, next) {
 	Database.addStudent(email, firstname, lastname, password, function(err, data) {
 		if (err) return next(err);
 		jwt.sign({username : email, firstname : firstname, lastname: lastname, id : data}, 'JWT Secret', {expiresIn : "12h"}, function(err, token) {
-			res.status(200).json({token, name: data.name, prof : false});
+			res.status(200).json({token, name: firstname + " " + lastname, prof : false});
 		});
 	});
 });
@@ -111,7 +111,7 @@ app.post('/api/student/addcourse', function(req, res, next) {
 // Create new Course
 app.post('/api/prof/createcourse', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		Database.createCourse(req.body.name, decoded.id, req.body.description, req.body.keywords, decoded.firstname + decoded.lastname, function(err, data) {
+		Database.createCourse(req.body.name, decoded.id, req.body.description, req.body.keywords, decoded.firstname + " " + decoded.lastname, function(err, data) {
 			if (err) return next(err);
 
 			Database.getWorkingCourses(decoded.id, function(err, data) {
@@ -150,7 +150,7 @@ app.post('/api/prof/createcourse', function(req, res, next) {
 //Create new chapter
 app.post('/api/prof/createchapter', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		Database.createChapter(decoded.id, req.body.chapterName, req.body.contributors, req.body.checkout_dur, "", decoded.firstname + decoded.lastname, req.body.keywords, req.body.description, function(err, data) {
+		Database.createChapter(decoded.id, req.body.chapterName, req.body.contributors, req.body.checkout_dur, "", decoded.firstname + " " + decoded.lastname, req.body.keywords, req.body.description, function(err, data) {
 			if (err) return next(err);
 			Git.createNewRepo(data, function(e, d) {
 				if (e) return next(err);
@@ -278,7 +278,7 @@ app.post('/api/addfolder', function(req, res, next) {
 app.post('/api/prof/upload', expjwt, upload.single('pdf'), function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		var pdfData = fs.readFile(req.file.path, 'base64', function(err, data){
-			Git.uploadFileToRepo(sanitizeRepoName(req.body.chapterName), data, req.file.originalname, req.body.commitMessage, decoded.firstname + decoded.lastnamename, function(e, d) {
+			Git.uploadFileToRepo(sanitizeRepoName(req.body.chapterName), data, req.file.originalname, req.body.commitMessage, decoded.firstname + " " + decoded.lastnamename, function(e, d) {
 				if (e) return next(e);
 				fs.unlink(req.file.path);
 				res.sendStatus(200);
@@ -289,7 +289,7 @@ app.post('/api/prof/upload', expjwt, upload.single('pdf'), function(req, res, ne
 
 app.post('/api/prof/revertchaptertopreviousversion', expjwt, function(req, res, next) {
   jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-  	Git.revertRepoToOldCommit(sanitizeRepoName(req.body.chapterName), req.body.sha, req.body.commitMessage, decoded.firstname + decoded.lastname, function(e, d) {
+  	Git.revertRepoToOldCommit(sanitizeRepoName(req.body.chapterName), req.body.sha, req.body.commitMessage, decoded.firstname + " " + decoded.lastname, function(e, d) {
   		if (e) return next(e);
   		res.send(d);
   	});
