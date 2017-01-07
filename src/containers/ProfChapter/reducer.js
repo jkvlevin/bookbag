@@ -20,6 +20,14 @@ function chapterReducer(state = initialState, action) {
       return Object.assign({}, state, {
         currentVersionFiles: action.versionFiles
       });
+    case types.CHANGE_CURRENT_VERSION_SUCCESS:
+      return Object.assign({}, state, {
+        versionDisplayed: action.version,
+      })
+      case types.CHANGE_CURRENT_VERSION_FILES_SUCCESS:
+        return Object.assign({}, state, {
+          currentVersionFiles: action.versionFiles,
+        })
     case types.SEARCH_MODAL:
       return Object.assign({}, state, {
         showSearchModal: !state.showSearchModal
