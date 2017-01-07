@@ -294,7 +294,7 @@ app.post('/api/getfolders', function(req, res, next) {
   		var folders = [];
 
   		async.each(data, function(item, callback) {
-  			Database.getFolderChapters(decoded.id, item.foldername, function(err, data) {
+  			Database.getFolderChapters(decoded.id, item.id, function(err, data) {
 				if (err) callback(err);
 				else {
 					folders.push({
