@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import { Navbar, NavDropdown, MenuItem, Nav, NavItem, FormGroup, FormControl } from 'react-bootstrap';
 import SearchBar from './SearchBar.js';
 
-const Header = ({ showSearch, hasUser, currentUser}) => {
+const Header = ({ showSearch, hasUser }) => {
   return (
     <Navbar inverse fixedTop style={{textAlign:"center", backgroundColor:"#262228"}}>
     <Navbar.Header>
@@ -16,7 +16,7 @@ const Header = ({ showSearch, hasUser, currentUser}) => {
           {showSearch ? <SearchBar /> : ""}
         </Navbar.Form>
       <Nav pullRight>
-        {hasUser ? <NavDropdown title={currentUser} eventKey={1} id="user-dropdown">
+        {hasUser ? <NavDropdown title={localStorage.getItem('userName')} eventKey={1} id="user-dropdown">
           <MenuItem eventKey={1.1}>Action</MenuItem>
           <MenuItem eventKey={3.2}>Another action</MenuItem>
           <MenuItem divider />
@@ -30,8 +30,7 @@ const Header = ({ showSearch, hasUser, currentUser}) => {
 
 Header.propTypes = {
   showSearch: PropTypes.bool.isRequired,
-  hasUser: PropTypes.bool.isRequired,
-  currentUser: PropTypes.string
+  hasUser: PropTypes.bool.isRequired
 };
 
 export default Header;

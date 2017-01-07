@@ -10,7 +10,9 @@ export function loadProfessorChapters() {
       url: '/api/prof/getchapters',
       headers: { Authorization : authLine}
     }).then((response) => {
-        console.log(response);
+        const workingChapters = response.data[0];
+        const publishedChapters = response.data[1];
+        dispatch(loadProfessorChaptersSuccess(workingChapters, publishedChapters));
     });
   };
 }
@@ -28,7 +30,9 @@ export function loadProfessorCourses() {
       url: '/api/prof/getcourses',
       headers: { Authorization : authLine},
     }).then((response) => {
-
+      const workingCourses = response.data[0];
+      const publishedCourses = response.data[1];
+      dispatch(loadProfessorCoursesSuccess(workingCourses, publishedCourses));
     });
   };
 }
@@ -47,7 +51,26 @@ export function submitNewChapter(name, description, keywords, checkoutTime) {
       headers: { Authorization : authLine},
       data: { chapterName: name, checkout_dur: checkoutTime, keywords: keywords, description: description, contributors: [] }
     }).then((response) => {
+      const workingChapters = response.data[0];
+      const publishedChapters = response.data[1];
+      dispatch(loadProfessorChaptersSuccess(workingChapters, publishedChapters));
+    });
+  };
+}
 
+export function submitNewCourse(name, description, keywords) {
+  const token = localStorage.getItem('userToken');
+  var authLine = 'Bearer ' + token;
+  return function (dispatch) {
+    axios({
+      method: 'post',
+      url: '/api/prof/createcourse',
+      headers: { Authorization : authLine},
+      data: { name: name, keywords: keywords, description: description }
+    }).then((response) => {
+      const workingCourses = response.data[0];
+      const publishedCourses = response.data[1];
+      dispatch(loadProfessorCoursesSuccess(workingCourses, publishedCourses));
     });
   };
 }

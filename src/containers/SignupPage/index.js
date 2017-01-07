@@ -12,7 +12,8 @@ import toastr from 'toastr';
 class SignupPage extends React.Component {
   constructor(props) {
    super(props);
-   this.state = { email: '', password: '', passwordConfirm: '', name: ''};
+   this.state = { email: '', password: '', passwordConfirm: '', firstName: '', lastName: ''};
+
    this.handleEChange = this.handleEChange.bind(this);
    this.handlePChange = this.handlePChange.bind(this);
    this.handlePCChange = this.handlePCChange.bind(this);
@@ -33,17 +34,23 @@ class SignupPage extends React.Component {
   }
 
   handleNameChange(event) {
-    this.setState({name: event.target.value});
+    if (event.target.name === "first") {
+      this.setState({firstName: event.target.value});
+    } else if (event.target.name === "last") {
+      this.setState({lastName: event.target.value});
+    }
   }
 
   handleSubmit(event) {
     event.preventDefault();
+    const isProf = this.refs.prof_checked.checked;
     if (this.state.password == this.state.passwordConfirm) {
-      this.props.createAccount(this.state.name, this.state.email, this.state.password);
-      this.setState({email: '', password: '', passwordConfirm: ''});
+      this.props.createAccount(this.state.firstName, this.state.lastName, this.state.email, this.state.password, isProf);
+      this.setState({email: '', password: '', passwordConfirm: '', firstName:'', lastName:'' });
     } else {
       toastr.error('Passwords do not match');
     }
+
   }
   render() {
     return (
@@ -62,7 +69,8 @@ class SignupPage extends React.Component {
         <Form horizontal onSubmit={this.handleSubmit} style={{padding:"40px", textAlign:"center"}}>
 
           <FormGroup controlId="formHorizontal">
-            <FormControl type="text" value={this.state.name} placeholder="Name" onChange={this.handleNameChange} />
+            <FormControl type="text" value={this.state.name} name="first" placeholder="First Name" onChange={this.handleNameChange} style={{width:"47%", float:"left"}}/>
+            <FormControl type="text" value={this.state.name} name="last" placeholder="Last Name" onChange={this.handleNameChange} style={{width:"47%", marginLeft:"52%"}}/>
           </FormGroup>
 
           <FormGroup controlId="formHorizontalEmail">
@@ -76,6 +84,10 @@ class SignupPage extends React.Component {
           <FormGroup controlId="formHorizontalPassword">
             <FormControl type="password" value={this.state.passwordConfirm} placeholder="Confirm Password" onChange={this.handlePCChange}/>
           </FormGroup>
+
+          <label style={{color:"#BFBFBF", fontWeight:"normal", fontSize:"11px"}}>
+            <input type="checkbox" ref="prof_checked" /> I am a Princeton University Professor or Graduate Student
+          </label>
 
           <FormGroup>
             <Button type="submit" className="login-button" onClick={this.handleSubmit} style={{background:"#1db954", borderColor:"#1db954", color:"white", width:"150px", height:"40px", marginTop:"20px"}}>
@@ -102,7 +114,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    createAccount: (name, email, password) => dispatch(actions.createAccount(name, email, password))
+    createAccount: (firstName, lastName, email, password, isProf) => dispatch(actions.createAccount(firstName, lastName, email, password, isProf))
   };
 }
 

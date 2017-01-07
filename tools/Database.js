@@ -60,7 +60,7 @@ Database.validateUser = function(email, password, callback) {
 };
 
 // Add a new student
-Database.addStudent = function(email, name, password, callback) {
+Database.addStudent = function(email, firstname, lastname, password, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
@@ -76,7 +76,7 @@ Database.addStudent = function(email, name, password, callback) {
 					if (e)
 						callback(e);
 
-					client.query("INSERT INTO users (email, name, password, prof) VALUES ('" + email + "' , '" + name + "' , '" + hash + "', FALSE)");
+					client.query("INSERT INTO users (email, firstname, lastname, password, prof) VALUES ('" + email + "' , '" + firstname + "' , '" + lastname + "', '" + hash + "', FALSE)");
 
 					client.query("SELECT * FROM users WHERE email = '" + email + "'").on('end', function(result) {
 						let uuid = result.rows[0]["id"];
@@ -95,7 +95,7 @@ Database.addStudent = function(email, name, password, callback) {
 };
 
 // Add a new prof
-Database.addProf = function(email, name, password, callback) {
+Database.addProf = function(email, firstname, lastname, password, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
@@ -110,7 +110,7 @@ Database.addProf = function(email, name, password, callback) {
 				Hash.hashPassword(password, function(e, hash) {
 					if (e) callback(e);
 
-					client.query("INSERT INTO users (email, name, password, prof) VALUES ('" + email + "' , '" + name + "' , '" + hash + "', TRUE)");
+					client.query("INSERT INTO users (email, firstname, lastname, password, prof) VALUES ('" + email + "' , '" + firstname + "' , '" + lastname + "', '" + hash + "', TRUE)");
 
 					client.query("SELECT * FROM users WHERE email = '" + email + "'").on('end', function(result) {
 						let uuid = result.rows[0]["id"];
@@ -142,12 +142,12 @@ Database.createCourse = function(name, prof, desc, keys, profname, callback) {
 
 		client.query("INSERT INTO courses (name, prof, description, keywords, subscribers, profname, public) VALUES ('" + name + "', '" + prof + "', '" + desc + "', '" + keys + "', " + 0 + ", '" + profname + "', FALSE) RETURNING id", function(err, result) {
 			if (err) callback(err);
-
-			client.query("CREATE TABLE \"" + result.rows[0].id + "_chapters\" (id text, url varchar(2083))");
-
-			client.query("INSERT INTO \"" + prof + "_working_courses\" VALUES ('" + result.rows[0].id + "')");
-			done();
-			callback(null, 200);
+			client.query("CREATE TABLE \"" + result.rows[0].id + "_chapters\" (id text, url varchar(2083))", function(er, re) {
+				client.query("INSERT INTO \"" + prof + "_working_courses\" VALUES ('" + result.rows[0].id + "')", function(e, r) {
+					done();
+					callback(null, 200);
+				});
+			});
 		});
 	});
 }
@@ -227,13 +227,12 @@ Database.createChapter = function(prof, chapterName, contributors, checkout_dur,
 		if (err) callback(err);
 
 		//Retreive pdf and src urls from git module
-		let s = "INSERT INTO chapters(name, owner, contributors, pdf_url, checkout_dur, ownername, keywords, description, public) VALUES ('" + chapterName + "', '" + prof + "', '{}', '" + pdf_url + "', " + checkout_dur + ", '" + profname + "', '{" + keywords + "}', '" + description + "', FALSE) RETURNING id";
-		client.query(s, function(err, result) {
-				if (err) callback(err);
+		client.query("INSERT INTO chapters(name, owner, contributors, pdf_url, checkout_dur, ownername, keywords, description, public) VALUES ('" + chapterName + "', '" + prof + "', '{}', '" + pdf_url + "', " + checkout_dur + ", '" + profname + "', '{" + keywords + "}', '" + description + "', FALSE) RETURNING id", function(err, result) {
+			if (err) callback(err);
 
-				client.query("INSERT INTO \"" + prof + "_working_chapters\" VALUES ('" + result.rows[0].id + "')");
-				done();
-				callback(null, result.rows[0].id);
+			client.query("INSERT INTO \"" + prof + "_working_chapters\" VALUES ('" + result.rows[0].id + "')");
+			done();
+			callback(null, result.rows[0].id);
 		});
 	});
 };

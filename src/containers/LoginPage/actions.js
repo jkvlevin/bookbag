@@ -1,5 +1,4 @@
 import * as types from '../../actionTypes';
-import { setUser } from '../App/actions.js';
 import { browserHistory } from 'react-router';
 import axios from 'axios';
 import toastr from 'toastr';
@@ -17,7 +16,6 @@ export function login(email, password) {
         localStorage.setItem('userToken', response.data.token);
         localStorage.setItem('userName', response.data.name);
         localStorage.setItem('isProfessor', response.data.prof);
-        dispatch(setUser(name));
         dispatch(loginSuccess());
         if (localStorage.getItem('isProfessor') === 'true') {
           browserHistory.push("/professor");
