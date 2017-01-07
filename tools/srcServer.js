@@ -50,13 +50,6 @@ app.get('*', function(req, res) {
   res.sendFile(path.join( __dirname, '../src/index.html'));
 });
 
-// Error Middleware
-app.use(function(err, req, res, next) {
-    res.status(202).send({
-        error: err
-    });
-});
-
 // var ptonVerify = require('./auth/ptonVerify.js');
 
 // ptonVerify.verifyProf('Yuan', 'K', function(err, res) {
@@ -76,9 +69,9 @@ Login/Account APIs
 // Log In User
 app.post('/api/login', function(req, res, next) {
 	Database.validateUser(req.body.email, req.body.password, function(err, data) {
-		if (err) return next(err);
+		if (err) return next(err, null, res, null);
 		jwt.sign({username : req.body.email, name : data.name, id : data.id}, 'JWT Secret', {expiresIn : "12h"}, function(err, token) {
-				res.status(200).json({token});
+				res.status(200).json({token, name: data.name});
 			});
 	});
 });
@@ -271,7 +264,7 @@ Student Retreival APIs
 app.post('/api/student/getcourses', expjwt, function(req, res, next) {
   jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
   	Database.getCourses(decoded.id, function(err, data) {
-  		if (err) throw Error(err);
+  		if (err) return next(err);
   		var courses = [];
 
   		async.each(data, function(item, callback) {
@@ -286,7 +279,7 @@ app.post('/api/student/getcourses', expjwt, function(req, res, next) {
 				callback();
 			});
   		}, function(err) {
-  			if (err) throw Error(err);
+  			if (err) return next(err);
   			res.send(courses);
   		});
   	});
@@ -403,3 +396,10 @@ app.post('/api/prof/deletechapter', function(req, res, next) {
 function sanitizeRepoName(repoName) {
 	return repoName.replace(' ', '-');
 }
+
+// Error Middlewarer
+app.use(function(err, req, res, next) {
+    res.status(202).json({
+        error: err
+    });
+});

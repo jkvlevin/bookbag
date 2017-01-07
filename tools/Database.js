@@ -39,11 +39,14 @@ Database.validateUser = function(email, password, callback) {
 
 		query.on('end', function(result) {
 			if (result.rowCount == 0) callback("user does not exist");
-			let uuid = result.rows[0]["id"];
-			let name = result.rows[0]["name"];
-			done();
-			if (result.rows[0].password == password) callback(null, {id : uuid, name : name});
-			else callback("password or username does not match");
+			else {
+				let uuid = result.rows[0]["id"];
+				let name = result.rows[0]["name"];
+				done();
+				if (result.rows[0].password == password) callback(null, {id : uuid, name : name});
+				else callback("password or username does not match");
+			}
+			
 		})
 	});
 };
