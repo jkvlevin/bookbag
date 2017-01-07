@@ -140,14 +140,14 @@ Database.createCourse = function(name, prof, desc, keys, profname, callback) {
 		if (err) callback(err);
 		let cn = name.replace(' ', '');
 
-		client.query("INSERT INTO courses (name, prof, description, keywords, subscribers, profname) VALUES ('" + name + "', '" + prof + "', '" + desc + "', '" + keys + "', " + 0 + ", '" + profname + "') RETURNING id", function(err, result) {
+		client.query("INSERT INTO courses (name, prof, description, keywords, subscribers, profname, public) VALUES ('" + name + "', '" + prof + "', '" + desc + "', '" + keys + "', " + 0 + ", '" + profname + "', FALSE) RETURNING id", function(err, result) {
 			if (err) callback(err);
 
 			client.query("CREATE TABLE \"" + result.rows[0].id + "_chapters\" (id text, url varchar(2083))");
 
 			client.query("INSERT INTO \"" + prof + "_working_courses\" VALUES ('" + result.rows[0].id + "')");
 			done();
-			callback(null, "success");
+			callback(null, 200);
 		});
 	});
 }
@@ -166,7 +166,7 @@ Database.addCourse = function(student, course, callback) {
 		client.query("UPDATE courses SET subscribers = subscribers + 1 WHERE id = '" + course + "'");
 
 		done();
-		callback(null, "success");
+		callback(null, 200);
 	});
 };
 
@@ -180,7 +180,7 @@ Database.addFolder = function(student, folderName, callback) {
 			// Create a new table that holds all the chapters in this folder
 			client.query("CREATE TABLE \"" + student + result.rows[0].id + "_chapters\" (id text, url varchar(2083))", function() {
 				done();
-				callback(null, "success");
+				callback(null, 200);
 			});
 		});
 	});
@@ -341,7 +341,7 @@ Database.getFolderChapters = function(student, folder, callback) {
 };
 
 // Get all of a user's courses and return them
-Database.getChapters = function(prof, callback) {
+Database.getWorkingChapters = function(prof, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
@@ -357,10 +357,42 @@ Database.getChapters = function(prof, callback) {
 };
 
 // Get all of the chapters in a give prof's library
-Database.getChapterData = function(chapter, callback) {
+Database.getWorkingChapterData = function(chapter, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 		let s = "SELECT * FROM chapters WHERE id = '" + chapter + "'";
+		let query = client.query(s);
+		query.on('row', function(row, result) {
+			result.addRow(row);
+		});
+		query.on('end', function(result) {
+			done();
+			callback(null, result.rows);
+		});
+	});
+};
+
+// Get all of a prof's courses and return them
+Database.getWorkingCourses = function(prof, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+
+		let query = client.query("SELECT * FROM \"" + prof + "_working_courses\"");
+		query.on('row', function(row, result) {
+			result.addRow(row);
+		});
+		query.on('end', function(result) {
+			done();
+			callback(null, result.rows);
+		});
+	});
+};
+
+// Get all of the courses in a give prof's library
+Database.getWorkingCourseData = function(course, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+		let s = "SELECT * FROM courses WHERE id = '" + course + "'";
 		let query = client.query(s);
 		query.on('row', function(row, result) {
 			result.addRow(row);
@@ -441,7 +473,7 @@ Database.deleteStudent = function(student, callback) {
 		});
 		client.query("DROP TABLE \"" + userFolders + "\"");
 
-		callback(null, "success");
+		callback(null, 200);
 	});
 };
 

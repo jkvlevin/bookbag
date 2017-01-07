@@ -8,11 +8,11 @@ export function loadProfessorChapters() {
     axios({
       method: 'post',
       url: '/api/prof/getchapters',
-      headers: { Authorization: authLine }
+      headers: { Authorization : authLine}
     }).then((response) => {
-      console.log(response.data);
+        console.log(response);
     });
-  }
+  };
 }
 
 export function loadProfessorChaptersSuccess(working, published) {
@@ -47,6 +47,7 @@ export function submitNewChapter(name, description, keywords, checkoutTime) {
       headers: { Authorization : authLine},
       data: { chapterName: name, checkout_dur: checkoutTime, keywords: keywords, description: description, contributors: [] }
     }).then((response) => {
+
     });
   };
 }

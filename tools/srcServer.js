@@ -101,7 +101,7 @@ app.post('/api/student/addcourse', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.addCourse(decoded.id, req.body.course, function(err, data) {
 			if (err) return next(err);
-			res.end(data);
+			res.sendStatus(data);
 		});
 	});
 });
@@ -111,7 +111,7 @@ app.post('/api/prof/createcourse', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.createCourse(req.body.name, decoded.id, req.body.description, req.body.keywords, decoded.name, function(err, data) {
 			if (err) return next(err);
-			res.end(data);
+			res.sendStatus(data);
 		});
 	});
 });
@@ -342,19 +342,16 @@ app.post('/api/prof/getchaptercontentsprevious', expjwt, function(req, res, next
 });
 
 app.post('/api/prof/getchapters', expjwt, function(req, res, next) {
-  console.log("about to verify");
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-    console.log("beginning response");
-		Database.getChapters(decoded.id, function(err, data) {
-      console.log("has the chapters");
+		Database.getWorkingChapters(decoded.id, function(err, data) {
 			if (err) return next(err);
 	  		var publicChapters = [];
 	  		var privateChapters = [];
 
 	  		async.each(data, function(item, callback) {
-	  			Database.getChapterData(item.id, function(err, data, name) {
+	  			Database.getWorkingChapterData(item.id, function(err, data, name) {
 					if (err) callback(err);
-					if (data.public == true) {
+					if (data[0].public == true) {
 						publicChapters.push(data[0]);
 					} else {
 						privateChapters.push(data[0]);
@@ -363,8 +360,32 @@ app.post('/api/prof/getchapters', expjwt, function(req, res, next) {
 				});
 	  		}, function(err) {
 	  			if (err) return next(err);
-          console.log("sending response");
 	  			res.send([privateChapters, publicChapters]);
+	  		});
+	  	});
+	});
+});
+
+app.post('/api/prof/getcourses', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.getWorkingCourses(decoded.id, function(err, data) {
+			if (err) return next(err);
+	  		var publicCourses = [];
+	  		var privateCourses = [];
+
+	  		async.each(data, function(item, callback) {
+	  			Database.getWorkingCourseData(item.id, function(err, data, name) {
+					if (err) callback(err);
+					if (data[0].public == true) {
+						publicCourses.push(data[0]);
+					} else {
+						privateCourses.push(data[0]);
+					}
+					callback();
+				});
+	  		}, function(err) {
+	  			if (err) return next(err);
+	  			res.send([privateCourses, publicCourses]);
 	  		});
 	  	});
 	});
@@ -401,7 +422,7 @@ app.post('/api/student/delete', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.deleteStudent(decoded.id, function(err, data) {
 			if (err) return next(err);
-			res.send(data);
+			res.sendStatus(data);
 		});
 	});
 });

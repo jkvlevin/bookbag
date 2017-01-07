@@ -5,9 +5,9 @@ import { Nav, NavItem, Table, Button, DropdownButton, MenuItem, Glyphicon, Modal
 import Sidebar from '../../components/MenuBar/Sidebar.js';
 import SearchContent from '../../components/SearchContent';
 import SearchIcon from 'react-icons/lib/fa/search';
-import ChapterList from '../../components/ProfessorWorkbench/ChapterList.js';
-import CourseList from '../../components/ProfessorWorkbench/CourseList.js';
 import AddIcon from 'react-icons/lib/md/add-circle-outline.js';
+import UserIcon from 'react-icons/lib/fa/user';
+import ChaptersIcon from 'react-icons/lib/go/book';
 import * as actions from './actions.js';
 import styles from './styles.css';
 
@@ -30,6 +30,8 @@ class ProfessorHome extends React.Component {
    this.submitNewCourseForm = this.submitNewCourseForm.bind(this);
    this.openNewCourseModal = this.openNewCourseModal.bind(this);
    this.closeNewCourseModal = this.closeNewCourseModal.bind(this);
+
+   this.handleSelectChapter = this.handleSelectChapter.bind(this);
 
    this.handleCoursesClick = this.handleCoursesClick.bind(this);
    this.handleBrowseClick = this.handleBrowseClick.bind(this);
@@ -90,35 +92,44 @@ class ProfessorHome extends React.Component {
    this.setState({ showNewCourseModal: false, newCourseName: '', newCourseDescription: '', newCourseKeywords: '' });
  }
 
+ handleSelectChapter(event) {
+   if (event.target.id) {
+     const chapter = event.target.id;
+     browserHistory.push('/chapter/' + chapter);
+   }
+ }
+
+ handleSelectCourse(event) {
+   if (event.target.id) {
+     const course = event.target.id;
+     browserHistory.push('/course/' + course);
+   }
+ }
+
   handleCoursesClick() {
     browserHistory.push('/professor');
   }
-
   handleBrowseClick() {
     alert('Browse');
   }
-
   handleSearchClick() {
     this.props.searchModal();
   }
-
   handleSettingsClick() {
     alert('Settings');
   }
-
   handleSearchChange(event) {
     this.setState({ searchValue: event.target.value });
   }
-
   submitSearch(event) {
     event.preventDefault();
     this.props.search(this.state.searchValue);
   }
 
-
   handleSelect(event) {
     this.props.switchTabs(event);
   }
+
  render() {
    const chaptersPublished = [{
      id: "1",
@@ -237,13 +248,17 @@ class ProfessorHome extends React.Component {
             <div id="in-progress">
               <h4>In Progress</h4>
               {chaptersInProgress.map(chapter =>
-                <ChapterList key={chapter.id} name={chapter.name} id={chapter.id} numContributors={chapter.numContributors}></ChapterList>
+                <ListGroupItem key={chapter.id} style={{textAlign:"left"}} id={chapter.id} onClick={this.handleSelectChapter}>
+                  {chapter.name}<div style={{float:"right"}} id={chapter.id} onClick={this.handleSelectChapter}><UserIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{chapter.numContributors}</div>
+                </ListGroupItem>
               )}
             </div>
             <div id="published">
               <h4>Published</h4>
               {chaptersPublished.map(chapter =>
-                <ChapterList key={chapter.id} name={chapter.name} id={chapter.id} numContributors={chapter.numContributors}></ChapterList>
+                <ListGroupItem key={chapter.id} style={{textAlign:"left"}} id={chapter.id} onClick={this.handleSelectChapter}>
+                  {chapter.name}<div style={{float:"right"}} id={chapter.id} onClick={this.handleSelectChapter}><UserIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{chapter.numContributors}</div>
+                </ListGroupItem>
               )}
             </div>
             </div> :
@@ -251,13 +266,17 @@ class ProfessorHome extends React.Component {
               <div id="in-progress">
                 <h4> In Progress</h4>
                 {coursesInProgress.map(course =>
-                  <CourseList key={course.id} name={course.name} id={course.id} numChapters={course.numChapters}></CourseList>
+                  <ListGroupItem key={course.id} style={{textAlign:"left"}} id={course.id} onClick={this.handleSelectCourse}>
+                    {course.name}<div style={{float:"right"}} id={course.id} onClick={this.handleSelectCourse}><ChaptersIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{course.numChapters}</div>
+                  </ListGroupItem>
                 )}
               </div>
               <div id="published">
                 <h4>Published</h4>
                 {coursesPublished.map(course =>
-                  <CourseList key={course.id} name={course.name} id={course.id} numChapters={course.numChapters}></CourseList>
+                  <ListGroupItem key={course.id} style={{textAlign:"left"}} id={course.id} onClick={this.handleSelectCourse}>
+                    {course.name}<div style={{float:"right"}} id={course.id} onClick={this.handleSelectCourse}><ChaptersIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{course.numChapters}</div>
+                  </ListGroupItem>
                 )}
               </div>
             </div>}
@@ -320,8 +339,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    loadProfessorChapters: () => dispatch(actions.loadProfessorChapters),
-    loadProfessorCourses: () => dispatch(actions.loadProfessorCourses),
+    loadProfessorChapters: () => dispatch(actions.loadProfessorChapters()),
+    loadProfessorCourses: () => dispatch(actions.loadProfessorCourses()),
     submitNewChapter: (name, description, keywords, checkoutTime) => dispatch(actions.submitNewChapter(name, description, keywords, checkoutTime)),
     switchTabs: (tab) => dispatch(actions.switchTabs(tab)),
     searchModal: () => dispatch(actions.searchModal()),
