@@ -7,8 +7,9 @@ var Git = [];
 const separator = '****';
 
 var GitHubApi = require("github");
-
 var github = new GitHubApi();
+
+let fs = require('fs');
 
 const ACCOUNT_NAME = 'bookbagInc' 
 const ACCOUNT_PASS = 'textFUTUREbook1'
@@ -44,10 +45,29 @@ Git.createNewRepo = function(repoName, callback) {
 		}
 
 		else {
-			callback(null, 200);
+			fs.readFile(__dirname + '/chapter_help.txt', 'base64', function(err, contents) {
+				if (err) {
+					console.log(err);
+					callback("Unable to create initial help file! Try again.");
+				}
+
+				else {
+					github.repos.createFile({
+						owner: ACCOUNT_NAME,
+						repo: repoName,
+						path: 'chapter_help.txt',
+						message: 'Bookbag'+separator+'Your chapter is empty. Add collaborators, checkout and upload files to get started!',
+						content: contents,
+					}, function(err, res) {
+						if (err)
+							callback(JSON.parse(err)["message"]);
+						else
+							callback(null, 200);
+					});
+				}
+			});
 		}
 	});
-
 }
 
 // Delete a repo
