@@ -50,9 +50,9 @@ class SignupPage extends React.Component {
       <div className="signup-container">
       <Header showSearch={false} hasUser={false}/>
       <h3 className="texts"> Sign up for BookBag today and get access to <br /> <br />
-        <h4 className="texts2" style={{color:"#98d2eb", marginLeft:"15px"}}> Course management platform </h4> <br />
-        <h4 className="texts2" style={{color:"#98d2eb", marginLeft:"15px"}}> Curated chapters of information written by professors worldwide </h4> <br />
-        <h4 className="texts2" style={{color:"#98d2eb", marginLeft:"15px"}}> Unlimited chapter subscriptions </h4> <br />
+        <h4 className="texts2" style={{color:"#98d2eb"}}> Course management platform </h4> <br /> <br />
+        <h4 className="texts2" style={{color:"#98d2eb"}}> Curated chapters of information written by professors worldwide </h4> <br /> <br />
+        <h4 className="texts2" style={{color:"#98d2eb"}}> Unlimited chapter subscriptions </h4> <br />
       </h3>
 
 

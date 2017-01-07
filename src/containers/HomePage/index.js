@@ -9,7 +9,7 @@ class HomePage extends React.Component {
       <div className="home-page">
         <Button id="sign-in" href="/login"> Sign In </Button>
         <h1 style={{marginTop:"150px", marginLeft:"30px", fontSize:"56px"}}> BookBag </h1> <hr id="divider" />
-        <p style={{marginLeft:"30px", fontSize:"26px"}}> A library of information at your fingertips </p>
+        <p style={{marginLeft:"30px", fontSize:"26px"}}> Rethinking textbooks for the modern day student and professor </p>
 
         <Button id="profBtn"> For the professor </Button>
         <Button id="stdBtn"> For the student </Button>

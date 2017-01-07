@@ -10,13 +10,18 @@ export function login(email, password) {
       email: email,
       password: password
     }).then((response) => {
-      if(response.status !== 200) {
+      if (response.status !== 200) {
         toastr.error('Login failure, invalid username or password');
       } else {
-        dispatch(setUser(email));
+        console.log(response.data);
         localStorage.setItem('userToken', response.data.token);
+        localStorage.setItem('userName', response.data.name);
+        localStorage.setItem('isProfessor', response.data.prof);
+        dispatch(setUser(name));
         dispatch(loginSuccess());
-        browserHistory.push("/student");
+        if (localStorage.getItem('isProfessor') === 'true') {
+          browserHistory.push("/professor");
+        } else browserHistory.push("/student");
       }
     });
   };

@@ -121,7 +121,7 @@ class ProfessorHome extends React.Component {
             <NavItem eventKey={2}>Courses</NavItem>
           </Nav>
 
-          <DropdownButton id="add-button" noCaret dropup title={<AddIcon style={{color:"#1db954", fontSize:"32px"}}/>}>
+          <DropdownButton id="add-button" noCaret title={<AddIcon style={{color:"#1db954", fontSize:"32px"}}/>}>
               <MenuItem eventKey="1">Create New Chapter</MenuItem>
               <MenuItem eventKey="2">Create New Course</MenuItem>
           </DropdownButton>

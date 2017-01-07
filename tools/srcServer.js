@@ -56,7 +56,7 @@ app.get('*', function(req, res) {
 
 // 	if (err)
 // 		console.log(err);
-// 	else 
+// 	else
 // 		console.log(res);
 
 // });
@@ -327,7 +327,7 @@ Prof Retrieval APIs
 
 app.post('/api/prof/getchapterhistory', expjwt, function(req, res, next) {
   jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-  	Git.listCommitsForRepo(sanitizeRepoName(req.body.chapterName), function(e, d) {
+  	Git.listCommitsForRepo(req.body.chapterId, function(e, d) {
   		res.send(d);
   	});
   });
@@ -335,7 +335,7 @@ app.post('/api/prof/getchapterhistory', expjwt, function(req, res, next) {
 
 app.post('/api/prof/getchaptercontents', expjwt, function(req, res, next) {
   jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-  	Git.getLatestContentsOfRepo(sanitizeRepoName(req.body.chapterName), function(e, d) {
+  	Git.getLatestContentsOfRepo(req.body.chapterId, function(e, d) {
   		res.send(d);
   	});
   });
@@ -343,7 +343,7 @@ app.post('/api/prof/getchaptercontents', expjwt, function(req, res, next) {
 
 app.post('/api/prof/getchaptercontentsprevious', expjwt, function(req, res, next) {
   jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-  	Git.getContentsOfRepoForCommit(sanitizeRepoName(req.body.chapterName), req.body.sha, function(e, d) {
+  	Git.getContentsOfRepoForCommit(req.body.chapterId, req.body.sha, function(e, d) {
   		res.send(d);
   	});
   });

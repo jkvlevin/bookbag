@@ -26,7 +26,12 @@ class ProfChapter extends React.Component {
    this.handleSettingsClick = this.handleSettingsClick.bind(this);
    this.handleSearchChange = this.handleSearchChange.bind(this);
    this.submitSearch = this.submitSearch.bind(this);
- }
+  }
+
+  componentDidMount() {
+    this.props.loadChapterVersions(this.props.currentChapter.id);
+    this.props.loadVersionFiles(this.props.currentChapter.id, this.props.versionDisplayed.sha);
+  }
 
   handleCoursesClick() {
     browserHistory.push('/professor');
@@ -56,25 +61,7 @@ class ProfChapter extends React.Component {
 
 
  render() {
-   const versionlist = [
-      {
-        name: "v1",
-        id: "1",
-        contributor:"dick butt"
-      },
-      {
-        name: "v2",
-        id: "2",
-        contributor:"dick butt junior"
-      },
-      {
-        name: "v3",
-        id: "3",
-        contributor:"recursive dick butt"
-      }
-   ];
    const isOwner = true;
-   const vD = "1";
    const filelist = [
      {
        name:"balls.pdf",
@@ -114,22 +101,22 @@ class ProfChapter extends React.Component {
 
           <div id="version-list">
             <ListGroup>
-              {versionlist.map(version =>
-                <VersionList key={version.id} name={version.name} id={version.id} contributor={version.contributor} versionDisplayed={vD}/>
+              {this.props.chapterVersions.map(version =>
+                <VersionList key={version.sha} version={version.version} id={version.sha} author={version.author} versionDisplayed={this.props.versionDisplayed.sha}/>
               )}
             </ListGroup>
           </div>
 
           <div id="file-title">
-            <h4 style={{float:"left", fontSize:"20px", marginTop:"25px", marginLeft:"5px"}}> v1 </h4>
-            <p style={{float:"left", marginLeft:"45px", marginTop:"25px", fontSize:"12px"}}> my message goes here </p>
-            <h5 style={{float:"right", marginTop:"25px", marginRight:"30px"}}> time stamp here </h5>
+            <h4 style={{float:"left", fontSize:"20px", marginTop:"25px", marginLeft:"5px"}}> Version {this.props.versionDisplayed.version} </h4>
+            <p style={{float:"left", marginLeft:"45px", marginTop:"25px", fontSize:"12px"}}> {this.props.versionDisplayed.message} </p>
+            <h5 style={{float:"right", marginTop:"25px", marginRight:"30px"}}> {this.props.versionDisplayed.date} </h5>
           </div>
 
           <div id="chapter-files">
             <ListGroup>
-              {filelist.map(file =>
-                <FileList key={file.id} name={file.name} id={file.id} isPdf={file.isPdf}/>
+              {this.props.currentVersionFiles.map(file =>
+                <FileList key={file.filename} name={file.filename} downloadUrl={file.downloadURL} isPdf={file.isPDF}/>
               )}
             </ListGroup>
           </div>
@@ -169,6 +156,12 @@ ProfChapter.propTypes = {
   closeSearchModal: PropTypes.func.isRequired,
   showSearchModal: PropTypes.bool.isRequired,
   searchContent: PropTypes.array.isRequired,
+  loadChapterVersions: PropTypes.func.isRequired,
+  chapterVersions: PropTypes.array.isRequired,
+  currentChapter: PropTypes.object.isRequired,
+  versionDisplayed: PropTypes.object.isRequired,
+  loadVersionFiles: PropTypes.func.isRequired,
+  currentVersionFiles: PropTypes.array.isRequired
 };
 
 function mapStateToProps(state) {
@@ -176,15 +169,20 @@ function mapStateToProps(state) {
     currentUser: state.appReducer.currentUser,
     showSearchModal: state.chapterReducer.showSearchModal,
     searchContent: state.chapterReducer.searchContent,
+    currentChapter: state.chapterReducer.currentChapter,
+    chapterVersions: state.chapterReducer.chapterVersions,
+    versionDisplayed: state.chapterReducer.versionDisplayed,
+    currentVersionFiles: state.chapterReducer.currentVersionFiles
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
+    loadChapterVersions: (id) => dispatch(actions.loadChapterVersions(id)),
+    loadVersionFiles: (sha) => dispatch(actions.loadVersionFiles(sha)),
     searchModal: () => dispatch(actions.searchModal()),
     closeSearchModal: () => dispatch(actions.closeSearchModal()),
     search: (searchValue) => dispatch(actions.search(searchValue)),
-
   };
 }
 
