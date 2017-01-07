@@ -3,7 +3,7 @@ import * as types from '../../actionTypes';
 const initialState = {
   activeTab: 1,
   showSearchModal: false,
-  searchContent: [],
+  searchContent: []
 };
 
 function professorReducer(state = initialState, action) {

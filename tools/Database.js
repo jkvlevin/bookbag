@@ -31,7 +31,7 @@ Database.validateUser = function(email, password, callback) {
 		}
 
 		let query = client.query("SELECT * FROM users WHERE email = '" + email + "'");
-			
+
 		// bcrypt.compare(password, row.password, function(e, res) {
 		// 	if 		(e)    callback("hash error");
 		// 	else if (res)  callback(null, 200);
@@ -54,7 +54,7 @@ Database.validateUser = function(email, password, callback) {
 					else     callback("password or username does not match");
 
 				});
-			}		
+			}
 		})
 	});
 };
@@ -70,7 +70,7 @@ Database.addStudent = function(email, name, password, callback) {
 				let errorString = email + " is taken";
 				callback(errorString);
 			} else {
-				
+
 				// Hash password then insert the new user into users
 				Hash.hashPassword(password, function(e, hash) {
 					if (e)
@@ -105,7 +105,7 @@ Database.addProf = function(email, name, password, callback) {
 				let errorString = email + " is taken";
 				callback(errorString);
 			} else {
-				
+
 				// Hash password and insert the new user into users
 				Hash.hashPassword(password, function(e, hash) {
 					if (e) callback(e);
@@ -124,7 +124,7 @@ Database.addProf = function(email, name, password, callback) {
 						done();
 						callback(null, uuid);
 					});
-				});	
+				});
 			}
 		});
 	});
