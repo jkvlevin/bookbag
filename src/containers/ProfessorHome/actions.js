@@ -1,6 +1,42 @@
 import * as types from '../../actionTypes';
 import axios from 'axios';
 
+export function loadProfessorChapters() {
+  const token = localStorage.getItem('userToken');
+  var authLine = 'Bearer ' + token;
+  return function (dispatch) {
+    axios({
+      method: 'post',
+      url: '/api/prof/getchapters',
+      headers: { Authorization: authLine }
+    }).then((response) => {
+      console.log(response.data);
+    });
+  }
+}
+
+export function loadProfessorChaptersSuccess(working, published) {
+  return { type: types.LOAD_PROFESSOR_CHAPTERS_SUCCESS, working, published };
+}
+
+export function loadProfessorCourses() {
+  const token = localStorage.getItem('userToken');
+  var authLine = 'Bearer ' + token;
+  return function (dispatch) {
+    axios({
+      method: 'post',
+      url: '/api/prof/getcourses',
+      headers: { Authorization : authLine},
+    }).then((response) => {
+
+    });
+  };
+}
+
+export function loadProfessorCoursesSuccess(working, published) {
+  return { type: types.LOAD_PROFESSOR_COURSES_SUCCESS, working, published };
+}
+
 export function submitNewChapter(name, description, keywords, checkoutTime) {
   const token = localStorage.getItem('userToken');
   var authLine = 'Bearer ' + token;
@@ -11,7 +47,6 @@ export function submitNewChapter(name, description, keywords, checkoutTime) {
       headers: { Authorization : authLine},
       data: { chapterName: name, checkout_dur: checkoutTime, keywords: keywords, description: description, contributors: [] }
     }).then((response) => {
-        console.log('sent');
     });
   };
 }

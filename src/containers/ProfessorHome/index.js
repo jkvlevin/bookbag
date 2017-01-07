@@ -40,6 +40,9 @@ class ProfessorHome extends React.Component {
    this.handleSelect = this.handleSelect.bind(this);
  }
 
+ componentDidMount() {
+   this.props.loadProfessorChapters();
+ }
 
   openNewChapterModal() {
     this.setState({ showNewChapterModal: true });
@@ -294,7 +297,12 @@ ProfessorHome.propTypes = {
   closeSearchModal: PropTypes.func.isRequired,
   showSearchModal: PropTypes.bool.isRequired,
   searchContent: PropTypes.array.isRequired,
-  submitNewChapter: PropTypes.func.isRequired
+  submitNewChapter: PropTypes.func.isRequired,
+  loadProfessorChapters: PropTypes.func.isRequired,
+  workingChapters: PropTypes.array.isRequired,
+  publishedChapters: PropTypes.array.isRequired,
+  workingCourses: PropTypes.array.isRequired,
+  publishedCourses: PropTypes.array.isRequired
 };
 
 function mapStateToProps(state) {
@@ -303,11 +311,17 @@ function mapStateToProps(state) {
     activeTab: state.professorReducer.activeTab,
     showSearchModal: state.professorReducer.showSearchModal,
     searchContent: state.professorReducer.searchContent,
+    workingChapters: state.professorReducer.workingChapters,
+    publishedChapters: state.professorReducer.publishedChapters,
+    workingCourses: state.professorReducer.workingCourses,
+    publishedCourses: state.professorReducer.publishedCourses
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
+    loadProfessorChapters: () => dispatch(actions.loadProfessorChapters),
+    loadProfessorCourses: () => dispatch(actions.loadProfessorCourses),
     submitNewChapter: (name, description, keywords, checkoutTime) => dispatch(actions.submitNewChapter(name, description, keywords, checkoutTime)),
     switchTabs: (tab) => dispatch(actions.switchTabs(tab)),
     searchModal: () => dispatch(actions.searchModal()),
