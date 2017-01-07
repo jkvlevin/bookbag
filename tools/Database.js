@@ -339,36 +339,35 @@ Deletion Queries
 *******************************************************************************/
 
 // Delete a student
-Database.deleteStudent = function(email, callback) {
+Database.deleteStudent = function(student, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
 		if (err) callback(err);
 
 		// Remove from users table
-		client.query("DELETE FROM users WHERE email = '" + email + "'");
+		client.query("DELETE FROM users WHERE id = '" + student + "'");
 
 		// Remove all course-related data
-		let userCourses = sanitizeEmail(email) + "_courses";
+		let userCourses = student + "_courses";
 
 		// Scrub all of the course notes
-		let query1 = client.query("SELECT * FROM " + userCourses);
-		query1.on('row', function(row, result) {
+		client.query("SELECT * FROM \"" + userCourses + "\"").on('row', function(row, result) {
 			if (row != null) {
-				client.query("DROP TABLE " + sanitizeEmail(email) + row.coursename.replace(' ', '') + sanitizeEmail(row.prof) + "_notes");
+				client.query("DROP TABLE \"" + student + row.id + "_notes\"");
 			}
 		});
-		client.query("DROP TABLE " + userCourses);
+		client.query("DROP TABLE \"" + userCourses + "\"");
 
 		// Remove all folder-related data
-		let userFolders = sanitizeEmail(email) + "_folders";
+		let userFolders = student + "_folders";
 
 		// Scrub all folders
-		let query2 = client.query("SELECT foldername FROM " + userFolders);
+		let query2 = client.query("SELECT id FROM \"" + userFolders + "\"");
 		query2.on('row', function(row, result) {
 			if (row != null) {
-				client.query("DROP TABLE " + sanitizeEmail(email) + row.foldername.replace(' ', ''));
+				client.query("DROP TABLE \"" + student + row.id + "_chapters\"");
 			}
 		});
-		client.query("DROP TABLE " + userFolders);
+		client.query("DROP TABLE \"" + userFolders + "\"");
 
 		callback(null, "success");
 	});

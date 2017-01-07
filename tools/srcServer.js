@@ -365,12 +365,12 @@ app.post('/api/search', function(req, res, next) {
 Deletion APIs
 *******************************************************************************/
 
-app.post('/api/deletestudentaccount', function(req, res, next) {
-	let email = req.body.email;
-
-	Database.deleteStudent(email, function(err, data) {
-		if (err) console.log(err);
-		res.send(data);
+app.post('/api/student/delete', function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.deleteStudent(decoded.id, function(err, data) {
+			if (err) next(err);
+			res.send(data);
+		});
 	});
 });
 
