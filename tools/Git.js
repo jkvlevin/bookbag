@@ -270,6 +270,38 @@ Git.uploadFileToRepo = function(repoName, contents, fileName, commitMessage, aut
 	});
 }
 
+Git.getPublicPdfForRepo = function() {
+
+	authenticate();
+
+	github.repos.getContent({
+    	owner: ACCOUNT_NAME,
+    	repo: repoName,
+    	path: "",
+	}, function(err, res) {
+		if (err) {
+    		callback(JSON.parse(err)["message"]);
+		}
+		else {
+
+			var pdfURL = '';
+			for (var i = 0; i < res.length; i++) {
+
+				var ext = res[i].name.split('.');
+				if (ext.length > 1) {
+					if (ext[ext.length - 1] === 'pdf') {
+						pdfURL = res[i].download_url;
+						break;
+					}
+
+				}
+			}
+
+			callback(null, pdfURL);
+		}
+	});
+}
+
 // Checkout management
 
 Git.checkoutRepoByUser = function(email, repoName, callback) {

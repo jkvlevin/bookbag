@@ -31,12 +31,6 @@ Database.validateUser = function(email, password, callback) {
 		}
 
 		let query = client.query("SELECT * FROM users WHERE email = '" + email + "'");
-			
-		// bcrypt.compare(password, row.password, function(e, res) {
-		// 	if 		(e)    callback("hash error");
-		// 	else if (res)  callback(null, 200);
-		// 	else if (!res) callback("password or username does not match");
-		// });
 
 		query.on('end', function(result) {
 			if (result.rowCount == 0) callback("user does not exist");
