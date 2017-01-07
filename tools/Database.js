@@ -257,8 +257,11 @@ Database.getCourseChapters = function(course, callback) {
 			result.addRow(row);
 		});
 		query.on('end', function(result) {
-			done();
-			callback(null, result.rows);
+			client.query("SELECT name FROM courses WHERE courses.id = \'" + course + "\'").on('end', function(r) {
+				let name = r.rows[0].name;
+				done();
+				callback(null, result.rows, name);
+			});
 		});
 	});
 };

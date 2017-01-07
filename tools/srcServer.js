@@ -163,7 +163,7 @@ app.post('/api/student/addchaptertocoursenotes', function(req, res, next) {
 						if (err) callback(err);
 						else {
 							courses.push({
-								courseName: item.coursename,
+								courseName: item.name,
 								chapters : data
 							});
 						}
@@ -268,11 +268,11 @@ app.post('/api/student/getcourses', expjwt, function(req, res, next) {
   		var courses = [];
 
   		async.each(data, function(item, callback) {
-  			Database.getCourseChapters(item.id, function(err, data) {
+  			Database.getCourseChapters(item.id, function(err, data, name) {
 				if (err) callback(err);
 				else {
 					courses.push({
-						courseName: item.coursename,
+						courseName: name,
 						chapters : data
 					});
 				}
