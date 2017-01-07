@@ -89,7 +89,7 @@ app.post('/api/prof/createaccount', function(req, res, next) {
 	Database.addProf(email, firstname, lastname, password, function(err, data) {
 		if (err) return next(err);
 		jwt.sign({username : email, firstname : firstname, lastname: lastname, id : data}, 'JWT Secret', {expiresIn : "12h"}, function(err, token) {
-			res.status(200).json({token, name: data.name, prof : true});
+			res.status(200).json({token, name: firstname + " " + lastname, prof : true});
 		});
 	});
 });
