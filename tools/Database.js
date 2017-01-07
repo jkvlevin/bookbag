@@ -6,6 +6,7 @@ let pg = require('pg');
 let Database = [];
 const DATABASE_URL = 'postgres://xtlscmgxzqrpjq:su76vkQ798qEeiMi1MxsclLq_2@ec2-184-73-196-82.compute-1.amazonaws.com:5432/d3qu3p1gh95p7l';
 var Hash = require('./auth/Hash.js');
+var ptonVerify = require('./auth/ptonVerify.js');
 
 /******************************************************************************
 Initial Database Connection
@@ -97,6 +98,7 @@ Database.addStudent = function(email, name, password, callback) {
 Database.addProf = function(email, name, password, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
+
 
 		client.query("SELECT EXISTS(SELECT * FROM users WHERE email = '" + email + "')").on('row', function(row, result) {
 			if (row["exists"] == true) {

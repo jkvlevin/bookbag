@@ -5,7 +5,11 @@ var ptonVerify = [];
 
 // Checks if professor defined by firstName, lastName, and email is returned on a search
 // of Princeton's Advanced People Search, case insensitive. Checks against keyword professor, lecturer, and researcher
-ptonVerify.verifyProf = function(firstName, lastName, email, callback) {
+ptonVerify.verifyProf = function(name, email, callback) {
+
+	var splitName = name.split(' ');
+	var firstName = splitName[0];
+	var lastName  = splitName[1];
 
 	// Check if professor
 	var keyword = 'professor';

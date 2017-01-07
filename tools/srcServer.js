@@ -50,18 +50,6 @@ app.get('*', function(req, res) {
   res.sendFile(path.join( __dirname, '../src/index.html'));
 });
 
-var ptonVerify = require('./auth/ptonVerify.js');
-
-ptonVerify.verifyProf('Yuan', 'K', function(err, res) {
-
-	if (err)
-		console.log(err);
-	else
-		console.log(res);
-
-});
-
-
 /******************************************************************************
 Login/Account APIs
 *******************************************************************************/
