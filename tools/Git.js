@@ -10,8 +10,10 @@ var GitHubApi = require("github");
 
 var github = new GitHubApi();
 
-var ACCOUNT_NAME = 'bookbagInc' 
-var ACCOUNT_PASS = 'textFUTUREbook1'
+const ACCOUNT_NAME = 'bookbagInc' 
+const ACCOUNT_PASS = 'textFUTUREbook1'
+
+const PUBLIC_PDF_NAME_CONVENTION = 'public.pdf';
 
 var authenticate = function() {
 	github.authenticate({
@@ -287,14 +289,18 @@ Git.getPublicPdfForRepo = function() {
 			var pdfURL = '';
 			for (var i = 0; i < res.length; i++) {
 
-				var ext = res[i].name.split('.');
-				if (ext.length > 1) {
-					if (ext[ext.length - 1] === 'pdf') {
-						pdfURL = res[i].download_url;
-						break;
-					}
-
+				if (res[i].name === PUBLIC_PDF_NAME_CONVENTION) {
+					pdfURL = res[i].download_url;
+					break;
 				}
+				// var ext = res[i].name.split('.');
+				// if (ext.length > 1) {
+				// 	if (ext[ext.length - 1] === 'pdf') {
+				// 		pdfURL = res[i].download_url;
+				// 		break;
+				// 	}
+
+				// }
 			}
 
 			callback(null, pdfURL);
