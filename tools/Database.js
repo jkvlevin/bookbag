@@ -99,33 +99,38 @@ Database.addProf = function(email, name, password, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
+		// Verify professor on Princeton Advanced People Search
+		ptonVerify.verifyProf(name, email, function(err, res) {
+			if (err)
+				callback(err);
 
-		client.query("SELECT EXISTS(SELECT * FROM users WHERE email = '" + email + "')").on('row', function(row, result) {
-			if (row["exists"] == true) {
-				done();
-				let errorString = email + " is taken";
-				callback(errorString);
-			} else {
-				
-				// Hash password and insert the new user into users
-				Hash.hashPassword(password, function(e, hash) {
-					if (e)
-						callback(e);
+			client.query("SELECT EXISTS(SELECT * FROM users WHERE email = '" + email + "')").on('row', function(row, result) {
+				if (row["exists"] == true) {
+					done();
+					let errorString = email + " is taken";
+					callback(errorString);
+				} else {
+					
+					// Hash password and insert the new user into users
+					Hash.hashPassword(password, function(e, hash) {
+						if (e)
+							callback(e);
 
-					client.query("INSERT INTO users (email, name, password, prof) VALUES ('" + email + "' , '" + name + "' , '" + hash + "', TRUE)");
+						client.query("INSERT INTO users (email, name, password, prof) VALUES ('" + email + "' , '" + name + "' , '" + hash + "', TRUE)");
 
-					client.query("SELECT * FROM users WHERE email = '" + email + "'").on('end', function(result) {
-						let uuid = result.rows[0]["id"];
-						// Add _courses table
-						client.query("CREATE TABLE \"" + uuid + "_working_courses\" (id text)");
-						// Add _folders table
-						client.query("CREATE TABLE \"" + uuid + "_folders\" (id text, name varchar(160))");
-						client.query("CREATE TRIGGER trigger_users_genid BEFORE INSERT ON \"" + uuid + "_folders\" FOR EACH ROW EXECUTE PROCEDURE unique_short_id()");
-						done();
-						callback(null, uuid);
-					});
-				});	
-			}
+						client.query("SELECT * FROM users WHERE email = '" + email + "'").on('end', function(result) {
+							let uuid = result.rows[0]["id"];
+							// Add _courses table
+							client.query("CREATE TABLE \"" + uuid + "_working_courses\" (id text)");
+							// Add _folders table
+							client.query("CREATE TABLE \"" + uuid + "_folders\" (id text, name varchar(160))");
+							client.query("CREATE TRIGGER trigger_users_genid BEFORE INSERT ON \"" + uuid + "_folders\" FOR EACH ROW EXECUTE PROCEDURE unique_short_id()");
+							done();
+							callback(null, uuid);
+						});
+					});	
+				}
+			});
 		});
 	});
 };
