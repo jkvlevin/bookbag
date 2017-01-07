@@ -59,7 +59,7 @@ app.post('/api/login', function(req, res, next) {
 	Database.validateUser(req.body.email, req.body.password, function(err, data) {
 		if (err) return next(err, null, res, null);
 		jwt.sign({username : req.body.email, name : data.name, id : data.id}, 'JWT Secret', {expiresIn : "12h"}, function(err, token) {
-				res.status(200).json({token, name: name, prof : data.prof});
+				res.status(200).json({token, name: data.name, prof : data.prof});
 			});
 	});
 });

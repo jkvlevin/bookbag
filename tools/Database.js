@@ -30,22 +30,13 @@ Database.validateUser = function(email, password, callback) {
 			callback(err);
 		}
 
-		let query = client.query("SELECT * FROM users WHERE email = '" + email + "'");
-
-		// bcrypt.compare(password, row.password, function(e, res) {
-		// 	if 		(e)    callback("hash error");
-		// 	else if (res)  callback(null, 200);
-		// 	else if (!res) callback("password or username does not match");
-		// });
-
-		query.on('end', function(result) {
+		let query = client.query("SELECT * FROM users WHERE email = '" + email + "'").on('end', function(result) {
 			if (result.rowCount == 0) callback("user does not exist");
 			else {
 				let uuid = result.rows[0]["id"];
-				let name = result.rows[0]["firstname"] + " " + result.row[0]["lastname"];
+				let name = result.rows[0]["firstname"] + " " + result.rows[0]["lastname"];
 				let prof = result.rows[0]["prof"];
 				done();
-
 				Hash.validatePassword(password, result.rows[0].password, function(e, res) {
 					if (e) callback(e);
 					if (res) callback(null, {id : uuid, name : name, prof : prof});
