@@ -5,11 +5,11 @@ import { ListGroup, ListGroupItem, Modal, Form, FormGroup, FormControl, InputGro
 import Sidebar from '../../components/MenuBar/Sidebar.js';
 import SearchContent from '../../components/SearchContent';
 import SearchIcon from 'react-icons/lib/fa/search';
-import VersionList from '../../components/ProfessorWorkbench/VersionList.js';
 import FileList from '../../components/ProfessorWorkbench/FileList.js';
 import UserIcon from 'react-icons/lib/fa/user';
 import CheckoutIcon from 'react-icons/lib/md/assignment-turned-in';
 import PublishIcon from 'react-icons/lib/md/publish';
+import DotIcon from 'react-icons/lib/go/primitive-dot';
 import * as actions from './actions.js';
 import styles from './styles.css';
 
@@ -19,6 +19,8 @@ class ProfChapter extends React.Component {
    super(props);
 
    this.state = { searchValue: ''};
+
+   this.handleVersionChange = this.handleVersionChange.bind(this);
 
    this.handleCoursesClick = this.handleCoursesClick.bind(this);
    this.handleBrowseClick = this.handleBrowseClick.bind(this);
@@ -31,6 +33,15 @@ class ProfChapter extends React.Component {
   componentDidMount() {
     this.props.loadChapterVersions(this.props.currentChapter.id);
     this.props.loadVersionFiles(this.props.currentChapter.id, this.props.versionDisplayed.sha);
+  }
+
+  handleVersionChange(event) {
+    for (const version in this.props.chapterVersions) {
+      if (this.props.chapterVersions[version].sha === event.target.id) {
+        this.props.changeCurrentVersion(this.props.chapterVersions[version]);
+      }
+    }
+    this.props.changeCurrentVersionFiles(this.props.currentChapter.id, event.target.id);
   }
 
   handleCoursesClick() {
@@ -59,26 +70,8 @@ class ProfChapter extends React.Component {
   }
 
 
-
  render() {
    const isOwner = true;
-   const filelist = [
-     {
-       name:"balls.pdf",
-       id:"1",
-       isPdf: true
-     },
-     {
-       name:"triceracocks.pdf",
-       id:"2",
-       isPdf: true
-     },
-     {
-       name:"sitonmyface.latex",
-       id:"3",
-       isPdf: false
-     }
-   ];
     return (
       <div id="chapter-container">
         <Sidebar
@@ -102,7 +95,10 @@ class ProfChapter extends React.Component {
           <div id="version-list">
             <ListGroup>
               {this.props.chapterVersions.map(version =>
-                <VersionList key={version.sha} version={version.version} id={version.sha} author={version.author} versionDisplayed={this.props.versionDisplayed.sha}/>
+                <ListGroupItem key={version.sha} id={version.sha} style={{textAlign:"left"}} onClick={this.handleVersionChange}>
+                  Version {version.version} - <div id={version.sha} onClick={this.handleVersionChange} style={{fontSize:"10px", fontStyle:"italic", display:"inline"}}>{version.author}</div>
+                  {(this.props.versionDisplayed.sha === version.sha) ? <DotIcon style={{float:"right", marginTop:"5px", fontSize:"14px", color:"#1db594"}}/> : ""}
+                </ListGroupItem>
               )}
             </ListGroup>
           </div>
@@ -183,6 +179,8 @@ function mapDispatchToProps(dispatch) {
     searchModal: () => dispatch(actions.searchModal()),
     closeSearchModal: () => dispatch(actions.closeSearchModal()),
     search: (searchValue) => dispatch(actions.search(searchValue)),
+    changeCurrentVersionFiles: (chapterId, sha) => dispatch(actions.changeCurrentVersionFiles(chapterId, sha)),
+    changeCurrentVersion: (version) => dispatch(actions.changeCurrentVersion(version))
   };
 }
 

@@ -10,7 +10,7 @@ const FileList = ({ name, isPdf, downloadUrl }) => {
       <ListGroupItem style={{textAlign:"left"}}>
         <div>
           { isPdf ? <PdfIcon style={{fontSize:"18px"}}/> : <FileIcon style={{fontSize:"18px"}}/> }
-          <h4 style={{marginLeft:"15px", color:"#407dc6"}}>{name}</h4>
+          <h4 style={{marginLeft:"15px", marginTop:"5px", color:"#407dc6"}}>{name}</h4>
           <a href={downloadUrl}><DownloadIcon style={{float:"right", marginRight:"10px", fontSize:"18px"}}/></a>
         </div>
       </ListGroupItem>

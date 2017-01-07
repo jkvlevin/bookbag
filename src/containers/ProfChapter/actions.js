@@ -33,7 +33,6 @@ export function loadVersionFiles(chapterId, sha) {
       data: { chapterId: chapterId}
     }).then((response) => {
       const versionFiles = response.data;
-      console.log(versionFiles);
       dispatch(loadVersionFilesSuccess(versionFiles));
     });
   }
@@ -43,8 +42,29 @@ export function loadVersionFilesSuccess(versionFiles) {
   return { type: types.LOAD_VERSION_FILES_SUCCESS, versionFiles };
 }
 
+export function changeCurrentVersionFiles(chapterId, sha) {
+  const token = localStorage.getItem('userToken');
+  var authLine = 'Bearer ' + token;
+  return function (dispatch) {
+    axios({
+      method: 'post',
+      url: '/api/prof/getchaptercontentsprevious',
+      headers: { Authorization: authLine },
+      data: { chapterId: chapterId, sha: sha}
+    }).then((response) => {
+      const versionFiles = response.data;
+      console.log(versionFiles);
+      dispatch(changeCurrentVersionFilesSuccess(versionFiles));
+    });
+  }
+}
+
+export function changeCurrentVersionFilesSuccess(versionFiles) {
+  return { type: types.CHANGE_CURRENT_VERSION_FILES_SUCCESS, versionFiles };
+}
+
 export function changeCurrentVersion(version) {
-  return { type: types.CHANGE_CURRENT_VERSION, version };
+  return { type: types.CHANGE_CURRENT_VERSION_SUCCESS, version };
 }
 
 export function search(searchValue) {
