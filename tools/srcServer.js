@@ -101,7 +101,7 @@ app.post('/api/student/addcourse', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.addCourse(decoded.id, req.body.course, function(err, data) {
 			if (err) return next(err);
-			res.end(data);
+			res.sendStatus(data);
 		});
 	});
 });
@@ -111,7 +111,7 @@ app.post('/api/prof/createcourse', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.createCourse(req.body.name, decoded.id, req.body.description, req.body.keywords, decoded.name, function(err, data) {
 			if (err) return next(err);
-			res.end(data);
+			res.sendStatus(data);
 		});
 	});
 });
@@ -422,7 +422,7 @@ app.post('/api/student/delete', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.deleteStudent(decoded.id, function(err, data) {
 			if (err) return next(err);
-			res.send(data);
+			res.sendStatus(data);
 		});
 	});
 });
