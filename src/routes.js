@@ -18,7 +18,7 @@ export default (
     <Route path="signup" component={SignupPage} />
     <Route path="student" component={StudentHome} />
     <Route path="professor" component={ProfessorHome} />
-    <Route path="chapter/:chapterId" component={ProfChapter} />
-    <Route path="course/:courseId" component={ProfCourse} />
+    <Route path="chapter/:name/:chapterId" component={ProfChapter} />
+    <Route path="course/:name/:courseId" component={ProfCourse} />
   </Route>
 );

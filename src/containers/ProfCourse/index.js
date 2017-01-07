@@ -78,7 +78,7 @@ class ProfCourse extends React.Component {
           handleSettingsClick={this.handleSettingsClick}
           userName={localStorage.getItem('userName')}
         />
-        <h1 style={{marginLeft:"220px", marginTop:"25px", fontSize:"22px", color:"#878787"}}> Course Name </h1>
+        <h1 style={{marginLeft:"220px", marginTop:"25px", fontSize:"22px", color:"#878787"}}> {this.props.params.name} </h1>
         <p style={{marginLeft:"225px"}}> "Description of the course goes here. Probably has something to do with taints and punching cooters." </p>
 
         <div id="chapter-home-container">
