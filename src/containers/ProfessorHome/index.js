@@ -320,8 +320,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    loadProfessorChapters: () => dispatch(actions.loadProfessorChapters),
-    loadProfessorCourses: () => dispatch(actions.loadProfessorCourses),
+    loadProfessorChapters: () => dispatch(actions.loadProfessorChapters()),
+    loadProfessorCourses: () => dispatch(actions.loadProfessorCourses()),
     submitNewChapter: (name, description, keywords, checkoutTime) => dispatch(actions.submitNewChapter(name, description, keywords, checkoutTime)),
     switchTabs: (tab) => dispatch(actions.switchTabs(tab)),
     searchModal: () => dispatch(actions.searchModal()),
