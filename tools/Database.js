@@ -340,6 +340,38 @@ Database.getFolderChapters = function(student, folder, callback) {
 	});
 };
 
+// Get all of a user's courses and return them
+Database.getChapters = function(prof, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+
+		let query = client.query("SELECT * FROM \"" + prof + "_working_chapters\"");
+		query.on('row', function(row, result) {
+			result.addRow(row);
+		});
+		query.on('end', function(result) {
+			done();
+			callback(null, result.rows);
+		});
+	});
+};
+
+// Get all of the chapters in a give prof's library
+Database.getChapterData = function(chapter, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+		let s = "SELECT * FROM chapters WHERE id = '" + chapter + "'";
+		let query = client.query(s);
+		query.on('row', function(row, result) {
+			result.addRow(row);
+		});
+		query.on('end', function(result) {
+			done();
+			callback(null, result.rows);
+		});
+	});
+};
+
 /******************************************************************************
 Search Queries
 *******************************************************************************/

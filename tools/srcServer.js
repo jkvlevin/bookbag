@@ -341,6 +341,31 @@ app.post('/api/prof/getchaptercontentsprevious', expjwt, function(req, res, next
   });
 });
 
+app.post('/api/prof/getchapters', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.getChapters(decoded.id, function(err, data) {
+			if (err) return next(err);
+	  		var publicChapters = [];
+	  		var privateChapters = [];
+
+	  		async.each(data, function(item, callback) {
+	  			Database.getChapterData(item.id, function(err, data, name) {
+					if (err) callback(err);
+					if (data.public == true) {
+						publicChapters.push(data[0]);
+					} else {
+						privateChapters.push(data[0]);
+					}
+					callback();
+				});
+	  		}, function(err) {
+	  			if (err) return next(err);
+	  			res.send([privateChapters, publicChapters]);
+	  		});
+	  	});
+	});
+});
+
 /******************************************************************************
 Search APIs
 *******************************************************************************/
