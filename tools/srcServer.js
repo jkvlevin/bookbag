@@ -87,7 +87,7 @@ app.post('/api/prof/createaccount', function(req, res, next) {
 	Database.addProf(email, name, password, function(err, data) {
 		if (err) return next(err);
 		jwt.sign({username : email, name : name, id : data}, 'JWT Secret', {expiresIn : "12h"}, function(err, token) {
-			res.status(200).json({token, name: data.name}, prof : true);
+			res.status(200).json({token, name: data.name, prof : true});
 		});
 	});
 });
@@ -119,7 +119,7 @@ app.post('/api/prof/createcourse', function(req, res, next) {
 //Create new chapter
 app.post('/api/prof/createchapter', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		Database.createChapter(decoded.id, req.body.chapterName, req.body.contributors, null, req.body.checkout_dur, decoded.name, req.body.keywords, req.body.description, function(err, data) {
+		Database.createChapter(decoded.id, req.body.chapterName, req.body.contributors, req.body.checkout_dur, "", decoded.name, req.body.keywords, req.body.description, function(err, data) {
 			if (err) return next(err);
 			Git.createNewRepo(decoded.id, function(e, d) {
 				if (e) return next(err);

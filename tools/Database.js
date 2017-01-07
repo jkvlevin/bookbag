@@ -108,8 +108,7 @@ Database.addProf = function(email, name, password, callback) {
 				
 				// Hash password and insert the new user into users
 				Hash.hashPassword(password, function(e, hash) {
-					if (e)
-						callback(e);
+					if (e) callback(e);
 
 					client.query("INSERT INTO users (email, name, password, prof) VALUES ('" + email + "' , '" + name + "' , '" + hash + "', TRUE)");
 
@@ -228,10 +227,11 @@ Database.createChapter = function(prof, chapterName, contributors, checkout_dur,
 		if (err) callback(err);
 
 		//Retreive pdf and src urls from git module
-		client.query("INSERT INTO chapters(name, owner, contributors, pdf_url, checkout_dur, ownername, keywords, description) VALUES ('" + chapterName + "', '" + prof + "', '" + contributors + "', '" + pdf_url + "', " + checkout_dur + ", '" + profname + "', '" + keywords + "', '" + description + "') RETURNING id", function(err, result) {
+		let s = "INSERT INTO chapters(name, owner, contributors, pdf_url, checkout_dur, ownername, keywords, description) VALUES ('" + chapterName + "', '" + prof + "', '" + contributors + "', '" + pdf_url + "', " + checkout_dur + ", '" + profname + "', '" + keywords + "', '" + description + "') RETURNING id";
+		client.query(s, function(err, result) {
 				if (err) callback(err);
 
-				client.query("INSERT INTO \"" + prof + "_working_chapters\" VALUES ('" + result.rows[0].id + "'");
+				client.query("INSERT INTO \"" + prof + "_working_chapters\" VALUES ('" + result.rows[0].id + "')");
 				done();
 				callback(null, 200);
 		});
