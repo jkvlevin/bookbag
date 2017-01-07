@@ -86,8 +86,9 @@ Git.listCommitsForRepo = function(repoName, callback) {
 		else {
 			for (var i = 0; i < res.length; i++) {
 				var date = new Date(res[i].commit.author.date);
+				var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZoneName: 'short', hour: 'numeric', minute: 'numeric' };
 				var messageWithUser = res[i].commit.message.split(separator);
-				var commit = {author: messageWithUser[0], version: res.length - i, message: messageWithUser[1], date: date.toLocaleString(), sha: res[i].sha};
+				var commit = {author: messageWithUser[0], version: res.length - i, message: messageWithUser[1], date: date.toLocaleString('en-US', options), sha: res[i].sha};
 				commits.push(commit);
 			}
 
