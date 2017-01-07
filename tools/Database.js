@@ -227,14 +227,13 @@ Database.createChapter = function(prof, chapterName, contributors, checkout_dur,
 		if (err) callback(err);
 
 		//Retreive pdf and src urls from git module
-		let s = "INSERT INTO chapters(name, owner, contributors, pdf_url, checkout_dur, ownername, keywords, description) VALUES ('" + chapterName + "', '" + prof + "', '{}', '" + pdf_url + "', " + checkout_dur + ", '" + profname + "', '{" + keywords + "}', '" + description + "') RETURNING id";
-    console.log(s);
+		let s = "INSERT INTO chapters(name, owner, contributors, pdf_url, checkout_dur, ownername, keywords, description, public) VALUES ('" + chapterName + "', '" + prof + "', '{}', '" + pdf_url + "', " + checkout_dur + ", '" + profname + "', '{" + keywords + "}', '" + description + "', FALSE) RETURNING id";
 		client.query(s, function(err, result) {
 				if (err) callback(err);
 
 				client.query("INSERT INTO \"" + prof + "_working_chapters\" VALUES ('" + result.rows[0].id + "')");
 				done();
-				callback(null, 200);
+				callback(null, result.rows[0].id);
 		});
 	});
 };
@@ -350,7 +349,7 @@ Database.searchChapters = function(searchQuery, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
 		if (err) callback(err);
 
-		let query = client.query("SELECT * FROM chapters WHERE name ILIKE '%" + searchQuery + "%' OR description ILIKE '%" + searchQuery + "%'");
+		let query = client.query("SELECT * FROM chapters WHERE name ILIKE '%" + searchQuery + "%' OR description ILIKE '%" + searchQuery + "%' AND public = TRUE");
 		query.on('row', function(row, result) {
 			result.addRow(row);
 		});
