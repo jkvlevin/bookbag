@@ -191,7 +191,7 @@ app.post('/api/student/addchaptertofolder', function(req, res, next) {
 						if (err) callback(err);
 						else {
 							folders.push({
-								foldername: item.foldername,
+								foldername: item.name,
 								chapters : data
 							});
 						}
@@ -218,11 +218,11 @@ app.post('/api/addfolder', function(req, res, next) {
 		  		var folders = [];
 
 		  		async.each(data2, function(item, callback) {
-		  			Database.getFolderChapters(decoded.id, item.foldername, function(err, folderdata) {
+		  			Database.getFolderChapters(decoded.id, item.id, function(err, folderdata) {
 						if (err) callback(err);
 						else {
 							folders.push({
-								foldername: item.foldername,
+								foldername: item.name,
 								chapters : folderdata
 							});
 						}
@@ -298,7 +298,7 @@ app.post('/api/getfolders', function(req, res, next) {
 				if (err) callback(err);
 				else {
 					folders.push({
-						foldername: item.foldername,
+						foldername: item.name,
 						chapters : data
 					});
 				}

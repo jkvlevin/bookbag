@@ -71,7 +71,7 @@ Database.addStudent = function(email, name, password, callback) {
 					// Add _courses table
 					client.query("CREATE TABLE \"" + uuid + "_courses\" (id text)");
 					// Add _folders table
-					client.query("CREATE TABLE \"" + uuid + "_folders\" (id text)");
+					client.query("CREATE TABLE \"" + uuid + "_folders\" (id text, name varchar(160))");
 					client.query("CREATE TRIGGER trigger_users_genid BEFORE INSERT ON \"" + uuid + "_folders\" FOR EACH ROW EXECUTE PROCEDURE unique_short_id()");
 					done();
 					callback(null, uuid);
@@ -158,7 +158,7 @@ Database.addFolder = function(student, folderName, callback) {
 		// Insert the course into the student's courselist
 		client.query("INSERT INTO \"" + student + "_folders\"(name) VALUES ('" + folderName + "') RETURNING id", function(err, result) {
 			// Create a new table that holds all the chapters in this folder
-			client.query("CREATE TABLE " + student + result.rows[0].id + "_chapters (id text, url varchar(2083))", function() {
+			client.query("CREATE TABLE \"" + student + result.rows[0].id + "_chapters\" (id text, url varchar(2083))", function() {
 				done();
 				callback(null, "success");
 			});
@@ -303,7 +303,7 @@ Database.getFolderChapters = function(student, folder, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 		let folderTable = student + folder;
-		let s = "SELECT chapters.id, chapters.name, owner, contributors, pdf_url, checkout_user, checkout_exp, checkout_dur FROM chapters INNER JOIN \"" + folderTable + "\" on chapters.id = \"" + folderTable + "\".id";
+		let s = "SELECT chapters.id, chapters.name, owner, contributors, pdf_url, checkout_user, checkout_exp, checkout_dur FROM chapters INNER JOIN \"" + folderTable + "_chapters\" on chapters.id = \"" + folderTable + "_chapters\".id";
 		let query = client.query(s);
 		query.on('row', function(row, result) {
 			result.addRow(row);
