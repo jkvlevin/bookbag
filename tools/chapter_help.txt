@@ -1,1 +1,23 @@
-This will help people get started on their chapters!
+Hello there! Thanks for choosing Bookbag.
+
+Here are some tips to get started:
+
+1. Adding collaborators gives multiple professors the ability to edit the chapter. Only the chapter owner
+   can add or remove collaborators. 
+
+2. To edit your new chapter, you must first hit the Checkout button. This gives you permission to upload
+   new files. Only one collaborator can have the chapter checked out at a time. When you're done making
+   your edits, upload your updated files. This makes the chapter available for another collaborator to 
+   check out.
+
+3. How you choose to craft your chapter is completely up to you and your other collaborators. You may have 
+   one source file that you all edit and re-upload, or you may all work on separate files and combine
+   them at the end. You are free to collaborate however you like!
+
+4. All files will be saved at every version! If you upload a file with the same name as an existing file, it
+   will overwrite the old file in the new version. But don't worry, you will be able to view the old 
+   file by clicking on the previous version! All your work at every upload will be saved no matter what.
+
+5. When you want to make your chapter public, you must upload a final version in PDF format. You may continue
+   working on your chapter privately, and you can change the public PDF at any point.
+

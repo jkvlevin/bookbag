@@ -18,9 +18,9 @@ const PUBLIC_PDF_NAME_CONVENTION = 'public.pdf';
 
 var authenticate = function() {
 	github.authenticate({
-	    type: "basic",
-	    username: ACCOUNT_NAME,
-	    password: ACCOUNT_PASS
+		type: "basic",
+		username: ACCOUNT_NAME,
+		password: ACCOUNT_PASS
 	});
 }
 
@@ -28,7 +28,7 @@ var authenticate = function() {
 Repo creation and contributor management
 *******************************************************************************/
 
-// Create a repo with the desired repo name
+// Create a repo with the desired repo name, commit intial file with help
 Git.createNewRepo = function(repoName, callback) {
 
 	authenticate();
@@ -99,7 +99,7 @@ Git.listCommitsForRepo = function(repoName, callback) {
 
 	github.repos.getCommits({
 		owner: ACCOUNT_NAME,
-    	repo: repoName,
+		repo: repoName,
 	}, function(err, res) {
 
 		var commits = [];
@@ -107,8 +107,8 @@ Git.listCommitsForRepo = function(repoName, callback) {
 			if (JSON.parse(err)["message"] === "Git Repository is empty.")
 				callback(null, []);
 			else
-	    		callback(JSON.parse(err)["message"]);
-	    }
+				callback(JSON.parse(err)["message"]);
+		}
 		else {
 			for (var i = 0; i < res.length; i++) {
 				var date = new Date(res[i].commit.author.date);
@@ -130,15 +130,15 @@ Git.getLatestContentsOfRepo = function(repoName, callback) {
 	authenticate();
 
 	github.repos.getContent({
-    	owner: ACCOUNT_NAME,
-    	repo: repoName,
-    	path: "",
+		owner: ACCOUNT_NAME,
+		repo: repoName,
+		path: "",
 	}, function(err, res) {
 		if (err) {
 			if (JSON.parse(err)["message"] === "This repository is empty.")
 				callback(null, []);
 			else
-	    		callback(JSON.parse(err)["message"]);
+				callback(JSON.parse(err)["message"]);
 		}
 		else {
 			var contents = [];
@@ -163,16 +163,16 @@ Git.getContentsOfRepoForCommit = function(repoName, sha, callback) {
 	authenticate();
 
 	github.repos.getContent({
-    	owner: ACCOUNT_NAME,
-    	repo: repoName,
-    	path: "",
-    	ref: sha,
+		owner: ACCOUNT_NAME,
+		repo: repoName,
+		path: "",
+		ref: sha,
 	}, function(err, res) {
 		if (err) {
 			if (JSON.parse(err)["message"] === "This repository is empty.")
 				callback(null, []);
 			else
-	    		callback(JSON.parse(err)["message"]);
+				callback(JSON.parse(err)["message"]);
 		}
 		else {
 			var contents = [];
@@ -198,11 +198,11 @@ Git.revertRepoToOldCommit = function(repoName, sha, commitMessage, author, callb
 
 	github.repos.getCommits({
 		owner: ACCOUNT_NAME,
-    	repo: repoName,
+		repo: repoName,
 	}, function(err, res) {
 
 		if (err)
-    		callback(JSON.parse(err)["message"]);
+			callback(JSON.parse(err)["message"]);
 		else {
 			var parent = res[0].sha;
 
@@ -268,13 +268,13 @@ Git.uploadFileToRepo = function(repoName, contents, fileName, commitMessage, aut
 		if (err) {
 			github.repos.getContent({
 				owner: ACCOUNT_NAME,
-		    	repo: repoName,
-		    	path: fileName
+				repo: repoName,
+				path: fileName
 			}, function(err, res) {
 
 				var sha;
 				if (err)
-		    		callback(JSON.parse(err)["message"]);
+					callback(JSON.parse(err)["message"]);
 				else {
 					sha = res.sha;
 
@@ -308,12 +308,12 @@ Git.getPublicPdfForRepo = function() {
 	authenticate();
 
 	github.repos.getContent({
-    	owner: ACCOUNT_NAME,
-    	repo: repoName,
-    	path: "",
+		owner: ACCOUNT_NAME,
+		repo: repoName,
+		path: "",
 	}, function(err, res) {
 		if (err) {
-    		callback(JSON.parse(err)["message"]);
+			callback(JSON.parse(err)["message"]);
 		}
 		else {
 
