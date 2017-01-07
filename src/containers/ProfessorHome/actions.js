@@ -1,6 +1,21 @@
 import * as types from '../../actionTypes';
 import axios from 'axios';
 
+export function submitNewChapter(name, description, keywords, checkoutTime) {
+  const token = localStorage.getItem('userToken');
+  var authLine = 'Bearer ' + token;
+  return function (dispatch) {
+    axios({
+      method: 'post',
+      url: '/api/prof/createchapter',
+      headers: { Authorization : authLine},
+      data: { chapterName: name, checkout_dur: checkoutTime, keywords: keywords, description: description, contributors: [] }
+    }).then((response) => {
+        console.log('sent');
+    });
+  };
+}
+
 export function switchTabs(tab) {
   return { type: types.SWITCH_TABS, tab };
 }

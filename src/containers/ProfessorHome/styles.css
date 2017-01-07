@@ -11,6 +11,14 @@
   padding: 0;
 }
 
+#welcome-title {
+  margin-left: 220px;
+  margin-top: 25px;
+  font-size: 26px;
+  font-family: 'Alegreya Sans SC';
+  color: #878787;
+}
+
 #nav-container {
   margin-left: 220px;
   text-align: center;

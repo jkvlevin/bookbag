@@ -32,6 +32,12 @@ Database.validateUser = function(email, password, callback) {
 
 		let query = client.query("SELECT * FROM users WHERE email = '" + email + "'");
 
+		// bcrypt.compare(password, row.password, function(e, res) {
+		// 	if 		(e)    callback("hash error");
+		// 	else if (res)  callback(null, 200);
+		// 	else if (!res) callback("password or username does not match");
+		// });
+
 		query.on('end', function(result) {
 			if (result.rowCount == 0) callback("user does not exist");
 			else {
@@ -48,7 +54,7 @@ Database.validateUser = function(email, password, callback) {
 					else     callback("password or username does not match");
 
 				});
-			}		
+			}
 		})
 	});
 };
@@ -64,7 +70,7 @@ Database.addStudent = function(email, name, password, callback) {
 				let errorString = email + " is taken";
 				callback(errorString);
 			} else {
-				
+
 				// Hash password then insert the new user into users
 				Hash.hashPassword(password, function(e, hash) {
 					if (e)
@@ -93,38 +99,33 @@ Database.addProf = function(email, name, password, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
-		// Verify professor on Princeton Advanced People Search
-		ptonVerify.verifyProf(name, email, function(err, res) {
-			if (err)
-				callback(err);
+		client.query("SELECT EXISTS(SELECT * FROM users WHERE email = '" + email + "')").on('row', function(row, result) {
+			if (row["exists"] == true) {
+				done();
+				let errorString = email + " is taken";
+				callback(errorString);
+			} else {
 
-			client.query("SELECT EXISTS(SELECT * FROM users WHERE email = '" + email + "')").on('row', function(row, result) {
-				if (row["exists"] == true) {
-					done();
-					let errorString = email + " is taken";
-					callback(errorString);
-				} else {
-					
-					// Hash password and insert the new user into users
-					Hash.hashPassword(password, function(e, hash) {
-						if (e)
-							callback(e);
+				// Hash password and insert the new user into users
+				Hash.hashPassword(password, function(e, hash) {
+					if (e) callback(e);
 
-						client.query("INSERT INTO users (email, name, password, prof) VALUES ('" + email + "' , '" + name + "' , '" + hash + "', TRUE)");
+					client.query("INSERT INTO users (email, name, password, prof) VALUES ('" + email + "' , '" + name + "' , '" + hash + "', TRUE)");
 
-						client.query("SELECT * FROM users WHERE email = '" + email + "'").on('end', function(result) {
-							let uuid = result.rows[0]["id"];
-							// Add _courses table
-							client.query("CREATE TABLE \"" + uuid + "_working_courses\" (id text)");
-							// Add _folders table
-							client.query("CREATE TABLE \"" + uuid + "_folders\" (id text, name varchar(160))");
-							client.query("CREATE TRIGGER trigger_users_genid BEFORE INSERT ON \"" + uuid + "_folders\" FOR EACH ROW EXECUTE PROCEDURE unique_short_id()");
-							done();
-							callback(null, uuid);
-						});
-					});	
-				}
-			});
+					client.query("SELECT * FROM users WHERE email = '" + email + "'").on('end', function(result) {
+						let uuid = result.rows[0]["id"];
+						// Add _working_courses table
+						client.query("CREATE TABLE \"" + uuid + "_working_courses\" (id text)");
+						// Add _working_chapters table
+						client.query("CREATE TABLE \"" + uuid + "_working_chapters\" (id text)");
+						// Add _folders table
+						client.query("CREATE TABLE \"" + uuid + "_folders\" (id text, name varchar(160))");
+						client.query("CREATE TRIGGER trigger_users_genid BEFORE INSERT ON \"" + uuid + "_folders\" FOR EACH ROW EXECUTE PROCEDURE unique_short_id()");
+						done();
+						callback(null, uuid);
+					});
+				});
+			}
 		});
 	});
 };
@@ -226,10 +227,15 @@ Database.createChapter = function(prof, chapterName, contributors, checkout_dur,
 		if (err) callback(err);
 
 		//Retreive pdf and src urls from git module
-		let s = "INSERT INTO chapters(name, owner, contributors, pdf_url, checkout_dur, ownername, keywords, description) VALUES ('" + chapterName + "', '" + prof + "', '" + {} + "', '', " + checkout_dur + ", '" + profname + "', '" + keywords + "', '" + description + "')";
-		client.query(s);
-		done();
-		callback(null, 200);
+		let s = "INSERT INTO chapters(name, owner, contributors, pdf_url, checkout_dur, ownername, keywords, description) VALUES ('" + chapterName + "', '" + prof + "', '{}', '" + pdf_url + "', " + checkout_dur + ", '" + profname + "', '{" + keywords + "}', '" + description + "') RETURNING id";
+    console.log(s);
+		client.query(s, function(err, result) {
+				if (err) callback(err);
+
+				client.query("INSERT INTO \"" + prof + "_working_chapters\" VALUES ('" + result.rows[0].id + "')");
+				done();
+				callback(null, 200);
+		});
 	});
 };
 
