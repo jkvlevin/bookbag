@@ -227,7 +227,8 @@ Database.createChapter = function(prof, chapterName, contributors, checkout_dur,
 		if (err) callback(err);
 
 		//Retreive pdf and src urls from git module
-		let s = "INSERT INTO chapters(name, owner, contributors, pdf_url, checkout_dur, ownername, keywords, description) VALUES ('" + chapterName + "', '" + prof + "', '" + {} + "', '" + pdf_url + "', " + checkout_dur + ", '" + profname + "', '" + keywords + "', '" + description + "') RETURNING id";
+		let s = "INSERT INTO chapters(name, owner, contributors, pdf_url, checkout_dur, ownername, keywords, description) VALUES ('" + chapterName + "', '" + prof + "', '{}', '" + pdf_url + "', " + checkout_dur + ", '" + profname + "', '{" + keywords + "}', '" + description + "') RETURNING id";
+    console.log(s);
 		client.query(s, function(err, result) {
 				if (err) callback(err);
 
