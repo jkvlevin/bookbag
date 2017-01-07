@@ -31,8 +31,8 @@ class ProfChapter extends React.Component {
   }
 
   componentDidMount() {
-    this.props.loadChapterVersions(this.props.currentChapter.id);
-    this.props.loadVersionFiles(this.props.currentChapter.id, this.props.versionDisplayed.sha);
+    this.props.loadChapterVersions(this.props.params.chapterId);
+    this.props.loadVersionFiles(this.props.params.chapterId, this.props.versionDisplayed.sha);
   }
 
   handleVersionChange(event) {
@@ -41,7 +41,7 @@ class ProfChapter extends React.Component {
         this.props.changeCurrentVersion(this.props.chapterVersions[version]);
       }
     }
-    this.props.changeCurrentVersionFiles(this.props.currentChapter.id, event.target.id);
+    this.props.changeCurrentVersionFiles(this.props.params.chapterId, event.target.id);
   }
 
   handleCoursesClick() {
@@ -80,7 +80,7 @@ class ProfChapter extends React.Component {
           handleBrowseClick={this.handleBrowseClick}
           handleSearchClick={this.handleSearchClick}
           handleSettingsClick={this.handleSettingsClick}
-          userName={this.props.currentUser}
+          userName={localStorage.getItem('userName')}
         />
         <h1 style={{marginLeft:"220px", marginTop:"25px", fontSize:"22px", color:"#878787"}}> Chapter Name </h1>
 
@@ -147,14 +147,12 @@ class ProfChapter extends React.Component {
 }
 
 ProfChapter.propTypes = {
-  currentUser: PropTypes.string.isRequired,
   searchModal: PropTypes.func.isRequired,
   closeSearchModal: PropTypes.func.isRequired,
   showSearchModal: PropTypes.bool.isRequired,
   searchContent: PropTypes.array.isRequired,
   loadChapterVersions: PropTypes.func.isRequired,
   chapterVersions: PropTypes.array.isRequired,
-  currentChapter: PropTypes.object.isRequired,
   versionDisplayed: PropTypes.object.isRequired,
   loadVersionFiles: PropTypes.func.isRequired,
   currentVersionFiles: PropTypes.array.isRequired
@@ -162,10 +160,8 @@ ProfChapter.propTypes = {
 
 function mapStateToProps(state) {
   return {
-    currentUser: state.appReducer.currentUser,
     showSearchModal: state.chapterReducer.showSearchModal,
     searchContent: state.chapterReducer.searchContent,
-    currentChapter: state.chapterReducer.currentChapter,
     chapterVersions: state.chapterReducer.chapterVersions,
     versionDisplayed: state.chapterReducer.versionDisplayed,
     currentVersionFiles: state.chapterReducer.currentVersionFiles

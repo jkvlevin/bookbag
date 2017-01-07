@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { Navbar, NavDropdown, MenuItem, Nav, NavItem, Col } from 'react-bootstrap';
 
-const HeaderMenu = ({currentUser}) => {
+const HeaderMenu = ({}) => {
   return (
     <Navbar id="headermenu-container" inverse fixedTop style={{textAlign:"right", backgroundColor:"#262228"}}>
       <Navbar.Header>
@@ -12,7 +12,7 @@ const HeaderMenu = ({currentUser}) => {
       </Navbar.Header>
       <Navbar.Collapse>
       <Nav pullRight>
-        <NavDropdown title={currentUser} eventKey={1} id="user-dropdown" style={{width:"200px", textAlign:"right"}}>
+        <NavDropdown title={localStorage.getItem('userName')} eventKey={1} id="user-dropdown" style={{width:"200px", textAlign:"right"}}>
           <MenuItem eventKey={1.1}>My Library</MenuItem>
           <MenuItem eventKey={1.2}>Browse</MenuItem>
           <MenuItem eventKey={1.3}>Search</MenuItem>
@@ -28,7 +28,6 @@ const HeaderMenu = ({currentUser}) => {
 };
 
 HeaderMenu.propTypes = {
-  currentUser: PropTypes.string
 };
 
 export default HeaderMenu;

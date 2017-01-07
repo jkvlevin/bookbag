@@ -1,7 +1,6 @@
 import * as types from '../../actionTypes';
 
 const initialState = {
-  currentChapter: { id:'U_Uws2an', name:'' },
   chapterVersions: [{ version: 1, sha:'', message: '', author:'', date:'' }],
   versionDisplayed: { version: 1, sha:'', message: '', author:'', date:'' },
   currentVersionFiles: [{ filename: '', downloadURL: '', isPDF:true }],

@@ -114,9 +114,9 @@ class StudentHome extends React.Component {
           handleBrowseClick={this.handleBrowseClick}
           handleSearchClick={this.handleSearchClick}
           handleSettingsClick={this.handleSettingsClick}
-          userName={this.props.currentUser}
+          userName={localStorage.getItem('userName')}
         />
-        <HeaderMenu currentUser={this.props.currentUser} />
+        <HeaderMenu />
 
         <div id="librarybar-container" className="clearfix">
           <div id="library-menu">
@@ -191,7 +191,6 @@ class StudentHome extends React.Component {
 }
 
 StudentHome.propTypes = {
-  currentUser: PropTypes.string.isRequired,
   courses: PropTypes.array.isRequired,
   loadCourses: PropTypes.func.isRequired,
   searchModal: PropTypes.func.isRequired,
@@ -210,7 +209,6 @@ StudentHome.propTypes = {
 
 function mapStateToProps(state) {
   return {
-    currentUser: state.appReducer.currentUser,
     courses: state.studentReducer.courses,
     showSearchModal: state.studentReducer.showSearchModal,
     showFolderModal: state.studentReducer.showFolderModal,

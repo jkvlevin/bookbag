@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link, browserHistory } from 'react-router';
-import { Nav, NavItem, Table, Button, DropdownButton, MenuItem, Glyphicon, Modal, Popover, ButtonToolbar, OverlayTrigger, Form, FormControl, FormGroup, InputGroup, ListGroup, ListGroupItem } from 'react-bootstrap';
+import { Nav, NavItem, Table, Button, DropdownButton, MenuItem, Glyphicon, Modal, Popover, ButtonToolbar, OverlayTrigger, Form, FormControl, FormGroup, ControlLabel, InputGroup, ListGroup, ListGroupItem } from 'react-bootstrap';
 import Sidebar from '../../components/MenuBar/Sidebar.js';
 import SearchContent from '../../components/SearchContent';
 import SearchIcon from 'react-icons/lib/fa/search';
@@ -31,8 +31,6 @@ class ProfessorHome extends React.Component {
    this.openNewCourseModal = this.openNewCourseModal.bind(this);
    this.closeNewCourseModal = this.closeNewCourseModal.bind(this);
 
-   this.handleSelectChapter = this.handleSelectChapter.bind(this);
-
    this.handleCoursesClick = this.handleCoursesClick.bind(this);
    this.handleBrowseClick = this.handleBrowseClick.bind(this);
    this.handleSearchClick = this.handleSearchClick.bind(this);
@@ -44,6 +42,7 @@ class ProfessorHome extends React.Component {
 
  componentDidMount() {
    this.props.loadProfessorChapters();
+   this.props.loadProfessorCourses();
  }
 
   openNewChapterModal() {
@@ -82,6 +81,8 @@ class ProfessorHome extends React.Component {
  }
 
  submitNewCourseForm() {
+   this.props.submitNewCourse(this.state.newCourseName, this.state.newCourseDescription, this.state.newCourseKeywords);
+   this.closeNewCourseModal();
  }
 
  openNewCourseModal() {
@@ -131,51 +132,6 @@ class ProfessorHome extends React.Component {
   }
 
  render() {
-   const chaptersPublished = [{
-     id: "1",
-     name: "Variance",
-     numContributors: 2
-   },
-   {
-     id: "2",
-     name: "Computability",
-     numContributors: 3
-   },
-   {
-     id: "5",
-     name: "Plato's Finest",
-     numContributors: 4
-   }];
-   const chaptersInProgress = [{
-     id: "3",
-     name: "Boobs",
-     numContributors: 1
-   },
-   {
-     id: "4",
-     name: "Algorithmic Design",
-     numContributors: 3
-   }];
-   const coursesPublished = [{
-     id: "1",
-     name: "COS 126",
-     numChapters: 18
-   },
-   {
-     id: "2",
-     name: "PHI 205",
-     numChapters: 25
-   }];
-   const coursesInProgress = [{
-     id: "3",
-     name: "Boobs",
-     numChapters: 69
-   },
-   {
-     id: "4",
-     name: "COS 340",
-     numChapters: 21
-   }];
     return (
       <div id="prof-container">
         <Sidebar
@@ -184,9 +140,9 @@ class ProfessorHome extends React.Component {
           handleBrowseClick={this.handleBrowseClick}
           handleSearchClick={this.handleSearchClick}
           handleSettingsClick={this.handleSettingsClick}
-          userName={this.props.currentUser}
+          userName={localStorage.getItem('userName')}
         />
-        <h1 id="welcome-title"> Welcome back Professor {localStorage.getItem('userName')} </h1>
+        <h1 id="welcome-title"> Welcome back professor {localStorage.getItem('userName')} </h1>
 
         <div id="nav-container">
           <Nav bsStyle="tabs" justified activeKey={this.props.activeTab} onSelect={this.handleSelect} style={{width:"200px", marginTop:"25px", marginLeft:"39%", float:"left"}}>
@@ -207,16 +163,17 @@ class ProfessorHome extends React.Component {
          <Modal.Body>
          <Form onSubmit={this.submitNewChapterForm}>
          <FormGroup>
+           <ControlLabel>Name</ControlLabel>
            <FormControl type="text" value={this.state.newChapterName} name="name" onChange={this.handleNewChapterChange} placeholder="Name" />
-           <FormControl type="textarea" value={this.state.newChapterDescription} name="description" onChange={this.handleNewChapterChange} placeholder="Give your chapter a helpful description" style={{marginTop:"15px", minHeight:"50px"}} />
-           <FormControl type="textarea" value={this.state.newChapterKeywords} name="keywords" onChange={this.handleNewChapterChange} placeholder="Give your chapter any relevant keywords seperated by commas. Eg. 'new', 'chapter'" style={{marginTop:"15px", minHeight:"70px"}}/>
-           <p style={{fontSize:"12px", fontWeight:"bold", marginTop:"20px", float:"left"}}> Checkout Time: </p>
-           <FormControl type="number" value={this.state.newChapterCheckout} name="checkout" onChange={this.handleNewChapterChange} min={1} max={24} style={{marginTop:"12px", width:"70px", marginLeft:"250px"}}/>
-           <p style={{fontSize:"10px", marginTop:"5px"}}> How long contributors can keep your chapter checked out to make edits</p>
+           <ControlLabel style={{marginTop:"15px"}}>Description</ControlLabel>
+           <FormControl componentClass="textarea" value={this.state.newChapterDescription} name="description" onChange={this.handleNewChapterChange} placeholder="Give your chapter a helpful description" style={{minHeight:"50px"}} />
+           <ControlLabel style={{marginTop:"15px"}}>Keywords</ControlLabel> <ControlLabel style={{marginTop:"15px", marginLeft:"55%"}}>Checkout Time (hours)</ControlLabel>
+           <FormControl componentClass="textarea" value={this.state.newChapterKeywords} name="keywords" onChange={this.handleNewChapterChange} placeholder="Give your chapter any relevant keywords seperated by commas. Eg. 'new', 'chapter'" style={{minHeight:"70px", width:"60%", float:"left"}}/>
+           <FormControl type="number" value={this.state.newChapterCheckout} name="checkout" onChange={this.handleNewChapterChange} min={1} max={24} style={{width:"70px", display:"inline", marginLeft:"8%"}}/>
          </FormGroup>
          </Form>
          </Modal.Body>
-         <Modal.Footer style={{textAlign:"center"}}>
+         <Modal.Footer style={{textAlign:"center", marginTop:"5%"}}>
           <Button onClick={this.closeNewChapterModal} style={{width:"100px", borderRadius:"20px"}}>Cancel</Button>
           <Button style={{backgroundColor:"#1db954", color:"white", width:"100px", borderRadius:"20px", marginLeft:"15px"}} onClick={this.submitNewChapterForm}>Create</Button>
          </Modal.Footer>
@@ -229,9 +186,12 @@ class ProfessorHome extends React.Component {
         <Modal.Body>
         <Form onSubmit={this.submitNewCourseForm}>
         <FormGroup>
-          <FormControl type="text" value={this.state.newCourseName} name="name" onChange={this.handleNewCourseChange} placeholder="Name" />
-          <FormControl type="textarea" value={this.state.newCourseDescription} name="description" onChange={this.handleNewCourseChange} placeholder="Give your course a helpful description" style={{marginTop:"15px", minHeight:"50px"}} />
-          <FormControl type="textarea" value={this.state.newCourseKeywords} name="keywords" onChange={this.handleNewCourseChange} placeholder="Give your course any relevant keywords seperated by commas. Eg. 'new', 'course'" style={{marginTop:"15px", minHeight:"70px"}}/>
+          <ControlLabel>Name</ControlLabel>
+          <FormControl type="text" value={this.state.newCourseName} title="Name" name="name" onChange={this.handleNewCourseChange} placeholder="New Course" />
+          <ControlLabel style={{marginTop:"15px"}}>Description</ControlLabel>
+          <FormControl componentClass="textarea" value={this.state.newCourseDescription} title="Description" name="description" onChange={this.handleNewCourseChange} placeholder="Give your course a helpful description" style={{minHeight:"50px"}} />
+          <ControlLabel style={{marginTop:"15px"}}>Keywords</ControlLabel>
+          <FormControl componentClass="textarea" value={this.state.newCourseKeywords} title="Keywords" name="keywords" onChange={this.handleNewCourseChange} placeholder="Give your course any relevant keywords seperated by commas. Eg. 'new', 'course'" style={{minHeight:"70px"}}/>
         </FormGroup>
         </Form>
         </Modal.Body>
@@ -247,17 +207,17 @@ class ProfessorHome extends React.Component {
           <div style={{marginTop:"35px", marginLeft:"5%"}}>
             <div id="in-progress">
               <h4>In Progress</h4>
-              {chaptersInProgress.map(chapter =>
+              {this.props.workingChapters.map(chapter =>
                 <ListGroupItem key={chapter.id} style={{textAlign:"left"}} id={chapter.id} onClick={this.handleSelectChapter}>
-                  {chapter.name}<div style={{float:"right"}} id={chapter.id} onClick={this.handleSelectChapter}><UserIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{chapter.numContributors}</div>
+                  {chapter.name}<div style={{float:"right"}} id={chapter.id} onClick={this.handleSelectChapter}><UserIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{chapter.contributors ? chapter.contributors.length : 0}</div>
                 </ListGroupItem>
               )}
             </div>
             <div id="published">
               <h4>Published</h4>
-              {chaptersPublished.map(chapter =>
+              {this.props.publishedChapters.map(chapter =>
                 <ListGroupItem key={chapter.id} style={{textAlign:"left"}} id={chapter.id} onClick={this.handleSelectChapter}>
-                  {chapter.name}<div style={{float:"right"}} id={chapter.id} onClick={this.handleSelectChapter}><UserIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{chapter.numContributors}</div>
+                  {chapter.name}<div style={{float:"right"}} id={chapter.id} onClick={this.handleSelectChapter}><UserIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{chapter.contributors ? chapter.contributors.length : 0}</div>
                 </ListGroupItem>
               )}
             </div>
@@ -265,17 +225,17 @@ class ProfessorHome extends React.Component {
             <div style={{marginTop:"35px", marginLeft:"5%"}}>
               <div id="in-progress">
                 <h4> In Progress</h4>
-                {coursesInProgress.map(course =>
-                  <ListGroupItem key={course.id} style={{textAlign:"left"}} id={course.id} onClick={this.handleSelectCourse}>
-                    {course.name}<div style={{float:"right"}} id={course.id} onClick={this.handleSelectCourse}><ChaptersIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{course.numChapters}</div>
+                {this.props.workingCourses.map(course =>
+                  <ListGroupItem key={course.courseInfo.id} style={{textAlign:"left"}} id={course.courseInfo.id} onClick={this.handleSelectCourse}>
+                    {course.courseInfo.name}<div style={{float:"right"}} id={course.courseInfo.id} onClick={this.handleSelectCourse}><ChaptersIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{course.chapters ? course.chapters.length : 0}</div>
                   </ListGroupItem>
                 )}
               </div>
               <div id="published">
                 <h4>Published</h4>
-                {coursesPublished.map(course =>
-                  <ListGroupItem key={course.id} style={{textAlign:"left"}} id={course.id} onClick={this.handleSelectCourse}>
-                    {course.name}<div style={{float:"right"}} id={course.id} onClick={this.handleSelectCourse}><ChaptersIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{course.numChapters}</div>
+                {this.props.publishedCourses.map(course =>
+                  <ListGroupItem key={course.courseInfo.id} style={{textAlign:"left"}} id={course.courseInfo.id} onClick={this.handleSelectCourse}>
+                    {course.courseInfo.name}<div style={{float:"right"}} id={course.courseInfo.id} onClick={this.handleSelectCourse}><ChaptersIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{course.chapters ? course.chapters.length: 0}</div>
                   </ListGroupItem>
                 )}
               </div>
@@ -311,7 +271,6 @@ class ProfessorHome extends React.Component {
 }
 
 ProfessorHome.propTypes = {
-  currentUser: PropTypes.string.isRequired,
   searchModal: PropTypes.func.isRequired,
   closeSearchModal: PropTypes.func.isRequired,
   showSearchModal: PropTypes.bool.isRequired,
@@ -321,12 +280,12 @@ ProfessorHome.propTypes = {
   workingChapters: PropTypes.array.isRequired,
   publishedChapters: PropTypes.array.isRequired,
   workingCourses: PropTypes.array.isRequired,
-  publishedCourses: PropTypes.array.isRequired
+  publishedCourses: PropTypes.array.isRequired,
+  submitNewCourse: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state) {
   return {
-    currentUser: state.appReducer.currentUser,
     activeTab: state.professorReducer.activeTab,
     showSearchModal: state.professorReducer.showSearchModal,
     searchContent: state.professorReducer.searchContent,
@@ -342,6 +301,7 @@ function mapDispatchToProps(dispatch) {
     loadProfessorChapters: () => dispatch(actions.loadProfessorChapters()),
     loadProfessorCourses: () => dispatch(actions.loadProfessorCourses()),
     submitNewChapter: (name, description, keywords, checkoutTime) => dispatch(actions.submitNewChapter(name, description, keywords, checkoutTime)),
+    submitNewCourse: (name, description, keywords) => dispatch(actions.submitNewCourse(name, description, keywords)),
     switchTabs: (tab) => dispatch(actions.switchTabs(tab)),
     searchModal: () => dispatch(actions.searchModal()),
     closeSearchModal: () => dispatch(actions.closeSearchModal()),

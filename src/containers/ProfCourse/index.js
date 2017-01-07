@@ -76,7 +76,7 @@ class ProfCourse extends React.Component {
           handleBrowseClick={this.handleBrowseClick}
           handleSearchClick={this.handleSearchClick}
           handleSettingsClick={this.handleSettingsClick}
-          userName={this.props.currentUser}
+          userName={localStorage.getItem('userName')}
         />
         <h1 style={{marginLeft:"220px", marginTop:"25px", fontSize:"22px", color:"#878787"}}> Course Name </h1>
         <p style={{marginLeft:"225px"}}> "Description of the course goes here. Probably has something to do with taints and punching cooters." </p>
@@ -127,7 +127,6 @@ class ProfCourse extends React.Component {
 }
 
 ProfCourse.propTypes = {
-  currentUser: PropTypes.string.isRequired,
   searchModal: PropTypes.func.isRequired,
   closeSearchModal: PropTypes.func.isRequired,
   showSearchModal: PropTypes.bool.isRequired,
@@ -136,7 +135,6 @@ ProfCourse.propTypes = {
 
 function mapStateToProps(state) {
   return {
-    currentUser: state.appReducer.currentUser,
     showSearchModal: state.chapterReducer.showSearchModal,
     searchContent: state.chapterReducer.searchContent,
   };

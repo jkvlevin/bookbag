@@ -21,7 +21,7 @@ const Sidebar = ({ isProf, handleCoursesClick, handleBrowseClick, handleSearchCl
         <Button id="menu-button" onClick={handleSearchClick}><SearchIcon id="menu-icon"/></Button> <h3 id="menu-title">Search</h3> <br/><br/><br/>
 
         <div id="pref-container">
-          <Button id="menu-button" onClick={handleSettingsClick} style={{marginLeft:"35px", marginBottom:"10px", width:"45px", height:"45px"}}><SettingsIcon id="menu-icon" style={{fontSize:"28px"}}/></Button> <br/>
+          <Button id="menu-button" onClick={handleSettingsClick} style={{marginLeft:"35px", marginBottom:"10px", width:"45px", height:"45px"}}><SettingsIcon id="menu-icon" style={{fontSize:"28px"}}/></Button> <br/><br /><br/>
           <h3 style={{fontSize:"12px"}}> {userName} </h3>
         </div>
       </div>
