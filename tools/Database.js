@@ -114,8 +114,10 @@ Database.addProf = function(email, name, password, callback) {
 
 					client.query("SELECT * FROM users WHERE email = '" + email + "'").on('end', function(result) {
 						let uuid = result.rows[0]["id"];
-						// Add _courses table
+						// Add _working_courses table
 						client.query("CREATE TABLE \"" + uuid + "_working_courses\" (id text)");
+						// Add _working_chapters table
+						client.query("CREATE TABLE \"" + uuid + "_working_chapters\" (id text)");
 						// Add _folders table
 						client.query("CREATE TABLE \"" + uuid + "_folders\" (id text, name varchar(160))");
 						client.query("CREATE TRIGGER trigger_users_genid BEFORE INSERT ON \"" + uuid + "_folders\" FOR EACH ROW EXECUTE PROCEDURE unique_short_id()");
@@ -225,10 +227,13 @@ Database.createChapter = function(prof, chapterName, contributors, checkout_dur,
 		if (err) callback(err);
 
 		//Retreive pdf and src urls from git module
-		let s = "INSERT INTO chapters(name, owner, contributors, pdf_url, checkout_dur, ownername, keywords, description) VALUES ('" + chapterName + "', '" + prof + "', '" + {} + "', '', " + checkout_dur + ", '" + profname + "', '" + keywords + "', '" + description + "')";
-		client.query(s);
-		done();
-		callback(null, 200);
+		client.query("INSERT INTO chapters(name, owner, contributors, pdf_url, checkout_dur, ownername, keywords, description) VALUES ('" + chapterName + "', '" + prof + "', '" + contributors + "', '" + pdf_url + "', " + checkout_dur + ", '" + profname + "', '" + keywords + "', '" + description + "') RETURNING id", function(err, result) {
+				if (err) callback(err);
+
+				client.query("INSERT INTO \"" + prof + "_working_chapters\" VALUES ('" + result.rows[0].id + "'");
+				done();
+				callback(null, 200);
+		});
 	});
 };
 
