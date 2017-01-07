@@ -42,8 +42,9 @@ Database.validateUser = function(email, password, callback) {
 			else {
 				let uuid = result.rows[0]["id"];
 				let name = result.rows[0]["name"];
+				let prof = result.rows[0]["prof"];
 				done();
-				if (result.rows[0].password == password) callback(null, {id : uuid, name : name});
+				if (result.rows[0].password == password) callback(null, {id : uuid, name : name, prof : prof});
 				else callback("password or username does not match");
 			}
 			
