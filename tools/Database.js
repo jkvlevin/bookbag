@@ -42,17 +42,14 @@ Database.validateUser = function(email, password, callback) {
 			if (result.rowCount == 0) callback("user does not exist");
 			else {
 				let uuid = result.rows[0]["id"];
-				let name = result.rows[0]["name"];
+				let name = result.rows[0]["firstname"] + " " + result.row[0]["lastname"];
 				let prof = result.rows[0]["prof"];
 				done();
 
 				Hash.validatePassword(password, result.rows[0].password, function(e, res) {
-					if (e)
-						callback(e);
-
+					if (e) callback(e);
 					if (res) callback(null, {id : uuid, name : name, prof : prof});
-					else     callback("password or username does not match");
-
+					else callback("password or username does not match");
 				});
 			}
 		})
