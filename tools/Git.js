@@ -29,7 +29,6 @@ Repo creation and contributor management
 Git.createNewRepo = function(repoName, callback) {
 
 	authenticate();
-
 	github.repos.create({
 		name: repoName
 	}, function(err, res) {

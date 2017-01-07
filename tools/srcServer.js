@@ -121,7 +121,7 @@ app.post('/api/prof/createchapter', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.createChapter(decoded.id, req.body.chapterName, req.body.contributors, req.body.checkout_dur, "", decoded.name, req.body.keywords, req.body.description, function(err, data) {
 			if (err) return next(err);
-			Git.createNewRepo(decoded.id, function(e, d) {
+			Git.createNewRepo(data, function(e, d) {
 				if (e) return next(err);
 				res.sendStatus(d);
 			})
