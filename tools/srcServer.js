@@ -111,7 +111,35 @@ app.post('/api/prof/createcourse', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.createCourse(req.body.name, decoded.id, req.body.description, req.body.keywords, decoded.name, function(err, data) {
 			if (err) return next(err);
-			res.sendStatus(data);
+			Database.getWorkingCourses(decoded.id, function(err, data) {
+				if (err) return next(err);
+		  		var publicCourses = [];
+		  		var privateCourses = [];
+
+		  		async.each(data, function(item, callback) {
+		  			Database.getCourseData(item.id, function(err, data) {
+		  				if (err) callback(err);
+		  				Database.getCourseChapters(item.id, function(e, d) {
+							if (e) callback(e);
+							if (data[0].public == true) {
+								publicCourses.push({
+									courseInfo: data[0],
+									chapters : d
+								});
+							} else {
+								privateCourses.push({
+									courseInfo: data[0],
+									chapters : d
+								});
+							}
+							callback();
+						});
+		  			});
+		  		}, function(err) {
+		  			if (err) return next(err);
+		  			res.send([privateCourses, publicCourses]);
+		  		});
+		  	});
 		});
 	});
 });
@@ -123,7 +151,26 @@ app.post('/api/prof/createchapter', function(req, res, next) {
 			if (err) return next(err);
 			Git.createNewRepo(data, function(e, d) {
 				if (e) return next(err);
-				res.sendStatus(d);
+				Database.getWorkingChapters(decoded.id, function(err, data) {
+					if (err) return next(err);
+			  		var publicChapters = [];
+			  		var privateChapters = [];
+
+			  		async.each(data, function(item, callback) {
+			  			Database.getWorkingChapterData(item.id, function(err, data, name) {
+							if (err) callback(err);
+							if (data[0].public == true) {
+								publicChapters.push(data[0]);
+							} else {
+								privateChapters.push(data[0]);
+							}
+							callback();
+						});
+			  		}, function(err) {
+			  			if (err) return next(err);
+			  			res.send([privateChapters, publicChapters]);
+			  		});
+			  	});
 			})
 		});
 	});
@@ -374,15 +421,24 @@ app.post('/api/prof/getcourses', expjwt, function(req, res, next) {
 	  		var privateCourses = [];
 
 	  		async.each(data, function(item, callback) {
-	  			Database.getWorkingCourseData(item.id, function(err, data, name) {
-					if (err) callback(err);
-					if (data[0].public == true) {
-						publicCourses.push(data[0]);
-					} else {
-						privateCourses.push(data[0]);
-					}
-					callback();
-				});
+	  			Database.getCourseData(item.id, function(err, data) {
+	  				if (err) callback(err);
+	  				Database.getCourseChapters(item.id, function(e, d) {
+						if (e) callback(e);
+						if (data[0].public == true) {
+							publicCourses.push({
+								courseInfo: data[0],
+								chapters : d
+							});
+						} else {
+							privateCourses.push({
+								courseInfo: data[0],
+								chapters : d
+							});
+						}
+						callback();
+					});
+	  			});
 	  		}, function(err) {
 	  			if (err) return next(err);
 	  			res.send([privateCourses, publicCourses]);

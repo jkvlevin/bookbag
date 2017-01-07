@@ -388,8 +388,8 @@ Database.getWorkingCourses = function(prof, callback) {
 	});
 };
 
-// Get all of the courses in a give prof's library
-Database.getWorkingCourseData = function(course, callback) {
+// Get metadata on a course
+Database.getCourseData = function(course, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 		let s = "SELECT * FROM courses WHERE id = '" + course + "'";
