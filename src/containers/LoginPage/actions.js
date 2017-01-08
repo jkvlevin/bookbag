@@ -12,14 +12,15 @@ export function login(email, password) {
       if (response.status !== 200) {
         toastr.error('Login failure, invalid username or password');
       } else {
-        console.log(response.data);
         localStorage.setItem('userToken', response.data.token);
         localStorage.setItem('userName', response.data.name);
         localStorage.setItem('isProfessor', response.data.prof);
         dispatch(loginSuccess());
         if (localStorage.getItem('isProfessor') === 'true') {
           browserHistory.push("/professor");
-        } else browserHistory.push("/student");
+        } else {
+          browserHistory.push("/student");
+        }
       }
     });
   };

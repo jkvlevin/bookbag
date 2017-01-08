@@ -95,15 +95,17 @@ class ProfessorHome extends React.Component {
 
  handleSelectChapter(event) {
    if (event.target.id) {
-     const chapter = event.target.id;
-     browserHistory.push('/chapter/' + chapter);
+     const id = event.target.id;
+     const name = event.target.name;
+     browserHistory.push('/chapter/' + name + '/' + id);
    }
  }
 
  handleSelectCourse(event) {
-   if (event.target.id) {
-     const course = event.target.id;
-     browserHistory.push('/course/' + course);
+   if (event.target.id && event.target.name) {
+     const id = event.target.id;
+     const name = event.target.name;
+     browserHistory.push('/course/' + name + '/' + id);
    }
  }
 
@@ -208,16 +210,16 @@ class ProfessorHome extends React.Component {
             <div id="in-progress">
               <h4>In Progress</h4>
               {this.props.workingChapters.map(chapter =>
-                <ListGroupItem key={chapter.id} style={{textAlign:"left"}} id={chapter.id} onClick={this.handleSelectChapter}>
-                  {chapter.name}<div style={{float:"right"}} id={chapter.id} onClick={this.handleSelectChapter}><UserIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{chapter.contributors ? chapter.contributors.length : 0}</div>
+                <ListGroupItem key={chapter.id} style={{textAlign:"left"}} id={chapter.id} name={chapter.name} onClick={this.handleSelectChapter}>
+                  {chapter.name}<div style={{float:"right"}} id={chapter.id} name={chapter.name} onClick={this.handleSelectChapter}><UserIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{chapter.contributors ? chapter.contributors.length : 0}</div>
                 </ListGroupItem>
               )}
             </div>
             <div id="published">
               <h4>Published</h4>
               {this.props.publishedChapters.map(chapter =>
-                <ListGroupItem key={chapter.id} style={{textAlign:"left"}} id={chapter.id} onClick={this.handleSelectChapter}>
-                  {chapter.name}<div style={{float:"right"}} id={chapter.id} onClick={this.handleSelectChapter}><UserIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{chapter.contributors ? chapter.contributors.length : 0}</div>
+                <ListGroupItem key={chapter.id} style={{textAlign:"left"}} id={chapter.id} name={chapter.name} onClick={this.handleSelectChapter}>
+                  {chapter.name}<div style={{float:"right"}} id={chapter.id} name={chapter.name} onClick={this.handleSelectChapter}><UserIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{chapter.contributors ? chapter.contributors.length : 0}</div>
                 </ListGroupItem>
               )}
             </div>
@@ -226,16 +228,16 @@ class ProfessorHome extends React.Component {
               <div id="in-progress">
                 <h4> In Progress</h4>
                 {this.props.workingCourses.map(course =>
-                  <ListGroupItem key={course.courseInfo.id} style={{textAlign:"left"}} id={course.courseInfo.id} onClick={this.handleSelectCourse}>
-                    {course.courseInfo.name}<div style={{float:"right"}} id={course.courseInfo.id} onClick={this.handleSelectCourse}><ChaptersIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{course.chapters ? course.chapters.length : 0}</div>
+                  <ListGroupItem key={course.courseInfo.id} style={{textAlign:"left"}} id={course.courseInfo.id} name={course.courseInfo.name} onClick={this.handleSelectCourse}>
+                    {course.courseInfo.name}<div style={{float:"right"}} id={course.courseInfo.id} name={course.courseInfo.name} onClick={this.handleSelectCourse}><ChaptersIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{course.chapters ? course.chapters.length : 0}</div>
                   </ListGroupItem>
                 )}
               </div>
               <div id="published">
                 <h4>Published</h4>
                 {this.props.publishedCourses.map(course =>
-                  <ListGroupItem key={course.courseInfo.id} style={{textAlign:"left"}} id={course.courseInfo.id} onClick={this.handleSelectCourse}>
-                    {course.courseInfo.name}<div style={{float:"right"}} id={course.courseInfo.id} onClick={this.handleSelectCourse}><ChaptersIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{course.chapters ? course.chapters.length: 0}</div>
+                  <ListGroupItem key={course.courseInfo.id} style={{textAlign:"left"}} id={course.courseInfo.id} name={course.courseInfo.name} onClick={this.handleSelectCourse}>
+                    {course.courseInfo.name}<div style={{float:"right"}} id={course.courseInfo.id} name={course.courseInfo.name} onClick={this.handleSelectCourse}><ChaptersIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{course.chapters ? course.chapters.length: 0}</div>
                   </ListGroupItem>
                 )}
               </div>

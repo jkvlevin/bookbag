@@ -82,7 +82,7 @@ class ProfChapter extends React.Component {
           handleSettingsClick={this.handleSettingsClick}
           userName={localStorage.getItem('userName')}
         />
-        <h1 style={{marginLeft:"220px", marginTop:"25px", fontSize:"22px", color:"#878787"}}> Chapter Name </h1>
+        <h1 style={{marginLeft:"220px", marginTop:"25px", fontSize:"22px", color:"#878787"}}> {this.props.params.name} </h1>
 
         <div id="chapter-home-container">
 
@@ -106,7 +106,7 @@ class ProfChapter extends React.Component {
           <div id="file-title">
             <h4 style={{float:"left", fontSize:"20px", marginTop:"25px", marginLeft:"5px"}}> Version {this.props.versionDisplayed.version} </h4>
             <p style={{float:"left", marginLeft:"45px", marginTop:"25px", fontSize:"12px"}}> {this.props.versionDisplayed.message} </p>
-            <h5 style={{float:"right", marginTop:"25px", marginRight:"30px"}}> {this.props.versionDisplayed.date} </h5>
+            <h5 style={{float:"right", marginTop:"25px", marginRight:"15px"}}> {this.props.versionDisplayed.date} </h5>
           </div>
 
           <div id="chapter-files">
