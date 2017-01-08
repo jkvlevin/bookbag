@@ -352,6 +352,32 @@ Database.getUserNameById = function(user, callback) {
 	});
 }
 
+Database.isCheckedOutByUser = function(user, chapter, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+		client.query("SELECT * FROM users INNER JOIN chapters ON users.id = '" + user + "' AND chapters.id = '" + chapter + "' AND users.id = chapters.checkout_user").on('row', function(row, result) {
+			result.addRow(row);
+		}).on('end', function(result) {
+			done();
+			if (result.rowCount > 0) callback(null, 200);
+			else callback(null, 202);		
+		});
+	});
+}
+
+Database.isOwner = function(user, chapter, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+		client.query("SELECT * FROM users INNER JOIN chapters ON users.id = '" + user + "' AND chapters.id = '" + chapter + "' AND users.id = chapters.owner").on('row', function(row, result) {
+			result.addRow(row);
+		}).on('end', function(result) {
+			done();
+			if (result.rowCount > 0) callback(null, 200);
+			else callback(null, 202);		
+		});
+	});
+}
+
 // Get all of a user's courses and return them
 Database.getWorkingChapters = function(prof, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
