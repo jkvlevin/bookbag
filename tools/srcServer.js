@@ -519,6 +519,16 @@ app.post('/api/prof/deletechapter', function(req, res, next) {
   });
 });
 
+// Remove Course from a Student's Library
+app.post('/api/prof/removechapterfromcourse', function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.removeChapterFromCourse(req.body.chapter, req.body.course, function(err, data) {
+			if (err) return next(err);
+			res.sendStatus(data);
+		});
+	});
+});
+
 function sanitizeRepoName(repoName) {
 	return repoName.replace(' ', '-');
 }

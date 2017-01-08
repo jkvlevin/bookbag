@@ -512,6 +512,18 @@ Database.deleteChapter = function(prof, chapterName, callback) {
 	});
 }
 
+Database.removeChapterFromCourse = function(chapter, course, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+
+		client.query("DELETE FROM \"" + course + "_chapters\" WHERE id = '" + chapter + "'", function(err, result) {
+			if (err) callback(err);
+			done();
+			callback(null, 200);
+		});
+	});
+};
+
 /******************************************************************************
 Helper Functions
 *******************************************************************************/
