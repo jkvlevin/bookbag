@@ -181,7 +181,7 @@ app.post('/api/prof/createchapter', function(req, res, next) {
 
 app.post('/api/prof/addchaptertocourse', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		Database.addChapterToCourse(decoded.id, req.body.chapter, req.body.course, function(err, data) {
+		Database.addChapterToCourse(req.body.chapter, req.body.course, function(err, data) {
 			if (err) return next(err);
 			res.sendStatus(data);
 		});

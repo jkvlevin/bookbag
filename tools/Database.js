@@ -178,10 +178,10 @@ Database.addFolder = function(student, folderName, callback) {
 Database.addChapterToCourse = function(chapter, course, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
-		let s = "INSERT INTO \"" + course + "_chapters\" VALUES ('" + chapter + "', null)";
-		client.query(s);
-		done();
-		callback(null, 200);
+		client.query("INSERT INTO \"" + course + "_chapters\" VALUES ('" + chapter + "', null)", function() {
+			done();
+			callback(null, 200);
+		});
 	});
 };
 
@@ -263,7 +263,7 @@ Database.getCourseChapters = function(course, callback) {
 		if (err) callback(err);
 
 		let courseTable = course + "_chapters";
-		let query = client.query("SELECT chapters.id, chapters.name, owner, contributors, pdf_url, checkout_user, checkout_exp, checkout_dur FROM chapters INNER JOIN \"" + courseTable + "\" on chapters.id = \"" + courseTable + "\".id");
+		let query = client.query("SELECT * FROM chapters INNER JOIN \"" + courseTable + "\" on chapters.id = \"" + courseTable + "\".id");
 		query.on('row', function(row, result) {
 			result.addRow(row);
 		});
@@ -315,7 +315,7 @@ Database.getFolderChapters = function(student, folder, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 		let folderTable = student + folder;
-		let s = "SELECT chapters.id, chapters.name, owner, contributors, pdf_url, checkout_user, checkout_exp, checkout_dur FROM chapters INNER JOIN \"" + folderTable + "_chapters\" on chapters.id = \"" + folderTable + "_chapters\".id";
+		let s = "SELECT * INNER JOIN \"" + folderTable + "_chapters\" on chapters.id = \"" + folderTable + "_chapters\".id";
 		let query = client.query(s);
 		query.on('row', function(row, result) {
 			result.addRow(row);
