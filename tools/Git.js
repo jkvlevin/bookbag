@@ -303,6 +303,133 @@ Git.uploadFileToRepo = function(repoName, contents, fileName, commitMessage, aut
 	});
 }
 
+Git.makeBlobForFile = function(repoName, contents, callback) {
+
+	authenticate();
+
+	github.gitdata.createBlob({
+		owner: ACCOUNT_NAME,
+		repo: repoName,
+		content: content,
+		encoding: 'base64'
+	}, function(err, res) {
+		if (err)
+			callback(JSON.parse(err)["message"]);
+		else
+			callback(null, res.sha);
+
+	});
+}
+
+Git.makeCommitWithBlobArray = function (repoName, blobs, author, commitMessage, callback) {
+
+	authenticate();
+
+	var tree = [];
+	for (int i = 0; i < blobs.length; i++) {
+		var blob = {path: blobs[i].path, mode: '10064', type: 'blob', sha: blobs[i].sha};
+		tree.push(blob);
+	}
+
+	github.gitdata.createTree({
+		owner: ACCOUNT_NAME,
+		repo: repoName,
+		tree: tree
+	}, function(err, res) {
+		if (err)
+			callback(JSON.parse(err)["message"]);
+		else {
+
+			treeSha = res.sha;
+
+			github.repos.getCommits({
+				owner: ACCOUNT_NAME,
+				repo: repoName,
+			}, function(err, res) {
+
+				if (err)
+					callback(JSON.parse(err)["message"]);
+				else {
+					var parent = res[0].sha;
+
+					github.gitdata.createCommit({
+						owner: ACCOUNT_NAME,
+						repo: repoName,
+						message: author + separator + commitMessage,
+						tree: treeSha,
+						parents: [parent]
+					}, function(err, res) {
+						if (err)
+							callback(JSON.parse(err)["message"]);
+						else {
+
+							github.gitdata.updateReference({
+								owner: ACCOUNT_NAME,
+								repo: repoName,
+								ref: 'heads/master',
+								sha: res.sha,
+								force: true
+							}, function(err, res) {
+								if (err) {
+									callback(JSON.parse(err)["message"]);
+								}
+								else {
+									callback(null, 200);
+								}
+							});
+						}
+					});
+				}
+			});
+		}
+	});
+}
+
+// Git.createCommitWithTree = function(repoName, tree, author, commitMessage, callback) {
+
+// 	authenticate();
+
+// 	github.repos.getCommits({
+// 		owner: ACCOUNT_NAME,
+// 		repo: repoName,
+// 	}, function(err, res) {
+
+// 		if (err)
+// 			callback(JSON.parse(err)["message"]);
+// 		else {
+// 			var parent = res[0].sha;
+
+// 			github.gitdata.createCommit({
+// 				owner: ACCOUNT_NAME,
+// 				repo: repoName,
+// 				message: author + separator + commitMessage,
+// 				tree: tree,
+// 				parents: [parent]
+// 			}, function(err, res) {
+// 				if (err)
+// 					callback(JSON.parse(err)["message"]);
+// 				else {
+
+// 					github.gitdata.updateReference({
+// 						owner: ACCOUNT_NAME,
+// 						repo: repoName,
+// 						ref: 'heads/master',
+// 						sha: res.sha,
+// 						force: true
+// 					}, function(err, res) {
+// 						if (err) {
+// 							callback(JSON.parse(err)["message"]);
+// 						}
+// 						else {
+// 							callback(null, 200);
+// 						}
+// 					});
+// 				}
+// 			});
+// 		}
+// 	});
+// }
+
 Git.getPublicPdfForRepo = function() {
 
 	authenticate();
