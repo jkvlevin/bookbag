@@ -2,11 +2,21 @@ import * as types from '../../actionTypes';
 
 const initialState = {
   showSearchModal: false,
+  activeAddChapterTab: 1,
   searchContent: [],
+  currentCourse: { courseInfo:{}, chapters: [{}]}
 };
 
 function courseReducer(state = initialState, action) {
   switch (action.type) {
+    case types.LOAD_COURSE_BY_ID_SUCCESS:
+      return Object.assign({}, state, {
+        currentCourse: action.course
+      });
+    case types.CHANGE_ADD_CHAPTER_TAB:
+      return Object.assign({}, state, {
+        activeAddChapterTab: action.tab
+      });
     case types.SEARCH_MODAL:
       return Object.assign({}, state, {
         showSearchModal: !state.showSearchModal

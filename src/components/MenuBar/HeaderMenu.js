@@ -14,10 +14,10 @@ const HeaderMenu = ({}) => {
       <Nav pullRight>
         <NavDropdown title={localStorage.getItem('userName')} eventKey={1} id="user-dropdown" style={{width:"200px", textAlign:"right"}}>
           <MenuItem eventKey={1.1}>My Library</MenuItem>
-          <MenuItem eventKey={1.2}>Browse</MenuItem>
+          {/* <MenuItem eventKey={1.2}>Browse</MenuItem> */}
           <MenuItem eventKey={1.3}>Search</MenuItem>
-          <MenuItem eventKey={1.4}>Notifications</MenuItem>
-          <MenuItem eventKey={1.5}>Settings</MenuItem>
+          {/* <MenuItem eventKey={1.4}>Notifications</MenuItem> */}
+          {/* <MenuItem eventKey={1.5}>Settings</MenuItem> */}
           <MenuItem divider />
           <MenuItem href={'/'} eventKey={1.6}>Logout</MenuItem>
         </NavDropdown>

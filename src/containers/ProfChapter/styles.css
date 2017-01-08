@@ -56,6 +56,24 @@
   border-radius: 5px;
 }
 
+#contributors-button {
+  float: left;
+  margin-left: 60px;
+  margin-top: 5px;
+  font-size: 25px;
+  background: none !important;
+  border: none !important;
+}
+
+#contributors-text {
+  margin-left: 10px;
+  color: #868686;
+}
+
+#contributors-text:hover {
+  color: #407dc6;
+}
+
 .btn-group.open .dropdown-toggle {
   -webkit-box-shadow: none !important;
   box-shadow: none !important;

@@ -14,10 +14,16 @@ const initialState = {
 function studentReducer(state = initialState, action) {
   switch (action.type) {
     case types.LOAD_COURSES_SUCCESS:
-      return Object.assign({}, state, {
-        courses: action.courses,
-        selectedCourse: action.courses[0]
-      });
+      if (action.courses.length > 0 ) {
+        return Object.assign({}, state, {
+          courses: action.courses,
+          selectedCourse: action.courses[0]
+        });
+      } else {
+        return Object.assign({}, state, {
+          courses: action.courses,
+        });
+      }
     case types.LOAD_FOLDERS_SUCCESS:
       return Object.assign({}, state, {
         folders: action.folders,

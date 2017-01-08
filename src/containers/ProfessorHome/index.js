@@ -228,16 +228,16 @@ class ProfessorHome extends React.Component {
               <div id="in-progress">
                 <h4> In Progress</h4>
                 {this.props.workingCourses.map(course =>
-                  <ListGroupItem key={course.courseInfo.id} style={{textAlign:"left"}} id={course.courseInfo.id} name={course.courseInfo.name} onClick={this.handleSelectCourse}>
-                    {course.courseInfo.name}<div style={{float:"right"}} id={course.courseInfo.id} name={course.courseInfo.name} onClick={this.handleSelectCourse}><ChaptersIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{course.chapters ? course.chapters.length : 0}</div>
+                  <ListGroupItem key={course.id} style={{textAlign:"left"}} id={course.id} name={course.name} onClick={this.handleSelectCourse}>
+                    {course.name}<div style={{float:"right"}} id={course.id} name={course.name} onClick={this.handleSelectCourse}><ChaptersIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{course.count}</div>
                   </ListGroupItem>
                 )}
               </div>
               <div id="published">
                 <h4>Published</h4>
                 {this.props.publishedCourses.map(course =>
-                  <ListGroupItem key={course.courseInfo.id} style={{textAlign:"left"}} id={course.courseInfo.id} name={course.courseInfo.name} onClick={this.handleSelectCourse}>
-                    {course.courseInfo.name}<div style={{float:"right"}} id={course.courseInfo.id} name={course.courseInfo.name} onClick={this.handleSelectCourse}><ChaptersIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{course.chapters ? course.chapters.length: 0}</div>
+                  <ListGroupItem key={course.id} style={{textAlign:"left"}} id={course.id} name={course.name} onClick={this.handleSelectCourse}>
+                    {course.name}<div style={{float:"right"}} id={course.id} name={course.name} onClick={this.handleSelectCourse}><ChaptersIcon style={{marginRight:"5px", marginTop:"-3px", fontSize:"18px"}}/>{course.count}</div>
                   </ListGroupItem>
                 )}
               </div>
