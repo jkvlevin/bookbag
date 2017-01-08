@@ -352,6 +352,19 @@ Database.getUserNameById = function(user, callback) {
 	});
 }
 
+// Get a chapter by ID
+Database.getChapterById = function(chapter, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+		client.query("SELECT * FROM chapters WHERE id = '" + chapter + "'").on('row', function(row, result) {
+			result.addRow(row);
+		}).on('end', function(result) {
+			done();
+			callback(null, result.rows[0]);			
+		});
+	});
+};
+
 Database.isCheckedOutByUser = function(user, chapter, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);

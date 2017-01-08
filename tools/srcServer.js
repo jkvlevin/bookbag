@@ -530,18 +530,20 @@ app.post('/api/prof/addcontributortochapter', expjwt, function(req, res, next) {
 app.post('/api/prof/getcontributors', expjwt, function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		if (err) return next(err);
-		let users = []
-		async.each(req.body.contributors, function(item, callback) {
-			Database.getUserNameById(item, function(err, data) {
-				if (err) callback(err);
-				data.id = item;
-				users.push(data);
-				callback();
-			});
-		}, function(err) {
-  			if (err) return next(err);
-  			res.send(users);
-  		});
+		Database.getChapterById(req.body.chapter, function (e, d) {
+			let users = []
+			async.each(d.contributors, function(item, callback) {
+				Database.getUserNameById(item, function(err, data) {
+					if (err) callback(err);
+					data.id = item;
+					users.push(data);
+					callback();
+				});
+			}, function(err) {
+	  			if (err) return next(err);
+	  			res.send(users);
+	  		});
+		});
 	});
 })
 
@@ -584,6 +586,14 @@ app.post('/api/searchchapters', function(req, res, next) {
 // Search the Database for Chapters
 app.post('/api/searchcourses', function(req, res, next) {
 	Database.searchCourses(req.body.searchQuery, function(err, data) {
+		if (err) return next(err);
+		res.send(data);
+	});
+});
+
+// Search Profs
+app.post('/api/searchprofs', function(req, res, next) {
+	Database.searchProfs(req.body.searchQuery, function(err, data) {
 		if (err) return next(err);
 		res.send(data);
 	});
