@@ -32,7 +32,7 @@ class ProfCourse extends React.Component {
 
    this.handleWorkbenchClick = this.handleWorkbenchClick.bind(this);
    this.handleSearchClick = this.handleSearchClick.bind(this);
-   this.handleSettingsClick = this.handleSettingsClick.bind(this);
+   this.logout = this.logout.bind(this);
  }
 
  componentDidMount() {
@@ -78,8 +78,11 @@ class ProfCourse extends React.Component {
     this.props.searchModal();
   }
 
-  handleSettingsClick() {
-    alert('Settings');
+  logout() {
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('isProfessor');
+    browserHistory.push('/');
   }
 
 
@@ -91,7 +94,7 @@ class ProfCourse extends React.Component {
         <Sidebar
           handleWorkbenchClick={this.handleWorkbenchClick}
           handleSearchClick={this.handleSearchClick}
-          handleSettingsClick={this.handleSettingsClick}
+          logout={this.logout}
           userName={localStorage.getItem('userName')}
         />
         <h1 style={{marginLeft:"220px", marginTop:"25px", fontSize:"22px", color:"#878787"}}> {this.props.currentCourse.courseInfo.name} </h1>

@@ -1,14 +1,10 @@
   #sidebar-container {
-    height: auto;
-    min-height: 100vh;
+    min-height: 100%;
     width: 170px;
     background-color: #F8F8F8;
     padding: 10px;
-    float: left;
     border-right: thin solid #B0B0B0;
-    position: fixed;
-    z-index: 300;
-    display: block;
+    float: left;
   }
 
   #sidebar-menu {

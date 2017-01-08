@@ -8,11 +8,21 @@ const initialState = {
   searchContent: [],
   currentChapter: {},
   checkoutUser: false,
-  isOwner: false
+  isOwner: false,
+  contributors: [],
+  searchProfsResults: []
 };
 
 function chapterReducer(state = initialState, action) {
   switch (action.type) {
+    case types.LOAD_SEARCH_PROFS_RESULTS:
+      return Object.assign({}, state, {
+        searchProfsResults: action.profs
+      });
+    case types.SET_CONTRIBUTORS:
+      return Object.assign({}, state, {
+        contributors: action.contributors
+      });
     case types.SET_IS_CHECKOUT_USER:
       return Object.assign({}, state, {
         checkoutUser: action.isCheckoutUser

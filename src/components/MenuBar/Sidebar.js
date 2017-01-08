@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { Button, ListGroup, ListGroupItem, Navbar } from 'react-bootstrap';
+import { Button, DropdownButton, MenuItem, ListGroup, ListGroupItem, Navbar } from 'react-bootstrap';
 import SearchIcon from 'react-icons/lib/fa/search.js';
 import LibraryIcon from 'react-icons/lib/md/library-books.js';
 import ToolsIcon from 'react-icons/lib/go/tools';
@@ -10,7 +10,7 @@ import Logo from 'react-icons/lib/go/squirrel';
 import styles from './styles.css'
 
 
-const Sidebar = ({ handleWorkbenchClick, handleSearchClick, handleSettingsClick, userName }) => {
+const Sidebar = ({ handleWorkbenchClick, handleSearchClick, logout, userName }) => {
   return (
     <div id="sidebar-container">
       <h2 style={{color:"#807F83", textAlign:"center", marginBottom:"35px", fontSize:"20px"}}> <div id="logo"><Logo /></div> <br/> BookBag </h2>
@@ -19,7 +19,9 @@ const Sidebar = ({ handleWorkbenchClick, handleSearchClick, handleSettingsClick,
         <Button id="menu-button" onClick={handleSearchClick}><SearchIcon id="menu-icon"/></Button> <h3 id="menu-title">Search</h3> <br/><br/><br/>
 
         <div id="pref-container">
-          <Button id="menu-button" onClick={handleSettingsClick} style={{marginLeft:"35px", marginBottom:"10px", width:"45px", height:"45px"}}><SettingsIcon id="menu-icon" style={{fontSize:"28px"}}/></Button> <br/><br /><br/>
+          <DropdownButton dropup noCaret id="settings-menu" title={<SettingsIcon id="menu-icon" style={{fontSize:"28px", color:"#1db954", marginLeft:"-4px"}}/>} style={{width:"45px", height:"45px", borderRadius:"25px"}}>
+            <MenuItem onClick={logout}>Logout</MenuItem>
+          </DropdownButton>
           <h3 style={{fontSize:"12px"}}> {userName} </h3>
         </div>
       </div>
@@ -30,7 +32,7 @@ const Sidebar = ({ handleWorkbenchClick, handleSearchClick, handleSettingsClick,
 Sidebar.propTypes = {
   handleWorkbenchClick: PropTypes.func,
   handleSearchClick: PropTypes.func,
-  handleSettingsClick: PropTypes.func,
+  logout: PropTypes.func,
   userName: PropTypes.string,
 };
 

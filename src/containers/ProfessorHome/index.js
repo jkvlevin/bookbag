@@ -33,7 +33,7 @@ class ProfessorHome extends React.Component {
 
    this.handleWorkbenchClick = this.handleWorkbenchClick.bind(this);
    this.handleSearchClick = this.handleSearchClick.bind(this);
-   this.handleSettingsClick = this.handleSettingsClick.bind(this);
+   this.logout = this.logout.bind(this);
    this.handleSearchChange = this.handleSearchChange.bind(this);
    this.submitSearch = this.submitSearch.bind(this);
 
@@ -116,8 +116,11 @@ class ProfessorHome extends React.Component {
   handleSearchClick() {
     this.props.searchModal();
   }
-  handleSettingsClick() {
-    alert('Settings');
+  logout() {
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('isProfessor');
+    browserHistory.push('/');
   }
   handleSearchChange(event) {
     this.setState({ searchValue: event.target.value });
@@ -137,7 +140,7 @@ class ProfessorHome extends React.Component {
         <Sidebar
           handleWorkbenchClick={this.handleWorkbenchClick}
           handleSearchClick={this.handleSearchClick}
-          handleSettingsClick={this.handleSettingsClick}
+          logout={this.logout}
           userName={localStorage.getItem('userName')}
         />
         <h1 id="welcome-title"> Welcome back professor {localStorage.getItem('userName')} </h1>
