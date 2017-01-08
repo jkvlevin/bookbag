@@ -265,6 +265,7 @@ Git.uploadFileToRepo = function(repoName, contents, fileName, commitMessage, aut
 	}, function(err, res) {
 		
 
+
 		if (err) {
 			github.repos.getContent({
 				owner: ACCOUNT_NAME,
@@ -310,7 +311,7 @@ Git.makeBlobForFile = function(repoName, contents, callback) {
 	github.gitdata.createBlob({
 		owner: ACCOUNT_NAME,
 		repo: repoName,
-		content: content,
+		content: contents,
 		encoding: 'base64'
 	}, function(err, res) {
 		if (err)
@@ -326,55 +327,68 @@ Git.makeCommitWithBlobArray = function (repoName, blobs, author, commitMessage, 
 	authenticate();
 
 	var tree = [];
-	for (int i = 0; i < blobs.length; i++) {
-		var blob = {path: blobs[i].path, mode: '10064', type: 'blob', sha: blobs[i].sha};
+	for (var i = 0; i < blobs.length; i++) {
+		var blob = {path: blobs[i].path, mode: '100644', type: 'blob', sha: blobs[i].sha};
 		tree.push(blob);
 	}
 
-	github.gitdata.createTree({
+	github.repos.getCommits({
 		owner: ACCOUNT_NAME,
 		repo: repoName,
-		tree: tree
 	}, function(err, res) {
 		if (err)
 			callback(JSON.parse(err)["message"]);
 		else {
+			var firstsha = res[0].sha;
 
-			treeSha = res.sha;
-
-			github.repos.getCommits({
+			github.gitdata.getCommit({
 				owner: ACCOUNT_NAME,
 				repo: repoName,
-			}, function(err, res) {
-
+				sha: firstsha
+			}, function (err, res) {
 				if (err)
 					callback(JSON.parse(err)["message"]);
-				else {
-					var parent = res[0].sha;
 
-					github.gitdata.createCommit({
+				else {
+					var base_tree = res.tree.sha;
+
+					github.gitdata.createTree({
 						owner: ACCOUNT_NAME,
 						repo: repoName,
-						message: author + separator + commitMessage,
-						tree: treeSha,
-						parents: [parent]
+						tree: tree,
+						base_tree: base_tree
 					}, function(err, res) {
-						if (err)
-							callback(JSON.parse(err)["message"]);
-						else {
 
-							github.gitdata.updateReference({
+						if (err) callback(JSON.parse(err)["message"]);
+
+						else {
+							var treeSha = res.sha;
+
+							github.gitdata.createCommit({
 								owner: ACCOUNT_NAME,
 								repo: repoName,
-								ref: 'heads/master',
-								sha: res.sha,
-								force: true
+								message: author + separator + commitMessage,
+								tree: treeSha,
+								parents: [firstsha]
 							}, function(err, res) {
-								if (err) {
+								if (err)
 									callback(JSON.parse(err)["message"]);
-								}
 								else {
-									callback(null, 200);
+
+									github.gitdata.updateReference({
+										owner: ACCOUNT_NAME,
+										repo: repoName,
+										ref: 'heads/master',
+										sha: res.sha,
+										force: true
+									}, function(err, res) {
+										if (err) {
+											callback(JSON.parse(err)["message"]);
+										}
+										else {
+											callback(null, 200);
+										}
+									});
 								}
 							});
 						}
@@ -384,51 +398,6 @@ Git.makeCommitWithBlobArray = function (repoName, blobs, author, commitMessage, 
 		}
 	});
 }
-
-// Git.createCommitWithTree = function(repoName, tree, author, commitMessage, callback) {
-
-// 	authenticate();
-
-// 	github.repos.getCommits({
-// 		owner: ACCOUNT_NAME,
-// 		repo: repoName,
-// 	}, function(err, res) {
-
-// 		if (err)
-// 			callback(JSON.parse(err)["message"]);
-// 		else {
-// 			var parent = res[0].sha;
-
-// 			github.gitdata.createCommit({
-// 				owner: ACCOUNT_NAME,
-// 				repo: repoName,
-// 				message: author + separator + commitMessage,
-// 				tree: tree,
-// 				parents: [parent]
-// 			}, function(err, res) {
-// 				if (err)
-// 					callback(JSON.parse(err)["message"]);
-// 				else {
-
-// 					github.gitdata.updateReference({
-// 						owner: ACCOUNT_NAME,
-// 						repo: repoName,
-// 						ref: 'heads/master',
-// 						sha: res.sha,
-// 						force: true
-// 					}, function(err, res) {
-// 						if (err) {
-// 							callback(JSON.parse(err)["message"]);
-// 						}
-// 						else {
-// 							callback(null, 200);
-// 						}
-// 					});
-// 				}
-// 			});
-// 		}
-// 	});
-// }
 
 Git.getPublicPdfForRepo = function() {
 

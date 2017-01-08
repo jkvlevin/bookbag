@@ -50,6 +50,30 @@ app.get('*', function(req, res) {
   res.sendFile(path.join( __dirname, '../src/index.html'));
 });
 
+// Git.makeBlobForFile('bsOflqi1', 'OC44LjQuNA==', function(e,d) {
+// 	if (e) console.log(e);
+// 	else {
+// 		console.log(d)
+// 		var blobs = [];
+// 		var blob = {path: 'test.txt', sha: d};
+// 		blobs.push(blob);
+
+// 		Git.makeBlobForFile('bsOflqi1', 'OC44LjQuNA==', function(e, d) {
+// 			if (e) console.log(e);
+
+// 			else {
+// 				blob = {path: 'newtest.txt', sha: d};
+// 				blobs.push(blob);
+
+// 				Git.makeCommitWithBlobArray('bsOflqi1', blobs, 'Joe Salter', 'Testing new Git stuff', function(e,d) {
+// 					if (e) console.log(e);
+// 					else console.log(d);
+// 				});
+// 			}
+// 		});
+// 	}
+// });
+
 /******************************************************************************
 Login/Account APIs
 *******************************************************************************/
