@@ -282,6 +282,8 @@ app.post('/api/prof/upload', expjwt, upload.array('files'), function(req, res, n
 			else {
 				var blobs = [];
 
+				console.log(req.files);
+
 				async.each(req.files, function(item, callback) {
 					fs.readFile(item.path, 'base64', function(err, data) {
 						Git.makeBlobForFile(req.body.chapter, data, function(e, d) {
