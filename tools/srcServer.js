@@ -482,12 +482,6 @@ app.post('/api/prof/getcourses', expjwt, function(req, res, next) {
 
 app.post('/api/prof/getcheckoutuser', expjwt, function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-<<<<<<< HEAD
-    console.log(decoded.id + " " + req.body.user);
-		if (decoded.id === req.body.user) res.sendStatus(202);
-		else {
-			Database.getUserNameById(req.body.user, function(err, data) {
-=======
 		if (err) return next(err);
 		Database.isCheckedOutByUser(decoded.id, req.body.chapter, function(err, data) {
 			if (err) return next(err);
@@ -500,7 +494,6 @@ app.post('/api/prof/getowner', expjwt, function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		if (err) return next(err);
 		Database.isOwner(decoded.id, req.body.chapter, function(err, data) {
->>>>>>> 54e024b3a4bb44012438a1a0bc9c61e9c5f1639b
 			if (err) return next(err);
 			res.send(data);
 		});
