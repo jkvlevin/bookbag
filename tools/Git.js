@@ -328,11 +328,7 @@ Git.makeCommitWithBlobArray = function (repoName, blobs, author, commitMessage, 
 
 	var tree = [];
 	for (var i = 0; i < blobs.length; i++) {
-<<<<<<< HEAD
-		var blob = {path: blobs[i].path, mode: '10064', type: 'blob', sha: blobs[i].sha};
-=======
 		var blob = {path: blobs[i].path, mode: '100644', type: 'blob', sha: blobs[i].sha};
->>>>>>> bbde657479bd5dd539e637cac0fbba8c8bf33a60
 		tree.push(blob);
 	}
 
