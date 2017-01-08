@@ -102,7 +102,6 @@ Git.listCommitsForRepo = function(repoName, callback) {
 		repo: repoName,
 	}, function(err, res) {
 
-		var commits = [];
 		if (err) {
 			if (JSON.parse(err)["message"] === "Git Repository is empty.")
 				callback(null, []);
@@ -110,6 +109,8 @@ Git.listCommitsForRepo = function(repoName, callback) {
 				callback(JSON.parse(err)["message"]);
 		}
 		else {
+			var commits = [];
+
 			for (var i = 0; i < res.length; i++) {
 				var date = new Date(res[i].commit.author.date);
 				var options = { day: 'numeric', month: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric' };
@@ -129,15 +130,16 @@ Git.getLatestContentsOfRepo = function(repoName, callback) {
 
 	authenticate();
 
-	github.repos.getCommits({
+	github.gitdata.getReference({
 		owner: ACCOUNT_NAME,
 		repo: repoName,
+		ref: 'heads/master'
 	}, function(err, res) {
 		if (err)
 			callback(JSON.parse(err)["message"]);
 
 		else {
-			var sha = res[0].sha;
+			var sha = res.object.sha;
 
 			github.repos.getContent({
 				owner: ACCOUNT_NAME,
@@ -209,15 +211,16 @@ Git.revertRepoToOldCommit = function(repoName, sha, commitMessage, author, callb
 
 	authenticate();
 
-	github.repos.getCommits({
+	github.gitdata.getReference({
 		owner: ACCOUNT_NAME,
 		repo: repoName,
+		ref: 'heads/master'
 	}, function(err, res) {
 
 		if (err)
 			callback(JSON.parse(err)["message"]);
 		else {
-			var parent = res[0].sha;
+			var parent = res.object.sha;
 
 			github.gitdata.getCommit({
 				owner: ACCOUNT_NAME,
@@ -343,14 +346,15 @@ Git.makeCommitWithBlobArray = function (repoName, blobs, author, commitMessage, 
 		tree.push(blob);
 	}
 
-	github.repos.getCommits({
+	github.gitdata.getReference({
 		owner: ACCOUNT_NAME,
 		repo: repoName,
+		ref: 'heads/master'
 	}, function(err, res) {
 		if (err)
 			callback(JSON.parse(err)["message"]);
 		else {
-			var firstsha = res[0].sha;
+			var firstsha = res.object.sha;
 
 			github.gitdata.getCommit({
 				owner: ACCOUNT_NAME,
