@@ -129,30 +129,43 @@ Git.getLatestContentsOfRepo = function(repoName, callback) {
 
 	authenticate();
 
-	github.repos.getContent({
+	github.repos.getCommits({
 		owner: ACCOUNT_NAME,
 		repo: repoName,
-		path: "",
 	}, function(err, res) {
-		if (err) {
-			if (JSON.parse(err)["message"] === "This repository is empty.")
-				callback(null, []);
-			else
-				callback(JSON.parse(err)["message"]);
-		}
+		if (err)
+			callback(JSON.parse(err)["message"]);
+
 		else {
-			var contents = [];
+			var sha = res[0].sha;
 
-			for (var i = 0; i < res.length; i++) {
-				var ext = res[i].name.split('.');
-				var isPDF;
-				if   (ext.length == 1) isPDF = false;
-				else isPDF = ext[ext.length - 1] === 'pdf';
-				var content = {filename: res[i].name, downloadURL: res[i].download_url, isPDF: isPDF};
-				contents.push(content);
-			}
+			github.repos.getContent({
+				owner: ACCOUNT_NAME,
+				repo: repoName,
+				path: "",
+			}, function(err, res) {
+				if (err) {
+					if (JSON.parse(err)["message"] === "This repository is empty.")
+						callback(null, []);
+					else
+						callback(JSON.parse(err)["message"]);
+				}
+				else {
+					var contents = [];
 
-			callback(null, contents);
+					for (var i = 0; i < res.length; i++) {
+						var ext = res[i].name.split('.');
+						var isPDF;
+						if   (ext.length == 1) isPDF = false;
+						else isPDF = ext[ext.length - 1] === 'pdf';
+						let url = res[i].download_url.replace('master', sha);
+						var content = {filename: res[i].name, downloadURL: url, isPDF: isPDF};
+						contents.push(content);
+					}
+
+					callback(null, contents);
+				}
+			});
 		}
 	});
 }
