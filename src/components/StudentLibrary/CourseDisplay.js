@@ -4,7 +4,7 @@ import ChapterList from './ChapterList';
 
 const CourseDisplay = ({ courseName, chapters }) => {
   return (
-    <div style={{width:"78%", marginTop:"20px"}}>
+    <div style={{width:"90%", marginTop:"20px"}}>
       <h1 style={{marginLeft:"25px", fontSize:"24px", color:"#807F83"}}> {courseName} </h1>
       <div id="course-box" style={{width:"100%", height:"100%"}}>
         <ListGroup id="chapter-list" style={{marginLeft:"30px", marginTop:"30px", overflowY:"scroll"}}>

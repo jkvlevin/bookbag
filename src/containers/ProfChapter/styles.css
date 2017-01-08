@@ -27,6 +27,54 @@
   border-bottom: thin solid #DDDDDD;
 }
 
+#checkout-btn {
+  float: right;
+  margin-right: 60px;
+  margin-top: 10px;
+  font-size: 25px;
+  background: none;
+  border: none;
+  margin-top: 5px;
+}
+
+#checkout-text {
+  margin-left: 10px;
+  color: #868686;
+}
+
+#upload-btn {
+  float: right;
+  margin-right: 60px;
+  margin-top: 10px;
+  font-size: 25px;
+  background: none;
+  border: none;
+  margin-top: 5px;
+}
+
+#upload-text {
+  margin-left: 10px;
+  color: #868686;
+}
+
+#upload-text:hover {
+  color: #407dc6;
+}
+
+#checkout-text:hover {
+  color: #407dc6;
+}
+
+#checked-out-btn {
+  float: right;
+  margin-right: 60px;
+  margin-top: 10px;
+  font-size: 25px;
+  background: none;
+  border: none;
+  margin-top: 5px;
+}
+
 #version-list {
   margin-left: 40px;
   margin-top: 30px;

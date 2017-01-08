@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { Navbar, NavDropdown, MenuItem, Nav, NavItem, Col } from 'react-bootstrap';
 
-const HeaderMenu = ({}) => {
+const HeaderMenu = ({logout}) => {
   return (
     <Navbar id="headermenu-container" inverse fixedTop style={{textAlign:"right", backgroundColor:"#262228"}}>
       <Navbar.Header>
@@ -14,12 +14,9 @@ const HeaderMenu = ({}) => {
       <Nav pullRight>
         <NavDropdown title={localStorage.getItem('userName')} eventKey={1} id="user-dropdown" style={{width:"200px", textAlign:"right"}}>
           <MenuItem eventKey={1.1}>My Library</MenuItem>
-          {/* <MenuItem eventKey={1.2}>Browse</MenuItem> */}
           <MenuItem eventKey={1.3}>Search</MenuItem>
-          {/* <MenuItem eventKey={1.4}>Notifications</MenuItem> */}
-          {/* <MenuItem eventKey={1.5}>Settings</MenuItem> */}
           <MenuItem divider />
-          <MenuItem href={'/'} eventKey={1.6}>Logout</MenuItem>
+          <MenuItem eventKey={1.6} onClick={logout}>Logout</MenuItem>
         </NavDropdown>
       </Nav>
       </Navbar.Collapse>
@@ -28,6 +25,7 @@ const HeaderMenu = ({}) => {
 };
 
 HeaderMenu.propTypes = {
+  logout: PropTypes.func.isRequired
 };
 
 export default HeaderMenu;
