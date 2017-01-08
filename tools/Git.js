@@ -264,8 +264,7 @@ Git.uploadFileToRepo = function(repoName, contents, fileName, commitMessage, aut
 		content: contents,
 	}, function(err, res) {
 		
-
-
+		
 		if (err) {
 			github.repos.getContent({
 				owner: ACCOUNT_NAME,
