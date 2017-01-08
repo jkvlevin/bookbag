@@ -324,7 +324,6 @@ Git.makeBlobForFile = function(repoName, contents, callback) {
 Git.makeCommitWithBlobArray = function (repoName, blobs, author, commitMessage, callback) {
 
 	authenticate();
-
 	var tree = [];
 	for (var i = 0; i < blobs.length; i++) {
 		var blob = {path: blobs[i].path, mode: '100644', type: 'blob', sha: blobs[i].sha};
@@ -358,10 +357,13 @@ Git.makeCommitWithBlobArray = function (repoName, blobs, author, commitMessage, 
 						base_tree: base_tree
 					}, function(err, res) {
 
-						if (err) callback(JSON.parse(err)["message"]);
+						if (err) {
+							callback(JSON.parse(err)["message"]);
+						}
 
 						else {
 							var treeSha = res.sha;
+
 
 							github.gitdata.createCommit({
 								owner: ACCOUNT_NAME,
@@ -370,8 +372,9 @@ Git.makeCommitWithBlobArray = function (repoName, blobs, author, commitMessage, 
 								tree: treeSha,
 								parents: [firstsha]
 							}, function(err, res) {
-								if (err)
+								if (err){
 									callback(JSON.parse(err)["message"]);
+								}
 								else {
 
 									github.gitdata.updateReference({
