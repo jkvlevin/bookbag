@@ -1,6 +1,6 @@
 @media (min-width: 992px) {
   #librarybar-container {
-    margin-left: 170px;
+    margin-top: 51px;
     position: fixed;
     display: block;
     z-index: 300;
@@ -16,12 +16,14 @@
   }
 
   #course-display {
+    margin-left: 25%;
     width: 70%;
     height: 100vh;
     display: flex;
   }
 
   #folder-display {
+    margin-left: 25%;
     width: 70%;
     height: 100vh;
     display: flex;

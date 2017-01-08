@@ -22,9 +22,7 @@ class StudentHome extends React.Component {
    this.state = { searchValue: '', newFolderName: ''};
 
    this.handleCoursesClick = this.handleCoursesClick.bind(this);
-   this.handleBrowseClick = this.handleBrowseClick.bind(this);
    this.handleSearchClick = this.handleSearchClick.bind(this);
-   this.handleSettingsClick = this.handleSettingsClick.bind(this);
    this.handleSearchChange = this.handleSearchChange.bind(this);
    this.submitSearch = this.submitSearch.bind(this);
    this.handleFolderNameChange = this.handleFolderNameChange.bind(this);
@@ -38,33 +36,8 @@ class StudentHome extends React.Component {
    this.props.loadFolders();
  }
 
- handleCoursesClick() {
-   browserHistory.push('/student');
- }
-
- handleBrowseClick() {
-   alert('Browse');
- }
-
- handleSearchClick() {
-   this.props.searchModal();
- }
-
- handleSettingsClick() {
-   alert('Settings');
- }
-
- handleSearchChange(event) {
-   this.setState({ searchValue: event.target.value });
- }
-
  handleFolderNameChange(event) {
    this.setState({ newFolderName: event.target.value });
- }
-
- submitSearch(event) {
-   event.preventDefault();
-   this.props.search(this.state.searchValue);
  }
 
  submitAddFolder(event) {
@@ -95,6 +68,34 @@ class StudentHome extends React.Component {
    this.props.selectFolder(newFolder);
  }
 
+ logout() {
+   localStorage.removeItem('userToken');
+   localStorage.removeItem('userName');
+   localStorage.removeItem('isProfessor');
+   browserHistory.push('/');
+ }
+
+
+
+
+ handleCoursesClick() {
+   browserHistory.push('/student');
+ }
+
+
+ handleSearchClick() {
+   this.props.searchModal();
+ }
+
+ handleSearchChange(event) {
+   this.setState({ searchValue: event.target.value });
+ }
+
+ submitSearch(event) {
+   event.preventDefault();
+   this.props.search(this.state.searchValue);
+ }
+
  render() {
     const popoverTop = (
      <Popover id="popover-positioned-top" title="New Folder" style={{width:"300px"}}>
@@ -108,15 +109,7 @@ class StudentHome extends React.Component {
 
     return (
       <div className="student-container">
-        <Sidebar
-          isProf={false}
-          handleCoursesClick={this.handleCoursesClick}
-          handleBrowseClick={this.handleBrowseClick}
-          handleSearchClick={this.handleSearchClick}
-          handleSettingsClick={this.handleSettingsClick}
-          userName={localStorage.getItem('userName')}
-        />
-        <HeaderMenu />
+        <HeaderMenu logout={this.logout} />
 
         <div id="librarybar-container" className="clearfix">
           <div id="library-menu">

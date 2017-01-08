@@ -49,7 +49,7 @@ class ProfCourse extends React.Component {
  }
 
  closeAddChapterModal() {
-   this.setState({ showAddChapterModal: false });
+   this.setState({ showAddChapterModal: false, searchChaptersValue: '' });
  }
 
  handleChangeAddChapterTab(event) {
@@ -156,11 +156,16 @@ class ProfCourse extends React.Component {
                  </FormGroup>
                  </Form>
                  <div id="search-content">
-                   <ListGroup>
-                     {this.props.searchContent.length > 0 ?
-                       this.props.searchContent.map(chapterName =>
-                         <SearchContent key={chapterName} chapterName={chapterName} />
-                       ) : ''}
+                   <ListGroup style={{overflow:"auto"}}>
+                     {this.props.searchChaptersResult.length > 0 ?
+                       this.props.searchChaptersResult.map(chapter =>
+                         <ListGroupItem key={chapter.id}>{chapter.name}
+                           <p style={{marginLeft:"2px", marginTop:"2px", fontSize:"11px", display:"inline"}}> - {chapter.ownername} </p>
+                           <Button onClick={this.handleAddChapterToCourse} id="add-to-course-button" name={chapter.id}>+</Button>
+                         </ListGroupItem>
+                       ) :
+                       this.props.hasSearched ? <p>No chapters found</p> : ''
+                     }
                    </ListGroup>
                  </div>
                 </div>
@@ -207,7 +212,9 @@ ProfCourse.propTypes = {
   deleteChapter: PropTypes.func.isRequired,
   workingChapters: PropTypes.array.isRequired,
   publishedChapters: PropTypes.array.isRequired,
-  addChapterToCourse: PropTypes.func.isRequired
+  addChapterToCourse: PropTypes.func.isRequired,
+  searchChaptersResult: PropTypes.array,
+  hasSearched: PropTypes.bool.isRequired
 };
 
 function mapStateToProps(state) {
@@ -217,7 +224,9 @@ function mapStateToProps(state) {
     currentCourse: state.courseReducer.currentCourse,
     activeAddChapterTab: state.courseReducer.activeAddChapterTab,
     workingChapters: state.professorReducer.workingChapters,
-    publishedChapters: state.professorReducer.publishedChapters
+    publishedChapters: state.professorReducer.publishedChapters,
+    searchChaptersResult: state.courseReducer.searchChaptersResult,
+    hasSearched: state.courseReducer.hasSearched
   };
 }
 

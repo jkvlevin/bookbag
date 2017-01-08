@@ -6,10 +6,15 @@ const initialState = {
   currentVersionFiles: [{ filename: '', downloadURL: '', isPDF:true }],
   showSearchModal: false,
   searchContent: [],
+  currentChapter: {},
 };
 
 function chapterReducer(state = initialState, action) {
   switch (action.type) {
+    case types.LOAD_CURRENT_CHAPTER_SUCCESS:
+      return Object.assign({}, state, {
+        currentChapter: action.chapter
+      });
     case types.LOAD_CHAPTER_VERSIONS_SUCCESS:
       return Object.assign({}, state, {
         chapterVersions: action.chapterVersions,
