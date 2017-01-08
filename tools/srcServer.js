@@ -275,14 +275,12 @@ app.post('/api/addfolder', function(req, res, next) {
 });
 
 app.post('/api/prof/upload', expjwt, upload.array('files'), function(req, res, next) {
-
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.prepUpload(req.body.chapter, function(err, info) {
 			if (err) return next(err);
-			if (info != 200) res.sendStatus(200).json(info);
+			if (info != 200) res.sendStatus(202).json(info);
 			else {
 				var blobs = [];
-
 				async.each(req.files, function(item, callback) {
 					fs.readFile(item.path, 'base64', function(err, data) {
 						Git.makeBlobForFile(req.body.chapter, data, function(e, d) {
@@ -297,14 +295,24 @@ app.post('/api/prof/upload', expjwt, upload.array('files'), function(req, res, n
 					});
 				}, function(err) {
 		  			if (err) return next(err);
-
 		  			Git.makeCommitWithBlobArray(req.body.chapter, blobs, decoded.firstname + " " + decoded.lastname, req.body.commitMessage, function(err, data) {
 		  				if (err) return next(err);
 
 		  				res.sendStatus(200);
 		  			});
-
 		  		});
+			}
+		});
+	});
+});
+
+app.post('/api/prof/checkin', expjwt, upload.array('files'), function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.prepUpload(req.body.chapter, function(err, info) {
+			if (err) return next(err);
+			if (info != 200) res.sendStatus(202).json(info);
+			else {
+				res.sendStatus(200);
 			}
 		});
 	});

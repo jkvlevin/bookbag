@@ -372,8 +372,14 @@ Database.isCheckedOutByUser = function(user, chapter, callback) {
 			result.addRow(row);
 		}).on('end', function(result) {
 			done();
-			if (result.rowCount > 0) callback(null, 200);
-			else callback(null, 202);		
+			if (result.rowCount > 0) {
+				done();
+				callback(null, 200);
+			}
+			else {
+				done();
+				callback(null, 202);		
+			}
 		});
 	});
 }
@@ -385,8 +391,14 @@ Database.isOwner = function(user, chapter, callback) {
 			result.addRow(row);
 		}).on('end', function(result) {
 			done();
-			if (result.rowCount > 0) callback(null, 200);
-			else callback(null, 202);		
+			if (result.rowCount > 0) {
+				done();
+				callback(null, 200);
+			}
+			else {
+				done();
+				callback(null, 202);
+			}
 		});
 	});
 }
@@ -472,7 +484,7 @@ Search Queries
 
 // Search a user's query and return the results
 Database.searchChapters = function(searchQuery, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
 		let query = client.query("SELECT * FROM chapters WHERE name ILIKE '%" + searchQuery + "%' OR description ILIKE '%" + searchQuery + "%' AND public = TRUE");
@@ -480,6 +492,7 @@ Database.searchChapters = function(searchQuery, callback) {
 			result.addRow(row);
 		});
 		query.on('end', function(result) {
+			done();
 			callback(null, result.rows);
 		});
 	});
@@ -487,7 +500,7 @@ Database.searchChapters = function(searchQuery, callback) {
 
 // Search a user's query and return the results
 Database.searchCourses = function(searchQuery, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
 		let query = client.query("SELECT * FROM courses WHERE name ILIKE '%" + searchQuery + "%' OR description ILIKE '%" + searchQuery + "%' OR profname ILIKE '%" + searchQuery + "%'");
@@ -495,18 +508,20 @@ Database.searchCourses = function(searchQuery, callback) {
 			result.addRow(row);
 		});
 		query.on('end', function(result) {
+			done();
 			callback(null, result.rows);
 		});
 	});
 };
 
 Database.searchProfs = function(searchQuery, user, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
 		client.query("SELECT * FROM users WHERE prof = TRUE AND firstname || ' ' || lastname ILIKE '%" + searchQuery + "%' AND id != '" + user + "'").on('row', function (row, result) {
 			result.addRow(row);
 		}).on('end', function (result) {
+			done();
 			callback(null, result.rows);
 		})
 	})
@@ -518,9 +533,10 @@ Checkout/in Queries
 
 // Make a course public
 Database.makeCoursePublic = function(course, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		client.query("UPDATE courses SET public = TRUE WHERE id = '" + course + "'", function(err, result) {
 			if (err) callback (err);
+			done();
 			callback(null, 200);
 		});
 	});
@@ -528,9 +544,10 @@ Database.makeCoursePublic = function(course, callback) {
 
 // Make a chapter public
 Database.makeChapterPublic = function(chapter, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		client.query("UPDATE chapters SET public = TRUE WHERE id = '" + chapter + "'", function(err, result) {
 			if (err) callback (err);
+			done();
 			callback(null, 200);
 		});
 	});
@@ -538,7 +555,7 @@ Database.makeChapterPublic = function(chapter, callback) {
 
 // See if the user can upload
 Database.prepUpload = function(chapter, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		client.query("SELECT checkout_exp FROM chapters WHERE id = '" + chapter + "'").on('row', function(row, result) {
 			result.addRow(row);
 		}).on('end', function(result) {
@@ -547,9 +564,11 @@ Database.prepUpload = function(chapter, callback) {
 			client.query("UPDATE chapters SET checkout_exp = NULL, checkout_user = NULL WHERE id = '" + chapter + "'");
 			if (d2 > d1) {
 				// past checkout
+				done();
 				callback(null, "Chapter is past checkout date");
 			} else {
 				// time to check out	
+				done();
 				callback(null, 200);
 			}
 		})
@@ -558,7 +577,7 @@ Database.prepUpload = function(chapter, callback) {
 
 // Attempt to check out chapter
 Database.attemptCheckout = function(prof, chapter, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
 		client.query("SELECT checkout_user FROM chapters WHERE id = '" + chapter + "'").on('row', function(row, result) {
@@ -569,9 +588,13 @@ Database.attemptCheckout = function(prof, chapter, callback) {
 				client.query("SELECT checkout_dur FROM chapters WHERE id = '" + chapter + "'", function(err, result) {
 					let dur = result.rows[0].checkout_dur;
 					client.query("UPDATE chapters SET checkout_exp = NOW() + INTERVAL '" + dur + " hour' WHERE id = '" + chapter + "'");
+					done();
 					callback(null, 200);
 				})
-			} else callback(null, result.rows[0]);
+			} else {
+				done();
+				callback(null, result.rows[0]);
+			}
 		});
 	});
 };
@@ -582,7 +605,7 @@ Deletion Queries
 
 // Delete a student
 Database.deleteStudent = function(student, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
 		// Remove from users table
@@ -611,18 +634,20 @@ Database.deleteStudent = function(student, callback) {
 		});
 		client.query("DROP TABLE \"" + userFolders + "\"");
 
+		done();
 		callback(null, 200);
 	});
 };
 
 // Remove course from a student's library
 Database.removeCourse = function(student, course, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
 		client.query("DROP TABLE \"" + student + course + "_notes\"");
 		client.query("DELETE FROM \"" + student + "_courses\" WHERE id = '" + course + "'");
 		client.query("UPDATE courses SET subscribers = subscribers - 1 WHERE id = '" + course + "'");
+		done();
 		callback(null, 200);
 	});
 };
