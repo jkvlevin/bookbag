@@ -250,8 +250,8 @@ class ProfChapter extends React.Component {
            <Modal.Header closeButton>
              <Modal.Title>Upload Files</Modal.Title>
            </Modal.Header>
-           <Modal.Body>\
-           
+           <Modal.Body>
+
             <Form onSubmit={this.handleUploadFilesSubmit} encType="multipart\/form-data">
               <DropzoneComponent config={config} eventHandlers={eventHandlers} djsConfig={djsConfig} />
               <FormControl type="text" value={this.state.uploadCommitMessage} placeholder="Short desecription of changes in upload" onChange={this.handleUploadMessageChange} />
