@@ -328,6 +328,19 @@ Database.getFolderChapters = function(student, folder, callback) {
 	});
 };
 
+// Get a user's name by their ID
+Database.getUserNameById = function(user, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+		client.query("SELECT firstname, lastname FROM users WHERE id = '" + user + "'").on('row', function(row, result) {
+			result.addRow(row);
+		}).on('end', function(result) {
+			done();
+			callback(null, result.rows[0]);			
+		});
+	});
+}
+
 // Get all of a user's courses and return them
 Database.getWorkingChapters = function(prof, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
@@ -359,6 +372,7 @@ Database.getWorkingChapterData = function(chapter, callback) {
 		});
 	});
 };
+
 
 // Get all of a prof's courses and return them
 Database.getWorkingCourses = function(prof, callback) {
