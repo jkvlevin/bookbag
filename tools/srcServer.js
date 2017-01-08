@@ -520,7 +520,7 @@ app.post('/api/prof/makecoursepublic', expjwt, function(req, res, next) {
 
 app.post('/api/prof/makechapterpublic', expjwt, function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		Database.makeChapterPublic(req.body.chapter, function(err, data) {
+		Database.makeChapterPublic(req.body.chapter, req.body.url, function(err, data) {
 			if (err) return next(err);
 			res.sendStatus(data);
 		});

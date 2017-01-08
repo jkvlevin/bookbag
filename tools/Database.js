@@ -543,12 +543,14 @@ Database.makeCoursePublic = function(course, callback) {
 };
 
 // Make a chapter public
-Database.makeChapterPublic = function(chapter, callback) {
+Database.makeChapterPublic = function(chapter, url, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		client.query("UPDATE chapters SET public = TRUE WHERE id = '" + chapter + "'", function(err, result) {
 			if (err) callback (err);
-			done();
-			callback(null, 200);
+			client.query("UPDATE chapters SET pdf_url = " + url +" WHERE id = '" + chapter + "'", function(e, r) {
+				done();
+				callback(null, 200);
+			});
 		});
 	});
 };
