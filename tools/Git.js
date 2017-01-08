@@ -25,7 +25,7 @@ var authenticate = function() {
 }
 
 /******************************************************************************
-Repo creation and contributor management
+Repo creation / deletion management
 *******************************************************************************/
 
 // Create a repo with the desired repo name, commit intial file with help
@@ -92,7 +92,7 @@ Git.deleteRepo = function(repoName, callback) {
 Repo data management
 *******************************************************************************/
 
-// Return all the commits for a given repo
+// Return array of commits objects for a given repo. Commit object contains {author, version #, message, date, sha}
 Git.listCommitsForRepo = function(repoName, callback) {
 
 	authenticate();
@@ -125,7 +125,7 @@ Git.listCommitsForRepo = function(repoName, callback) {
 	});
 }
 
-// Return the contents of a repo
+// Return array of content objects of a repo. Content object contains {filename, downloadURl, isPDF}
 Git.getLatestContentsOfRepo = function(repoName, callback) {
 
 	authenticate();
@@ -172,7 +172,7 @@ Git.getLatestContentsOfRepo = function(repoName, callback) {
 	});
 }
 
-// Return the contents of a repo for a specific commit
+// Return the contents of a repo for a specific commit. Same format as above
 Git.getContentsOfRepoForCommit = function(repoName, sha, callback) {
 
 	authenticate();
@@ -267,7 +267,7 @@ Git.revertRepoToOldCommit = function(repoName, sha, commitMessage, author, callb
 }
 
 
-// Upload file to repo
+// Upload file to repo. First try creating the file, then just update the file if it already exists
 Git.uploadFileToRepo = function(repoName, contents, fileName, commitMessage, author, callback) {
 
 	authenticate();
@@ -319,6 +319,7 @@ Git.uploadFileToRepo = function(repoName, contents, fileName, commitMessage, aut
 	});
 }
 
+// Make a blob for a file contents, return the blob sha
 Git.makeBlobForFile = function(repoName, contents, callback) {
 
 	authenticate();
@@ -337,6 +338,7 @@ Git.makeBlobForFile = function(repoName, contents, callback) {
 	});
 }
 
+// Given array of blob objects {path, sha}, make a commit to Repo
 Git.makeCommitWithBlobArray = function (repoName, blobs, author, commitMessage, callback) {
 
 	authenticate();
@@ -452,20 +454,6 @@ Git.getPublicPdfForRepo = function() {
 			callback(null, pdfURL);
 		}
 	});
-}
-
-// Checkout management
-
-Git.checkoutRepoByUser = function(email, repoName, callback) {
-
-}
-
-Git.checkinRepoByUser = function(email, repoName, callback) {
-
-}
-
-Git.isCheckedOut = function(repoName, callback) {
-
 }
 
 module.exports = Git;
