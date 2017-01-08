@@ -58,8 +58,8 @@ Login/Account APIs
 app.post('/api/login', function(req, res, next) {
 	Database.validateUser(req.body.email, req.body.password, function(err, data) {
 		if (err) return next(err, null, res, null);
-		jwt.sign({username : req.body.email, name : data.name, id : data.id}, 'JWT Secret', {expiresIn : "12h"}, function(err, token) {
-				res.status(200).json({token, name: data.name, prof : data.prof});
+		jwt.sign({username : req.body.email, firstname : data.firstname, lastname: data.lastname, id : data.id}, 'JWT Secret', {expiresIn : "12h"}, function(err, token) {
+				res.status(200).json({token, name: data.firstname + " " + data.lastname, prof : data.prof});
 			});
 	});
 });
@@ -275,15 +275,33 @@ app.post('/api/addfolder', function(req, res, next) {
 	});
 });
 
-app.post('/api/prof/upload', expjwt, upload.single('pdf'), function(req, res, next) {
+app.post('/api/prof/upload', expjwt, upload.array('files'), function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		var pdfData = fs.readFile(req.file.path, 'base64', function(err, data){
-			Git.uploadFileToRepo(sanitizeRepoName(req.body.chapterName), data, req.file.originalname, req.body.commitMessage, decoded.firstname + " " + decoded.lastnamename, function(e, d) {
-				if (e) return next(e);
-				fs.unlink(req.file.path);
+		async.each(req.files, function(item, callback) {
+			var pdfData = fs.readFile(item.path, 'base64', function(err, data) {
+				Git.uploadFileToRepo(req.body.chapter, data, item.originalname, req.body.commitMessage, decoded.firstname + " " + decoded.lastname, function(e, d) {
+					if (e) return next(e);
+					fs.unlink(item.path);
+					res.sendStatus(200);
+				});
+			})
+		}, function(err) {
+  			if (err) return next(err);
+  			res.send();
+  		});
+	});
+});
+
+app.post('/api/prof/checkoutchapter', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.attemptCheckout(decoded.id, req.body.chapter, function(err, data) {
+			if (err) return next(err);
+			if (data != 200) {
+				res.send({message : "Someone has already checked out this chapter"});
+			} else {
 				res.sendStatus(200);
+			}
 		});
-		})
 	});
 });
 

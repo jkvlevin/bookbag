@@ -34,12 +34,13 @@ Database.validateUser = function(email, password, callback) {
 			if (result.rowCount == 0) callback("user does not exist");
 			else {
 				let uuid = result.rows[0]["id"];
-				let name = result.rows[0]["firstname"] + " " + result.rows[0]["lastname"];
+				let firstname = result.rows[0]["firstname"];
+				let lastname = result.rows[0]["lastname"];
 				let prof = result.rows[0]["prof"];
 				done();
 				Hash.validatePassword(password, result.rows[0].password, function(e, res) {
 					if (e) callback(e);
-					if (res) callback(null, {id : uuid, name : name, prof : prof});
+					if (res) callback(null, {id : uuid, firstname : firstname, lastname: lastname, prof : prof});
 					else callback("password or username does not match");
 				});
 			}
@@ -415,7 +416,7 @@ Database.searchChapters = function(searchQuery, callback) {
 			result.addRow(row);
 		});
 		query.on('end', function(result) {
-			callback(null, JSON.stringify(result.rows, null, "    "));
+			callback(null, result.rows);
 		});
 	});
 };
@@ -430,7 +431,31 @@ Database.searchCourses = function(searchQuery, callback) {
 			result.addRow(row);
 		});
 		query.on('end', function(result) {
-			callback(null, JSON.stringify(result.rows, null, "    "));
+			callback(null, result.rows);
+		});
+	});
+};
+
+/******************************************************************************
+Checkout/in Queries
+*******************************************************************************/
+
+// Attempt to check out chapter
+Database.attemptCheckout = function(prof, chapter, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		if (err) callback(err);
+
+		client.query("SELECT checkout_user FROM chapters WHERE id = '" + chapter + "'").on('row', function(row, result) {
+			result.addRow(row);
+		}).on('end', function(result) {
+			if (result.rows[0].checkout_user == null) {
+				client.query("UPDATE chapters SET checkout_user = '" + prof + "' WHERE id = '" + chapter + "'");
+				client.query("SELECT checkout_dur FROM chapters WHERE id = '" + chapter + "'", function(err, result) {
+					let dur = result.rows[0].checkout_dur;
+					client.query("UPDATE chapters SET checkout_exp = NOW() + INTERVAL '" + dur + " hour' WHERE id = '" + chapter + "'");
+					callback(null, 200);
+				})
+			} else callback(null, result.rows[0]);
 		});
 	});
 };
