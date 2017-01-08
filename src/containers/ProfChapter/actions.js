@@ -1,7 +1,23 @@
 import * as types from '../../actionTypes';
 import axios from 'axios';
 
+export function checkoutChapter(id) {
+  const token = localStorage.getItem('userToken');
+  var authLine = 'Bearer ' + token;
+  return function (dispatch) {
+    axios({
+      method: 'post',
+      url: '/api/prof/checkoutchapter',
+      headers: { Authorization: authLine },
+      data: { chapter: id }
+    }).then((response) => {
+      dispatch(getChapterById(id));
+    });
+  }
+}
+
 export function submitFiles(files, message, chapter) {
+  console.log(files + ' msg: ' + message + ' ch: ' + chapter);
   const token = localStorage.getItem('userToken');
   var authLine = 'Bearer ' + token;
   return function (dispatch) {
@@ -11,6 +27,7 @@ export function submitFiles(files, message, chapter) {
       headers: { Authorization: authLine },
       data: { files: files, chapter: chapter, commitMessage: message }
     }).then((response) => {
+      dispatch(getChapterById(chapter));
     });
   }
 }
