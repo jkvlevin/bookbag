@@ -497,7 +497,7 @@ app.post('/api/prof/getchapterbyid', expjwt, function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.getWorkingChapterData(req.body.chapter, function(err, data) {
 			if (err) callback(err);
-			res.send(data);
+			res.send(data[0]);
 		});
   	});
 });
