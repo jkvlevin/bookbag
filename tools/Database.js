@@ -500,6 +500,18 @@ Database.searchCourses = function(searchQuery, callback) {
 	});
 };
 
+Database.searchProfs = function(searchQuery, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		if (err) callback(err);
+
+		client.query("SELECT * FROM users WHERE prof = TRUE AND name ILIKE '%" + searchQuery + "%'").on('row', function (row, result) {
+			result.addRow(row);
+		}).on('end', function (result) {
+			callback(null, result.rows);
+		})
+	})
+}
+
 /******************************************************************************
 Checkout/in Queries
 *******************************************************************************/
