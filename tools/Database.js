@@ -70,9 +70,9 @@ Database.addStudent = function(email, firstname, lastname, password, callback) {
 					client.query("SELECT * FROM users WHERE email = '" + email + "'").on('end', function(result) {
 						let uuid = result.rows[0]["id"];
 						// Add _courses table
-						client.query("CREATE TABLE \"" + uuid + "_courses\" (id text)");
+						client.query("CREATE TABLE \"" + uuid + "_courses\" (id text UNIQUE)");
 						// Add _folders table
-						client.query("CREATE TABLE \"" + uuid + "_folders\" (id text, name varchar(160))");
+						client.query("CREATE TABLE \"" + uuid + "_folders\" (id text UNIQUE, name varchar(160))");
 						client.query("CREATE TRIGGER trigger_users_genid BEFORE INSERT ON \"" + uuid + "_folders\" FOR EACH ROW EXECUTE PROCEDURE unique_short_id()");
 						done();
 						callback(null, uuid);
@@ -104,11 +104,11 @@ Database.addProf = function(email, firstname, lastname, password, callback) {
 					client.query("SELECT * FROM users WHERE email = '" + email + "'").on('end', function(result) {
 						let uuid = result.rows[0]["id"];
 						// Add _working_courses table
-						client.query("CREATE TABLE \"" + uuid + "_working_courses\" (id text)");
+						client.query("CREATE TABLE \"" + uuid + "_working_courses\" (id text UNIQUE)");
 						// Add _working_chapters table
-						client.query("CREATE TABLE \"" + uuid + "_working_chapters\" (id text)");
+						client.query("CREATE TABLE \"" + uuid + "_working_chapters\" (id text UNIQUE)");
 						// Add _folders table
-						client.query("CREATE TABLE \"" + uuid + "_folders\" (id text, name varchar(160))");
+						client.query("CREATE TABLE \"" + uuid + "_folders\" (id text UNIQUE, name varchar(160))");
 						client.query("CREATE TRIGGER trigger_users_genid BEFORE INSERT ON \"" + uuid + "_folders\" FOR EACH ROW EXECUTE PROCEDURE unique_short_id()");
 						done();
 						callback(null, uuid);
@@ -131,7 +131,7 @@ Database.createCourse = function(name, prof, desc, keys, profname, callback) {
 
 		client.query("INSERT INTO courses (name, prof, description, keywords, subscribers, profname, public) VALUES ('" + name + "', '" + prof + "', '" + desc + "', '" + keys + "', " + 0 + ", '" + profname + "', FALSE) RETURNING id", function(err, result) {
 			if (err) callback(err);
-			client.query("CREATE TABLE \"" + result.rows[0].id + "_chapters\" (id text, url varchar(2083))", function(er, re) {
+			client.query("CREATE TABLE \"" + result.rows[0].id + "_chapters\" (id text UNIQUE, url varchar(2083))", function(er, re) {
 				client.query("INSERT INTO \"" + prof + "_working_courses\" VALUES ('" + result.rows[0].id + "')", function(e, r) {
 					done();
 					callback(null, 200);
@@ -147,10 +147,10 @@ Database.addCourse = function(student, course, callback) {
 		if (err) callback(err);
 
 		// Insert the course into the student's courselist
-		client.query("INSERT INTO \"" + student + "_courses\" VALUES ('" + course + "')");
+		client.query("INSERT INTO \"" + student + "_courses\" VALUES ('" + course + "') ON CONFLICT (id) DO NOTHING");
 
 		// Create a new table that holds all the student's notes for the course
-		client.query("CREATE TABLE \"" + student + course + "_notes\" (id text, url varchar(2083))");
+		client.query("CREATE TABLE \"" + student + course + "_notes\" (id text UNIQUE, url varchar(2083))");
 
 		client.query("UPDATE courses SET subscribers = subscribers + 1 WHERE id = '" + course + "'");
 
@@ -167,7 +167,7 @@ Database.addFolder = function(student, folderName, callback) {
 		// Insert the course into the student's courselist
 		client.query("INSERT INTO \"" + student + "_folders\"(name) VALUES ('" + folderName + "') RETURNING id", function(err, result) {
 			// Create a new table that holds all the chapters in this folder
-			client.query("CREATE TABLE \"" + student + result.rows[0].id + "_chapters\" (id text, url varchar(2083))", function() {
+			client.query("CREATE TABLE \"" + student + result.rows[0].id + "_chapters\" (id text UNIQUE, url varchar(2083))", function() {
 				done();
 				callback(null, 200);
 			});
@@ -179,7 +179,7 @@ Database.addFolder = function(student, folderName, callback) {
 Database.addChapterToCourse = function(chapter, course, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
-		client.query("INSERT INTO \"" + course + "_chapters\" VALUES ('" + chapter + "', null)", function() {
+		client.query("INSERT INTO \"" + course + "_chapters\" VALUES ('" + chapter + "', null) ON CONFLICT (id) DO NOTHING", function() {
 			done();
 			callback(null, 200);
 		});
@@ -236,6 +236,17 @@ Database.addNote = function(email, courseName, callback) {
 		// client.query('CREATE TABLE ' + email + courseName + ' (chapter varchar(80))');
 	});
 };
+
+// Add a contributor to a chapter
+Database.addContributorToChapter = function(contributor, chapter, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+		client.query("UPDATE chapters SET contributors = array_append(contributors, '" + contributor + "') WHERE id = '" + chapter + "' AND NOT contributors::text[] @> ARRAY['" + contributor + "']");
+		client.query("INSERT INTO \"" + contributor + "_working_chapters\" (id) VALUES ('" + chapter + "') ON CONFLICT (id) DO NOTHING");
+		done();
+		callback(null, 200);
+	});
+}
 
 /******************************************************************************
 Retreival Queries

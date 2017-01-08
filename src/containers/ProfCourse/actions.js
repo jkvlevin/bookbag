@@ -64,17 +64,13 @@ export function searchChapters(searchValue) {
       headers: { Authorization : authLine},
       data: { searchQuery: searchValue }
     }).then((response) => {
-        const searchResponse = [];
-        for (let chapter in response.data) {
-          searchResponse.push(response.data[chapter].name);
-        }
-        dispatch(searchResponseSuccess(searchResponse));
+        dispatch(searchChaptersSuccess(response.data));
     });
   };
 }
 
-export function searchResponseSuccess(searchResponse) {
-  return { type: types.SEARCH_RESPONSE_SUCCESS, searchResponse };
+export function searchChaptersSuccess(chapters) {
+  return { type: types.SEARCH_CHAPTERS_SUCCESS, chapters };
 }
 
 export function searchModal() {

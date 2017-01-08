@@ -1,6 +1,38 @@
 import * as types from '../../actionTypes';
 import axios from 'axios';
 
+export function submitFiles(files, message, chapter) {
+  const token = localStorage.getItem('userToken');
+  var authLine = 'Bearer ' + token;
+  return function (dispatch) {
+    axios({
+      method: 'post',
+      url: '/api/prof/upload',
+      headers: { Authorization: authLine },
+      data: { files: files, chapter: chapter, commitMessage: message }
+    }).then((response) => {
+    });
+  }
+}
+
+export function getChapterById(id) {
+  const token = localStorage.getItem('userToken');
+  var authLine = 'Bearer ' + token;
+  return function (dispatch) {
+    axios({
+      method: 'post',
+      url: '/api/prof/getchapterbyid',
+      headers: { Authorization: authLine },
+      data: { chapter: id }
+    }).then((response) => {
+      dispatch(loadCurrentChapterSuccess(response.data));
+    });
+  }
+}
+
+export function loadCurrentChapterSuccess(chapter) {
+  return { type: types.LOAD_CURRENT_CHAPTER_SUCCESS, chapter };
+}
 
 export function loadChapterVersions(id){
   const token = localStorage.getItem('userToken');

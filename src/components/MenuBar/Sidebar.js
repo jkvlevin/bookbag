@@ -30,11 +30,11 @@ const Sidebar = ({ isProf, handleCoursesClick, handleBrowseClick, handleSearchCl
 };
 
 Sidebar.propTypes = {
-  handleCoursesClick: PropTypes.func.isRequired,
+  handleCoursesClick: PropTypes.func,
   handleBrowseClick: PropTypes.func,
-  handleSearchClick: PropTypes.func.isRequired,
-  handleSettingsClick: PropTypes.func.isRequired,
-  userName: PropTypes.string.isRequired,
+  handleSearchClick: PropTypes.func,
+  handleSettingsClick: PropTypes.func,
+  userName: PropTypes.string,
   isProf: PropTypes.bool.isRequired
 };
 

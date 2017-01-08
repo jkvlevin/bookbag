@@ -10,17 +10,27 @@ import UserIcon from 'react-icons/lib/fa/user';
 import CheckoutIcon from 'react-icons/lib/md/assignment-turned-in';
 import PublishIcon from 'react-icons/lib/md/publish';
 import DotIcon from 'react-icons/lib/go/primitive-dot';
+import UploadIcon from 'react-icons/lib/go/cloud-upload';
+import DropzoneComponent from 'react-dropzone-component';
 import * as actions from './actions.js';
 import styles from './styles.css';
-
+import dzstyles from 'react-dropzone-component/styles/filepicker.css';
+import dzstyles2 from 'dropzone/dist/min/dropzone.min.css';
 
 class ProfChapter extends React.Component {
   constructor(props) {
    super(props);
 
-   this.state = { searchValue: ''};
+   this.state = { searchValue: '', showUploadModal: false, uploadFiles: [], uploadCommitMessage: '' };
 
    this.handleVersionChange = this.handleVersionChange.bind(this);
+
+   this.showUploadModal = this.showUploadModal.bind(this);
+   this.closeUploadModal = this.closeUploadModal.bind(this);
+   this.handleUploadFileAdded = this.handleUploadFileAdded.bind(this);
+   this.handleRemovedFile = this.handleRemovedFile.bind(this);
+   this.handleUploadMessageChange = this.handleUploadMessageChange.bind(this);
+   this.handleUploadFilesSubmit = this.handleUploadFilesSubmit.bind(this);
 
    this.handleCoursesClick = this.handleCoursesClick.bind(this);
    this.handleSearchClick = this.handleSearchClick.bind(this);
@@ -30,6 +40,7 @@ class ProfChapter extends React.Component {
   }
 
   componentDidMount() {
+    this.props.getChapterById(this.props.params.chapterId);
     this.props.loadChapterVersions(this.props.params.chapterId);
     this.props.loadVersionFiles(this.props.params.chapterId, this.props.versionDisplayed.sha);
   }
@@ -41,6 +52,34 @@ class ProfChapter extends React.Component {
       }
     }
     this.props.changeCurrentVersionFiles(this.props.params.chapterId, event.target.id);
+  }
+
+  showUploadModal() {
+    this.setState({ showUploadModal: true });
+  }
+  closeUploadModal() {
+    this.setState({ showUploadModal: false });
+  }
+
+  handleUploadFileAdded(file) {
+    this.state.uploadFiles.push(file);
+    console.log(this.state.uploadFiles);
+  }
+
+  handleRemovedFile(file) {
+    const i = this.state.uploadFiles.indexOf(file);
+    this.state.uploadFiles.splice(i, 1);
+    console.log(this.state.uploadFiles);
+  }
+
+  handleUploadMessageChange(event) {
+    this.setState({ uploadCommitMessage: event.target.value });
+  }
+
+  handleUploadFilesSubmit(event) {
+    event.preventDefault();
+    this.props.submitFiles(this.state.uploadFiles, this.state.uploadCommitMessage, this.props.params.chapterId);
+    this.setState({ showUploadModal: false });
   }
 
   handleCoursesClick() {
@@ -67,6 +106,20 @@ class ProfChapter extends React.Component {
 
  render() {
    const isOwner = true;
+
+   const componentConfig = {
+     postUrl: 'no-url'
+   };
+   const djsConfig = {
+     addRemoveLinks: true,
+     autoProcessQueue: false,
+     uploadMultiple: true
+   };
+   const eventHandlers = {
+      addedfile: this.handleUploadFileAdded,
+      removedfile: this.handleRemovedFile
+    };
+
    const contributorsPopover = (
       <Popover id="contributors-popover" title="Contributors">
         <ListGroup>
@@ -93,7 +146,11 @@ class ProfChapter extends React.Component {
               <Button id="contributors-button"><UserIcon/><h4 id="contributors-text">Contributors</h4></Button>
             </OverlayTrigger>
               { isOwner ? <div style={{float:"right", marginRight:"60px", marginTop:"10px", fontSize:"25px"}}><PublishIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>Publish</h4></div> : ""}
-              <div style={{float:"right", marginRight:"60px", marginTop:"10px", fontSize:"25px"}}><CheckoutIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>Checkout</h4></div>
+              { this.props.currentChapter.checkout_user === null ?
+                <Button id="checkout-btn"><CheckoutIcon/><h4 id="checkout-text">Checkout</h4></Button> :
+                // <Button disabled id="checked-out-btn"><CheckoutIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>Checked Out</h4></Button>
+                <Button id="upload-btn" onClick={this.showUploadModal}><UploadIcon/><h4 id="upload-text">Upload Files</h4></Button>
+              }
           </div>
 
           <div id="version-list">
@@ -121,7 +178,20 @@ class ProfChapter extends React.Component {
             </ListGroup>
           </div>
 
-          <Modal show={this.props.showSearchModal} onHide={this.props.closeSearchModal} style={{marginTop:"100px"}}>
+          <Modal show={this.state.showUploadModal} onHide={this.closeUploadModal} style={{marginTop:"80px"}}>
+           <Modal.Header closeButton>
+             <Modal.Title>Upload Files</Modal.Title>
+           </Modal.Header>
+           <Modal.Body>
+            <Form onSubmit={this.handleUploadFilesSubmit}>
+              <DropzoneComponent config={componentConfig} djsConfig={djsConfig} eventHandlers={eventHandlers} />
+              <FormControl type="text" value={this.state.uploadCommitMessage} placeholder="Short desecription of changes in upload" onChange={this.handleUploadMessageChange} />
+              <Button type="submit"> Upload </Button>
+            </Form>
+           </Modal.Body>
+          </Modal>
+
+          {/* <Modal show={this.props.showSearchModal} onHide={this.props.closeSearchModal} style={{marginTop:"100px"}}>
             <Modal.Body>
               <Form onSubmit={this.submitSearch}>
               <FormGroup>
@@ -142,7 +212,7 @@ class ProfChapter extends React.Component {
                 </ListGroup>
               </div>
             </Modal.Body>
-          </Modal>
+          </Modal> */}
 
         </div>
       </div>
@@ -159,7 +229,10 @@ ProfChapter.propTypes = {
   chapterVersions: PropTypes.array.isRequired,
   versionDisplayed: PropTypes.object.isRequired,
   loadVersionFiles: PropTypes.func.isRequired,
-  currentVersionFiles: PropTypes.array.isRequired
+  currentVersionFiles: PropTypes.array.isRequired,
+  getChapterById: PropTypes.func.isRequired,
+  currentChapter: PropTypes.object.isRequired,
+  submitFiles: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state) {
@@ -168,7 +241,8 @@ function mapStateToProps(state) {
     searchContent: state.chapterReducer.searchContent,
     chapterVersions: state.chapterReducer.chapterVersions,
     versionDisplayed: state.chapterReducer.versionDisplayed,
-    currentVersionFiles: state.chapterReducer.currentVersionFiles
+    currentVersionFiles: state.chapterReducer.currentVersionFiles,
+    currentChapter: state.chapterReducer.currentChapter,
   };
 }
 
@@ -180,7 +254,9 @@ function mapDispatchToProps(dispatch) {
     closeSearchModal: () => dispatch(actions.closeSearchModal()),
     search: (searchValue) => dispatch(actions.search(searchValue)),
     changeCurrentVersionFiles: (chapterId, sha) => dispatch(actions.changeCurrentVersionFiles(chapterId, sha)),
-    changeCurrentVersion: (version) => dispatch(actions.changeCurrentVersion(version))
+    changeCurrentVersion: (version) => dispatch(actions.changeCurrentVersion(version)),
+    getChapterById: (id) => dispatch(actions.getChapterById(id)),
+    submitFiles: (files, message, chapter) => dispatch(actions.submitFiles(files, message, chapter))
   };
 }
 
