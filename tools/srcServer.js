@@ -510,7 +510,7 @@ app.post('/api/searchchapters', function(req, res, next) {
 	// Auth.verify(req.email);
 	Database.searchChapters(req.body.searchQuery, function(err, data) {
 		if (err) return next(err);
-		res.end(data);
+		res.send(data);
 	});
 });
 
@@ -519,7 +519,7 @@ app.post('/api/searchcourses', function(req, res, next) {
 	// Auth.verify(req.email);
 	Database.searchCourses(req.body.searchQuery, function(err, data) {
 		if (err) return next(err);
-		res.end(data);
+		res.send(data);
 	});
 });
 
