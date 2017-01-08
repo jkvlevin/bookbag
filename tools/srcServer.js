@@ -517,6 +517,24 @@ app.post('/api/prof/addcontributortochapter', expjwt, function(req, res, next) {
 	});
 });
 
+app.post('/api/prof/getcontributors', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		if (err) return next(err);
+		let users = []
+		async.each(req.body.contributors, function(item, callback) {
+			Database.getUserNameById(item, function(err, data) {
+				if (err) callback(err);
+				data.id = item;
+				users.push(data);
+				callback();
+			});
+		}, function(err) {
+  			if (err) return next(err);
+  			res.send(users);
+  		});
+	});
+})
+
 app.post('/api/prof/getcoursebyid', expjwt, function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.getCourseData(req.body.course, function(err, data) {
