@@ -493,6 +493,15 @@ app.post('/api/prof/getcoursebyid', expjwt, function(req, res, next) {
 	});
 });
 
+app.post('/api/prof/getchapterbyid', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.getWorkingChapterData(req.body.chapter, function(err, data) {
+			if (err) callback(err);
+			res.send(data);
+		});
+  	});
+});
+
 app.post('api/prof/makecoursepublic', expjwt, function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.makeCoursePublic(req.body.course, function(err, data) {
