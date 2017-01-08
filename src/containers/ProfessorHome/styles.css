@@ -7,8 +7,9 @@
   -o-background-size: cover;
   background-size: cover;
   /*float: left;*/
-  overflow-y: auto;
+  overflow: auto;
   padding: 0;
+  min-width: 1130px;
 }
 
 #welcome-title {

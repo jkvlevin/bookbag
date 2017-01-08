@@ -7,7 +7,8 @@
   -o-background-size: cover;
   background-size: cover;
   /*float: left;*/
-  overflow-y: auto;
+  overflow: auto;
+  min-width: 1130px;
   padding: 0;
 }
 #chapter-home-container {
@@ -16,6 +17,7 @@
   display: block;
   z-index: 300;
   width: 100%;
+  min-width: 1130px;
   text-align: center;
 }
 
@@ -23,8 +25,8 @@
   height: 60px;
   width: 76%;
   margin-top: 30px;
-  margin-left: 45px;
   border-bottom: thin solid #DDDDDD;
+  margin-left: 170px;
 }
 
 #checkout-btn {

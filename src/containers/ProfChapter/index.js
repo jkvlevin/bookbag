@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link, browserHistory } from 'react-router';
-import { ListGroup, ListGroupItem, Modal, Form, FormGroup, FormControl, InputGroup, Button, Popover, OverlayTrigger } from 'react-bootstrap';
+import { ListGroup, ListGroupItem, Modal, Form, FormGroup, FormControl, ControlLabel, InputGroup, Button, Popover, OverlayTrigger } from 'react-bootstrap';
 import Sidebar from '../../components/MenuBar/Sidebar.js';
 import SearchContent from '../../components/SearchContent';
 import SearchIcon from 'react-icons/lib/fa/search';
@@ -11,6 +11,7 @@ import CheckoutIcon from 'react-icons/lib/md/assignment-turned-in';
 import PublishIcon from 'react-icons/lib/md/publish';
 import DotIcon from 'react-icons/lib/go/primitive-dot';
 import UploadIcon from 'react-icons/lib/go/cloud-upload';
+import AddIcon from 'react-icons/lib/md/add-circle-outline.js';
 import DropzoneComponent from 'react-dropzone-component';
 import * as actions from './actions.js';
 import styles from './styles.css';
@@ -21,7 +22,7 @@ class ProfChapter extends React.Component {
   constructor(props) {
    super(props);
 
-   this.state = { searchValue: '', showUploadModal: false, uploadFiles: [], uploadCommitMessage: '' };
+   this.state = { searchValue: '', showUploadModal: false, uploadFiles: [], uploadCommitMessage: '', showAddContributors: false, searchContributorsValue: ''};
 
    this.handleVersionChange = this.handleVersionChange.bind(this);
 
@@ -34,9 +35,14 @@ class ProfChapter extends React.Component {
 
    this.handleCheckout = this.handleCheckout.bind(this);
 
-   this.handleCoursesClick = this.handleCoursesClick.bind(this);
+   this.showAddContributors = this.showAddContributors.bind(this);
+   this.handleSearchContributorsChange = this.handleSearchContributorsChange.bind(this);
+   this.submitContributorsSearch = this.submitContributorsSearch.bind(this);
+   this.handleAddContributors = this.handleAddContributors.bind(this);
+
+   this.handleWorkbenchClick = this.handleWorkbenchClick.bind(this);
    this.handleSearchClick = this.handleSearchClick.bind(this);
-   this.handleSettingsClick = this.handleSettingsClick.bind(this);
+   this.logout = this.logout.bind(this);
    this.handleSearchChange = this.handleSearchChange.bind(this);
    this.submitSearch = this.submitSearch.bind(this);
 
@@ -56,6 +62,9 @@ class ProfChapter extends React.Component {
     this.props.getChapterById(this.props.params.chapterId);
     this.props.loadChapterVersions(this.props.params.chapterId);
     this.props.loadVersionFiles(this.props.params.chapterId, this.props.versionDisplayed.sha);
+    this.props.checkIfCheckoutUser(this.props.params.chapterId);
+    this.props.checkIsOwner(this.props.params.chapterId);
+    this.props.getContributors(this.props.params.chapterId);
   }
 
   handleVersionChange(event) {
@@ -71,7 +80,7 @@ class ProfChapter extends React.Component {
     this.setState({ showUploadModal: true });
   }
   closeUploadModal() {
-    this.setState({ showUploadModal: false });
+    this.setState({ showUploadModal: false, uploadFiles: [], uploadCommitMessage:'' });
   }
 
   handleUploadFileAdded(file) {
@@ -90,7 +99,7 @@ class ProfChapter extends React.Component {
   handleUploadFilesSubmit(event) {
     event.preventDefault();
     this.props.submitFiles(this.state.uploadFiles, this.state.uploadCommitMessage, this.props.params.chapterId);
-    this.setState({ showUploadModal: false });
+    this.setState({ showUploadModal: false, uploadFiles: [], uploadCommitMessage: '' });
   }
 
   handleCheckout(event) {
@@ -98,8 +107,26 @@ class ProfChapter extends React.Component {
     this.props.checkoutChapter(this.props.params.chapterId);
   }
 
+  showAddContributors() {
+    this.setState({ showAddContributors: true });
+  }
 
-  handleCoursesClick() {
+  handleSearchContributorsChange(event) {
+    this.setState({ searchContributorsValue: event.target.value });
+  }
+
+  submitContributorsSearch(event) {
+    event.preventDefault();
+    this.props.searchProfs(this.state.searchContributorsValue);
+    this.setState({ searchContributorsValue: '' });
+  }
+
+  handleAddContributors(event) {
+    this.props.addContributor(event.target.id, this.props.params.chapterId);
+    this.props.loadSearchProfsResults([]);
+  }
+
+  handleWorkbenchClick() {
     browserHistory.push('/professor');
   }
 
@@ -107,8 +134,11 @@ class ProfChapter extends React.Component {
     this.props.searchModal();
   }
 
-  handleSettingsClick() {
-    alert('Settings');
+  logout() {
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('isProfessor');
+    browserHistory.push('/');
   }
 
   handleSearchChange(event) {
@@ -126,7 +156,6 @@ class ProfChapter extends React.Component {
 
    const config = this.componentConfig;
    const djsConfig = this.djsConfig;
-
    const eventHandlers = {
       init: dz => this.dropzone = dz,
       addedfile: this.handleUploadFileAdded,
@@ -134,35 +163,61 @@ class ProfChapter extends React.Component {
     };
 
    const contributorsPopover = (
-      <Popover id="contributors-popover" title="Contributors">
+      <Popover ref="cont_pop" id="contributors-popover" title={this.props.currentChapter.name + " Contributors"} style={{width:"300px"}}>
         <ListGroup>
-
+          { this.props.contributors ? this.props.contributors.map(user =>
+            <ListGroupItem key={user.id} style={{borderTop:"none", marginTop:"1px"}}>
+              <h5 style={{display:"inline"}}>{user.firstname} {user.lastname}</h5>
+              { this.props.isOwner ? <Button style={{float:"right", marginTop:"-7px", color:"#878787", background:"none", border:"none", fontSize:"14px"}}>x</Button> : ''}
+            </ListGroupItem>
+          ) : '' }
         </ListGroup>
+        { this.state.showAddContributors ?
+          <Form onSubmit={this.submitContributorsSearch} style={{marginTop:"25px"}}>
+          <FormGroup>
+            <InputGroup>
+              <FormControl type="text" value={this.state.searchContributorsValue} placeholder="Search professors by name" onChange={this.handleSearchContributorsChange}/>
+              <InputGroup.Button>
+                <Button type="submit"> <SearchIcon style={{color:"#1db954"}}/> </Button>
+              </InputGroup.Button>
+            </InputGroup>
+          </FormGroup>
+          </Form>
+        : ''}
+        { this.props.searchProfsResults.length > 0 ?
+          <ListGroup>
+            { this.props.searchProfsResults.map(prof =>
+              <ListGroupItem key={prof.id}>
+                <h5 style={{display:"inline"}}>{prof.firstname} {prof.lastname}</h5>
+                <Button onClick={this.handleAddContributors} id={prof.id} style={{float:"right", background:"none", border:"none", marginTop:"-7px", color:"#1db954", fontSize:"15px"}}>+</Button>
+              </ListGroupItem>
+            )}
+          </ListGroup>
+          : ''}
+        { this.props.isOwner ? <div style={{textAlign:"center"}}><Button style={{border:"none", background:"none"}} onClick={this.showAddContributors}><AddIcon style={{fontSize:"26px", color:"#1db954"}}/></Button></div>: ''}
       </Popover>
     );
     return (
       <div id="chapter-container">
         <Sidebar
           isProf={true}
-          handleCoursesClick={this.handleCoursesClick}
-          handleBrowseClick={this.handleBrowseClick}
+          handleWorkbenchClick={this.handleWorkbenchClick}
           handleSearchClick={this.handleSearchClick}
-          handleSettingsClick={this.handleSettingsClick}
+          logout={this.logout}
           userName={localStorage.getItem('userName')}
         />
         <h1 style={{marginLeft:"220px", marginTop:"25px", fontSize:"22px", color:"#878787"}}> {this.props.params.name} </h1>
 
-        <div id="chapter-home-container">
-
           <div id="button-options">
             <OverlayTrigger trigger="click" rootClose placement="right" overlay={contributorsPopover}>
-              <Button id="contributors-button"><UserIcon/><h4 id="contributors-text">Contributors</h4></Button>
+              <Button id="contributors-button"><UserIcon/><h4 id="contributors-text">Contributors </h4></Button>
             </OverlayTrigger>
-              { isOwner ? <div style={{float:"right", marginRight:"60px", marginTop:"10px", fontSize:"25px"}}><PublishIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>Publish</h4></div> : ""}
+              { this.props.isOwner ? <div style={{float:"right", marginRight:"60px", marginTop:"10px", fontSize:"25px"}}><PublishIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>Publish</h4></div> : ""}
               { this.props.currentChapter.checkout_user === null ?
                 <Button id="checkout-btn" onClick={this.handleCheckout}><CheckoutIcon/><h4 id="checkout-text">Checkout</h4></Button> :
-                // <Button disabled id="checked-out-btn"><CheckoutIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>Checked Out</h4></Button>
-                <Button id="upload-btn" onClick={this.showUploadModal}><UploadIcon/><h4 id="upload-text">Upload Files</h4></Button>
+                this.props.checkoutUser ?
+                <Button id="upload-btn" onClick={this.showUploadModal}><UploadIcon/><h4 id="upload-text">Upload Files</h4></Button> :
+                <Button disabled id="checked-out-btn"><CheckoutIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>Checked Out</h4></Button>
               }
           </div>
 
@@ -195,7 +250,8 @@ class ProfChapter extends React.Component {
            <Modal.Header closeButton>
              <Modal.Title>Upload Files</Modal.Title>
            </Modal.Header>
-           <Modal.Body>
+           <Modal.Body>\
+           
             <Form onSubmit={this.handleUploadFilesSubmit} encType="multipart\/form-data">
               <DropzoneComponent config={config} eventHandlers={eventHandlers} djsConfig={djsConfig} />
               <FormControl type="text" value={this.state.uploadCommitMessage} placeholder="Short desecription of changes in upload" onChange={this.handleUploadMessageChange} />
@@ -203,6 +259,7 @@ class ProfChapter extends React.Component {
             </Form>
            </Modal.Body>
           </Modal>
+
 
           {/* <Modal show={this.props.showSearchModal} onHide={this.props.closeSearchModal} style={{marginTop:"100px"}}>
             <Modal.Body>
@@ -227,7 +284,6 @@ class ProfChapter extends React.Component {
             </Modal.Body>
           </Modal> */}
 
-        </div>
       </div>
     );
   }
@@ -246,7 +302,16 @@ ProfChapter.propTypes = {
   getChapterById: PropTypes.func.isRequired,
   currentChapter: PropTypes.object.isRequired,
   submitFiles: PropTypes.func.isRequired,
-  checkoutChapter: PropTypes.func.isRequired
+  checkoutChapter: PropTypes.func.isRequired,
+  checkIfCheckoutUser: PropTypes.func.isRequired,
+  checkoutUser: PropTypes.bool.isRequired,
+  checkIsOwner: PropTypes.func.isRequired,
+  isOwner: PropTypes.bool.isRequired,
+  getContributors: PropTypes.func.isRequired,
+  contributors: PropTypes.array.isRequired,
+  searchProfs: PropTypes.func.isRequired,
+  searchProfsResults: PropTypes.array.isRequired,
+  addContributor: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state) {
@@ -257,6 +322,10 @@ function mapStateToProps(state) {
     versionDisplayed: state.chapterReducer.versionDisplayed,
     currentVersionFiles: state.chapterReducer.currentVersionFiles,
     currentChapter: state.chapterReducer.currentChapter,
+    checkoutUser: state.chapterReducer.checkoutUser,
+    isOwner: state.chapterReducer.isOwner,
+    contributors: state.chapterReducer.contributors,
+    searchProfsResults: state.chapterReducer.searchProfsResults
   };
 }
 
@@ -271,7 +340,13 @@ function mapDispatchToProps(dispatch) {
     changeCurrentVersion: (version) => dispatch(actions.changeCurrentVersion(version)),
     getChapterById: (id) => dispatch(actions.getChapterById(id)),
     submitFiles: (files, message, chapter) => dispatch(actions.submitFiles(files, message, chapter)),
-    checkoutChapter: (id) => dispatch(actions.checkoutChapter(id))
+    checkoutChapter: (id) => dispatch(actions.checkoutChapter(id)),
+    checkIfCheckoutUser: (id) => dispatch(actions.checkIfCheckoutUser(id)),
+    checkIsOwner: (id) => dispatch(actions.checkIsOwner(id)),
+    getContributors: (id) => dispatch(actions.getContributors(id)),
+    searchProfs: (name) => dispatch(actions.searchProfs(name)),
+    addContributor: (id, chapter) => dispatch(actions.addContributor(id, chapter)),
+    loadSearchProfsResults: (profs) => dispatch(actions.loadSearchProfsResults(profs))
   };
 }
 

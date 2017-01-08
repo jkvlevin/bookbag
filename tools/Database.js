@@ -352,6 +352,45 @@ Database.getUserNameById = function(user, callback) {
 	});
 }
 
+// Get a chapter by ID
+Database.getChapterById = function(chapter, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+		client.query("SELECT * FROM chapters WHERE id = '" + chapter + "'").on('row', function(row, result) {
+			result.addRow(row);
+		}).on('end', function(result) {
+			done();
+			callback(null, result.rows[0]);			
+		});
+	});
+};
+
+Database.isCheckedOutByUser = function(user, chapter, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+		client.query("SELECT * FROM users INNER JOIN chapters ON users.id = '" + user + "' AND chapters.id = '" + chapter + "' AND users.id = chapters.checkout_user").on('row', function(row, result) {
+			result.addRow(row);
+		}).on('end', function(result) {
+			done();
+			if (result.rowCount > 0) callback(null, 200);
+			else callback(null, 202);		
+		});
+	});
+}
+
+Database.isOwner = function(user, chapter, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+		client.query("SELECT * FROM users INNER JOIN chapters ON users.id = '" + user + "' AND chapters.id = '" + chapter + "' AND users.id = chapters.owner").on('row', function(row, result) {
+			result.addRow(row);
+		}).on('end', function(result) {
+			done();
+			if (result.rowCount > 0) callback(null, 200);
+			else callback(null, 202);		
+		});
+	});
+}
+
 // Get all of a user's courses and return them
 Database.getWorkingChapters = function(prof, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
@@ -460,6 +499,18 @@ Database.searchCourses = function(searchQuery, callback) {
 		});
 	});
 };
+
+Database.searchProfs = function(searchQuery, user, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		if (err) callback(err);
+
+		client.query("SELECT * FROM users WHERE prof = TRUE AND firstname || ' ' || lastname ILIKE '%" + searchQuery + "%' AND id != '" + user + "'").on('row', function (row, result) {
+			result.addRow(row);
+		}).on('end', function (result) {
+			callback(null, result.rows);
+		})
+	})
+}
 
 /******************************************************************************
 Checkout/in Queries

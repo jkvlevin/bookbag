@@ -483,13 +483,21 @@ app.post('/api/prof/getcourses', expjwt, function(req, res, next) {
 
 app.post('/api/prof/getcheckoutuser', expjwt, function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		if (decoded.id === req.body.user) res.sendStatus(200);
-		else {
-			Database.getUserNameById(req.body.user, function(err, data) {
+		if (err) return next(err);
+		Database.isCheckedOutByUser(decoded.id, req.body.chapter, function(err, data) {
 			if (err) return next(err);
 			res.send(data);
 		});
-		}
+	});
+});
+
+app.post('/api/prof/getowner', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		if (err) return next(err);
+		Database.isOwner(decoded.id, req.body.chapter, function(err, data) {
+			if (err) return next(err);
+			res.send(data);
+		});
 	});
 });
 
@@ -497,7 +505,7 @@ app.post('/api/prof/makecoursepublic', expjwt, function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.makeCoursePublic(req.body.course, function(err, data) {
 			if (err) return next(err);
-			res.sendStatus(data); 
+			res.sendStatus(data);
 		});
 	});
 });
@@ -506,7 +514,7 @@ app.post('/api/prof/makechapterpublic', expjwt, function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.makeChapterPublic(req.body.chapter, function(err, data) {
 			if (err) return next(err);
-			res.sendStatus(data); 
+			res.sendStatus(data);
 		});
 	});
 });
@@ -519,6 +527,26 @@ app.post('/api/prof/addcontributortochapter', expjwt, function(req, res, next) {
 		});
 	});
 });
+
+app.post('/api/prof/getcontributors', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		if (err) return next(err);
+		Database.getChapterById(req.body.chapter, function (e, d) {
+			let users = []
+			async.each(d.contributors, function(item, callback) {
+				Database.getUserNameById(item, function(err, data) {
+					if (err) callback(err);
+					data.id = item;
+					users.push(data);
+					callback();
+				});
+			}, function(err) {
+	  			if (err) return next(err);
+	  			res.send(users);
+	  		});
+		});
+	});
+})
 
 app.post('/api/prof/getcoursebyid', expjwt, function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
@@ -561,6 +589,16 @@ app.post('/api/searchcourses', function(req, res, next) {
 	Database.searchCourses(req.body.searchQuery, function(err, data) {
 		if (err) return next(err);
 		res.send(data);
+	});
+});
+
+// Search Profs
+app.post('/api/searchprofs', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.searchProfs(req.body.searchQuery, decoded.id, function(err, data) {
+			if (err) return next(err);
+			res.send(data);
+		});
 	});
 });
 
