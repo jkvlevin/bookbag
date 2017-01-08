@@ -310,7 +310,7 @@ Git.makeBlobForFile = function(repoName, contents, callback) {
 	github.gitdata.createBlob({
 		owner: ACCOUNT_NAME,
 		repo: repoName,
-		content: content,
+		content: contents,
 		encoding: 'base64'
 	}, function(err, res) {
 		if (err)
@@ -326,7 +326,7 @@ Git.makeCommitWithBlobArray = function (repoName, blobs, author, commitMessage, 
 	authenticate();
 
 	var tree = [];
-	for (int i = 0; i < blobs.length; i++) {
+	for (var i = 0; i < blobs.length; i++) {
 		var blob = {path: blobs[i].path, mode: '10064', type: 'blob', sha: blobs[i].sha};
 		tree.push(blob);
 	}

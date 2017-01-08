@@ -440,6 +440,46 @@ Database.searchCourses = function(searchQuery, callback) {
 Checkout/in Queries
 *******************************************************************************/
 
+// Make a course public
+Database.makeCoursePublic = function(course, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		client.query("UPDATE courses SET public = TRUE WHERE id = '" + course + "'", function(err, result) {
+			if (err) callback (err);
+			callback(null, 200);
+		});
+	});
+};
+
+// Make a chapter public
+Database.makeChapterPublic = function(chapter, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		client.query("UPDATE chapters SET public = TRUE WHERE id = '" + chapter + "'", function(err, result) {
+			if (err) callback (err);
+			callback(null, 200);
+		});
+	});
+};
+
+// See if the user can upload
+Database.prepUpload = function(chapter, callback) {
+	pg.connect(DATABASE_URL, function(err, client) {
+		client.query("SELECT checkout_exp FROM chapters WHERE id = '" + chapter + "'").on('row', function(row, result) {
+			result.addRow(row);
+		}).on('end', function(result) {
+			let d1 = new Date(result.rows[0].checkout_exp);
+			let d2 = new Date();
+			client.query("UPDATE chapters SET checkout_exp = NULL, checkout_user = NULL WHERE id = '" + chapter + "'");
+			if (d2 > d1) {
+				// past checkout
+				callback(null, "Chapter is past checkout date");
+			} else {
+				// time to check out	
+				callback(null, 200);
+			}
+		})
+	});
+}
+
 // Attempt to check out chapter
 Database.attemptCheckout = function(prof, chapter, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {

@@ -277,18 +277,23 @@ app.post('/api/addfolder', function(req, res, next) {
 
 app.post('/api/prof/upload', expjwt, upload.array('files'), function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		async.each(req.files, function(item, callback) {
-			var pdfData = fs.readFile(item.path, 'base64', function(err, data) {
-				Git.uploadFileToRepo(req.body.chapter, data, item.originalname, req.body.commitMessage, decoded.firstname + " " + decoded.lastname, function(e, d) {
-					if (e) return next(e);
-					fs.unlink(item.path);
-					res.sendStatus(200);
-				});
-			})
-		}, function(err) {
-  			if (err) return next(err);
-  			res.send();
-  		});
+		Database.prepUpload(req.body.chapter, function(err, info) {
+			if (err) return next(err);
+			if (info != 200) res.sendStatus(200).json(info);
+
+			async.each(req.files, function(item, callback) {
+				var pdfData = fs.readFile(item.path, 'base64', function(err, data) {
+					Git.uploadFileToRepo(req.body.chapter, data, item.originalname, req.body.commitMessage, decoded.firstname + " " + decoded.lastname, function(e, d) {
+						if (e) return next(e);
+						fs.unlink(item.path);
+						res.sendStatus(200);
+					});
+				})
+			}, function(err) {
+	  			if (err) return next(err);
+	  			res.send();
+	  		});
+		});
 	});
 });
 
@@ -466,15 +471,33 @@ app.post('/api/prof/getcourses', expjwt, function(req, res, next) {
 app.post('/api/prof/getcoursebyid', expjwt, function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.getCourseData(req.body.course, function(err, data) {
-			if (err) callback(err);
+			if (err) return next(err);
 			Database.getCourseChapters(req.body.course, function(e, d) {
-				if (e) callback(e);
+				if (e) return next(e);
 				res.send({
 					courseInfo: data[0],
 					chapters : d
 				})
 			});
 		});
+	});
+});
+
+app.post('api/prof/makecoursepublic', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.makeCoursePublic(req.body.course, function(err, data) {
+			if (err) return next(err);
+			res.sendStatus(data); 
+		})
+	});
+});
+
+app.post('api/prof/makechapterpublic', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.makeChapterPublic(req.body.chapter, function(err, data) {
+			if (err) return next(err);
+			res.sendStatus(data); 
+		})
 	});
 });
 
