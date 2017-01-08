@@ -150,13 +150,16 @@ class StudentHome extends React.Component {
           {/* <Collapsible trigger="All Chapters" transitionTime={100} overflowWhenOpen="auto">
           </Collapsible> */}
           </div>
-
-          { this.props.isCourseSelected ?
+          { this.props.courses.length > 0 ?
+            this.props.isCourseSelected ?
             <div id="course-display">
                 <CourseDisplay courseName={this.props.selectedCourse.courseName} chapters={this.props.selectedCourse.chapters}/>
             </div> :
             <div id="folder-display">
                 <FolderDisplay folderName={this.props.selectedFolder.foldername} chapters={this.props.selectedFolder.chapters}/>
+            </div> :
+            <div style={{marginLeft:"23%", width:"60%", textAlign:"center"}}>
+              <p style={{marginTop:"40px", textAlign:"center"}}> You are not currently subscribed to any courses. Search for courses to subscribe to them and view their content </p>
             </div>
         }
 

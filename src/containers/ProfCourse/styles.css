@@ -15,6 +15,32 @@
   text-align: center;
 }
 
+#addchapter-button {
+  display: inline;
+  margin-left: 120px;
+  margin-top: 5px;
+  font-size: 25px;
+  background: none;
+  border: none;
+}
+
+#addchapter-text {
+  margin-left: 10px;
+  color: #868686;
+}
+
+#addchapter-text:hover {
+  color: #407dc6;
+}
+
+#add-to-course-button {
+  color: #1db954;
+  background: none;
+  border: none;
+  float: right;
+  margin-top: -5px;
+}
+
 #course-chapter-list {
   margin-top: 25px;
   width: 77.5%;
@@ -23,6 +49,17 @@
   border: thin solid #DDDDDD;
   overflow: auto;
   border-radius: 5px;
+}
+
+#del-chapter-button {
+  float: right;
+  margin-right: 5px;
+  color: #Bf3309;
+  background: none;
+  border: none;
+  font-weight: bold;
+  font-size: 16px;
+  margin-top: -7px;
 }
 
 .btn-group.open .dropdown-toggle {

@@ -17,7 +17,7 @@ const Sidebar = ({ isProf, handleCoursesClick, handleBrowseClick, handleSearchCl
       <div id="sidebar-menu">
         {isProf ? <div> <Button id="menu-button" onClick={handleCoursesClick}><ToolsIcon id="menu-icon"/></Button> <h3 id="menu-title">Workbench</h3> <br/><br/><br/> </div>:
          <div><Button id="menu-button" onClick={handleCoursesClick}><LibraryIcon id="menu-icon"/></Button> <h3 id="menu-title">My Library</h3> <br/><br/><br/> </div>}
-        <Button id="menu-button" onClick={handleBrowseClick}><BrowseIcon id="menu-icon"/></Button> <h3 id="menu-title">Browse</h3> <br/><br/><br/>
+        {/* <Button id="menu-button" onClick={handleBrowseClick}><BrowseIcon id="menu-icon"/></Button> <h3 id="menu-title">Browse</h3> <br/><br/><br/> */}
         <Button id="menu-button" onClick={handleSearchClick}><SearchIcon id="menu-icon"/></Button> <h3 id="menu-title">Search</h3> <br/><br/><br/>
 
         <div id="pref-container">
@@ -31,7 +31,7 @@ const Sidebar = ({ isProf, handleCoursesClick, handleBrowseClick, handleSearchCl
 
 Sidebar.propTypes = {
   handleCoursesClick: PropTypes.func.isRequired,
-  handleBrowseClick: PropTypes.func.isRequired,
+  handleBrowseClick: PropTypes.func,
   handleSearchClick: PropTypes.func.isRequired,
   handleSettingsClick: PropTypes.func.isRequired,
   userName: PropTypes.string.isRequired,

@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link, browserHistory } from 'react-router';
-import { ListGroup, ListGroupItem, Modal, Form, FormGroup, FormControl, InputGroup, Button } from 'react-bootstrap';
+import { ListGroup, ListGroupItem, Modal, Form, FormGroup, FormControl, InputGroup, Button, Popover, OverlayTrigger } from 'react-bootstrap';
 import Sidebar from '../../components/MenuBar/Sidebar.js';
 import SearchContent from '../../components/SearchContent';
 import SearchIcon from 'react-icons/lib/fa/search';
@@ -23,7 +23,6 @@ class ProfChapter extends React.Component {
    this.handleVersionChange = this.handleVersionChange.bind(this);
 
    this.handleCoursesClick = this.handleCoursesClick.bind(this);
-   this.handleBrowseClick = this.handleBrowseClick.bind(this);
    this.handleSearchClick = this.handleSearchClick.bind(this);
    this.handleSettingsClick = this.handleSettingsClick.bind(this);
    this.handleSearchChange = this.handleSearchChange.bind(this);
@@ -48,10 +47,6 @@ class ProfChapter extends React.Component {
     browserHistory.push('/professor');
   }
 
-  handleBrowseClick() {
-    alert('Browse');
-  }
-
   handleSearchClick() {
     this.props.searchModal();
   }
@@ -72,6 +67,13 @@ class ProfChapter extends React.Component {
 
  render() {
    const isOwner = true;
+   const contributorsPopover = (
+      <Popover id="contributors-popover" title="Contributors">
+        <ListGroup>
+
+        </ListGroup>
+      </Popover>
+    );
     return (
       <div id="chapter-container">
         <Sidebar
@@ -87,7 +89,9 @@ class ProfChapter extends React.Component {
         <div id="chapter-home-container">
 
           <div id="button-options">
-              <div style={{float:"left", marginLeft:"60px", marginTop:"10px", fontSize:"25px"}}><UserIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>Contributors</h4></div>
+            <OverlayTrigger trigger="click" rootClose placement="right" overlay={contributorsPopover}>
+              <Button id="contributors-button"><UserIcon/><h4 id="contributors-text">Contributors</h4></Button>
+            </OverlayTrigger>
               { isOwner ? <div style={{float:"right", marginRight:"60px", marginTop:"10px", fontSize:"25px"}}><PublishIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>Publish</h4></div> : ""}
               <div style={{float:"right", marginRight:"60px", marginTop:"10px", fontSize:"25px"}}><CheckoutIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>Checkout</h4></div>
           </div>
