@@ -32,6 +32,8 @@ class ProfChapter extends React.Component {
    this.handleUploadMessageChange = this.handleUploadMessageChange.bind(this);
    this.handleUploadFilesSubmit = this.handleUploadFilesSubmit.bind(this);
 
+   this.handleCheckout = this.handleCheckout.bind(this);
+
    this.handleCoursesClick = this.handleCoursesClick.bind(this);
    this.handleSearchClick = this.handleSearchClick.bind(this);
    this.handleSettingsClick = this.handleSettingsClick.bind(this);
@@ -81,6 +83,12 @@ class ProfChapter extends React.Component {
     this.props.submitFiles(this.state.uploadFiles, this.state.uploadCommitMessage, this.props.params.chapterId);
     this.setState({ showUploadModal: false });
   }
+
+  handleCheckout(event) {
+    event.preventDefault();
+    this.props.checkoutChapter(this.props.params.chapterId);
+  }
+
 
   handleCoursesClick() {
     browserHistory.push('/professor');
@@ -147,7 +155,7 @@ class ProfChapter extends React.Component {
             </OverlayTrigger>
               { isOwner ? <div style={{float:"right", marginRight:"60px", marginTop:"10px", fontSize:"25px"}}><PublishIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>Publish</h4></div> : ""}
               { this.props.currentChapter.checkout_user === null ?
-                <Button id="checkout-btn"><CheckoutIcon/><h4 id="checkout-text">Checkout</h4></Button> :
+                <Button id="checkout-btn" onClick={this.handleCheckout}><CheckoutIcon/><h4 id="checkout-text">Checkout</h4></Button> :
                 // <Button disabled id="checked-out-btn"><CheckoutIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>Checked Out</h4></Button>
                 <Button id="upload-btn" onClick={this.showUploadModal}><UploadIcon/><h4 id="upload-text">Upload Files</h4></Button>
               }
@@ -232,7 +240,8 @@ ProfChapter.propTypes = {
   currentVersionFiles: PropTypes.array.isRequired,
   getChapterById: PropTypes.func.isRequired,
   currentChapter: PropTypes.object.isRequired,
-  submitFiles: PropTypes.func.isRequired
+  submitFiles: PropTypes.func.isRequired,
+  checkoutChapter: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state) {
@@ -256,7 +265,8 @@ function mapDispatchToProps(dispatch) {
     changeCurrentVersionFiles: (chapterId, sha) => dispatch(actions.changeCurrentVersionFiles(chapterId, sha)),
     changeCurrentVersion: (version) => dispatch(actions.changeCurrentVersion(version)),
     getChapterById: (id) => dispatch(actions.getChapterById(id)),
-    submitFiles: (files, message, chapter) => dispatch(actions.submitFiles(files, message, chapter))
+    submitFiles: (files, message, chapter) => dispatch(actions.submitFiles(files, message, chapter)),
+    checkoutChapter: (id) => dispatch(actions.checkoutChapter(id))
   };
 }
 
