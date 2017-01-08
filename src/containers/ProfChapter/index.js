@@ -39,6 +39,17 @@ class ProfChapter extends React.Component {
    this.handleSettingsClick = this.handleSettingsClick.bind(this);
    this.handleSearchChange = this.handleSearchChange.bind(this);
    this.submitSearch = this.submitSearch.bind(this);
+
+   this.componentConfig = {
+      showFiletypeIcon: true,
+      postUrl: '/api/prof/upload',
+   };
+
+   this.djsConfig = {
+      addRemoveLinks: true,
+   };
+
+    this.dropzone = null;
   }
 
   componentDidMount() {
@@ -65,13 +76,11 @@ class ProfChapter extends React.Component {
 
   handleUploadFileAdded(file) {
     this.state.uploadFiles.push(file);
-    console.log(this.state.uploadFiles);
   }
 
   handleRemovedFile(file) {
     const i = this.state.uploadFiles.indexOf(file);
     this.state.uploadFiles.splice(i, 1);
-    console.log(this.state.uploadFiles);
   }
 
   handleUploadMessageChange(event) {
@@ -115,15 +124,11 @@ class ProfChapter extends React.Component {
  render() {
    const isOwner = true;
 
-   const componentConfig = {
-     postUrl: 'no-url'
-   };
-   const djsConfig = {
-     addRemoveLinks: true,
-     autoProcessQueue: false,
-     uploadMultiple: true
-   };
+   const config = this.componentConfig;
+   const djsConfig = this.djsConfig;
+
    const eventHandlers = {
+      init: dz => this.dropzone = dz,
       addedfile: this.handleUploadFileAdded,
       removedfile: this.handleRemovedFile
     };
@@ -191,8 +196,8 @@ class ProfChapter extends React.Component {
              <Modal.Title>Upload Files</Modal.Title>
            </Modal.Header>
            <Modal.Body>
-            <Form onSubmit={this.handleUploadFilesSubmit}>
-              <DropzoneComponent config={componentConfig} djsConfig={djsConfig} eventHandlers={eventHandlers} />
+            <Form onSubmit={this.handleUploadFilesSubmit} encType="multipart\/form-data">
+              <DropzoneComponent config={config} eventHandlers={eventHandlers} djsConfig={djsConfig} />
               <FormControl type="text" value={this.state.uploadCommitMessage} placeholder="Short desecription of changes in upload" onChange={this.handleUploadMessageChange} />
               <Button type="submit"> Upload </Button>
             </Form>

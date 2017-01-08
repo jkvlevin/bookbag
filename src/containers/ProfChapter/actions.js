@@ -17,16 +17,22 @@ export function checkoutChapter(id) {
 }
 
 export function submitFiles(files, message, chapter) {
-  console.log(files + ' msg: ' + message + ' ch: ' + chapter);
   const token = localStorage.getItem('userToken');
   var authLine = 'Bearer ' + token;
+  var formdata = new FormData();
+  for (var i = 0; i < files.length; i++)
+    formdata.append("files", files[i]);
+  formdata.append("chapter", chapter);
+  formdata.append("commitMessage", message);
+  
   return function (dispatch) {
     axios({
       method: 'post',
       url: '/api/prof/upload',
-      headers: { Authorization: authLine },
-      data: { files: files, chapter: chapter, commitMessage: message }
+      headers: { Authorization: authLine, 'Content-Type': 'multipart/form-data' },
+      data: formdata
     }).then((response) => {
+      console.log("made request");
       dispatch(getChapterById(chapter));
     });
   }

@@ -17,7 +17,7 @@ const compiler = webpack(config);
 let Database = require('./Database.js');
 let bodyParser = require('body-parser');
 let Git = require('./Git.js');
-var upload = multer({ dest: 'uploads/' });
+let upload = multer({dest: 'uploads'})
 
 var expjwt = expressJWT({ secret : "JWT Secret"});
 
@@ -275,14 +275,13 @@ app.post('/api/addfolder', function(req, res, next) {
 });
 
 app.post('/api/prof/upload', expjwt, upload.array('files'), function(req, res, next) {
+
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.prepUpload(req.body.chapter, function(err, info) {
 			if (err) return next(err);
 			if (info != 200) res.sendStatus(200).json(info);
 			else {
 				var blobs = [];
-
-				console.log(req.files);
 
 				async.each(req.files, function(item, callback) {
 					fs.readFile(item.path, 'base64', function(err, data) {
