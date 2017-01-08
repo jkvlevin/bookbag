@@ -7,10 +7,20 @@ const initialState = {
   showSearchModal: false,
   searchContent: [],
   currentChapter: {},
+  checkoutUser: false,
+  isOwner: false
 };
 
 function chapterReducer(state = initialState, action) {
   switch (action.type) {
+    case types.SET_IS_CHECKOUT_USER:
+      return Object.assign({}, state, {
+        checkoutUser: action.isCheckoutUser
+      });
+    case types.SET_IS_OWNER:
+      return Object.assign({}, state, {
+        isOwner: action.isOwner
+      });
     case types.LOAD_CURRENT_CHAPTER_SUCCESS:
       return Object.assign({}, state, {
         currentChapter: action.chapter

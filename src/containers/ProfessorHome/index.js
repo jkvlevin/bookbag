@@ -31,12 +31,12 @@ class ProfessorHome extends React.Component {
    this.openNewCourseModal = this.openNewCourseModal.bind(this);
    this.closeNewCourseModal = this.closeNewCourseModal.bind(this);
 
-   this.handleCoursesClick = this.handleCoursesClick.bind(this);
-   this.handleBrowseClick = this.handleBrowseClick.bind(this);
+   this.handleWorkbenchClick = this.handleWorkbenchClick.bind(this);
    this.handleSearchClick = this.handleSearchClick.bind(this);
    this.handleSettingsClick = this.handleSettingsClick.bind(this);
    this.handleSearchChange = this.handleSearchChange.bind(this);
    this.submitSearch = this.submitSearch.bind(this);
+
    this.handleSelect = this.handleSelect.bind(this);
  }
 
@@ -109,12 +109,10 @@ class ProfessorHome extends React.Component {
    }
  }
 
-  handleCoursesClick() {
+  handleWorkbenchClick() {
     browserHistory.push('/professor');
   }
-  handleBrowseClick() {
-    alert('Browse');
-  }
+
   handleSearchClick() {
     this.props.searchModal();
   }
@@ -137,9 +135,7 @@ class ProfessorHome extends React.Component {
     return (
       <div id="prof-container">
         <Sidebar
-          isProf={true}
-          handleCoursesClick={this.handleCoursesClick}
-          handleBrowseClick={this.handleBrowseClick}
+          handleWorkbenchClick={this.handleWorkbenchClick}
           handleSearchClick={this.handleSearchClick}
           handleSettingsClick={this.handleSettingsClick}
           userName={localStorage.getItem('userName')}

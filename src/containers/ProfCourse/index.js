@@ -30,7 +30,7 @@ class ProfCourse extends React.Component {
    this.handleSearchChaptersChange = this.handleSearchChaptersChange.bind(this);
    this.submitChaptersSearch = this.submitChaptersSearch.bind(this);
 
-   this.handleCoursesClick = this.handleCoursesClick.bind(this);
+   this.handleWorkbenchClick = this.handleWorkbenchClick.bind(this);
    this.handleSearchClick = this.handleSearchClick.bind(this);
    this.handleSettingsClick = this.handleSettingsClick.bind(this);
  }
@@ -70,7 +70,7 @@ class ProfCourse extends React.Component {
  }
 
 
-  handleCoursesClick() {
+  handleWorkbenchClick() {
     browserHistory.push('/professor');
   }
 
@@ -89,17 +89,13 @@ class ProfCourse extends React.Component {
       <div id="course-container">
 
         <Sidebar
-          isProf={true}
-          handleCoursesClick={this.handleCoursesClick}
-          handleBrowseClick={this.handleBrowseClick}
+          handleWorkbenchClick={this.handleWorkbenchClick}
           handleSearchClick={this.handleSearchClick}
           handleSettingsClick={this.handleSettingsClick}
           userName={localStorage.getItem('userName')}
         />
         <h1 style={{marginLeft:"220px", marginTop:"25px", fontSize:"22px", color:"#878787"}}> {this.props.currentCourse.courseInfo.name} </h1>
         <p style={{marginLeft:"225px"}}> {this.props.currentCourse.courseInfo.description} </p>
-
-        <div id="chapter-home-container">
 
           <div id="button-options">
             <div style={{display:"inline", marginTop:"10px", fontSize:"25px"}}><ChapterIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>{this.props.currentCourse.chapters ? this.props.currentCourse.chapters.length : 0}</h4></div>
@@ -196,7 +192,6 @@ class ProfCourse extends React.Component {
             </Modal.Body>
           </Modal> */}
 
-        </div>
       </div>
     );
   }

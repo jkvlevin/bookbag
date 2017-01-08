@@ -7,12 +7,14 @@
   -o-background-size: cover;
   background-size: cover;
   /*float: left;*/
-  overflow-y: auto;
+  overflow: auto;
   padding: 0;
+  min-width: 1130px;
 }
 
 #button-options {
   text-align: center;
+  margin-left: 210px;
 }
 
 #addchapter-button {
@@ -42,10 +44,10 @@
 }
 
 #course-chapter-list {
+  margin-left: 210px;
   margin-top: 25px;
   width: 77.5%;
   min-height: 58vh;
-  margin-left: 40px;
   border: thin solid #DDDDDD;
   overflow: auto;
   border-radius: 5px;

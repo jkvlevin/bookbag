@@ -1,6 +1,53 @@
 import * as types from '../../actionTypes';
 import axios from 'axios';
 
+export function checkIsOwner(id) {
+  const token = localStorage.getItem('userToken');
+  var authLine = 'Bearer ' + token;
+  return function (dispatch) {
+    axios({
+      method: 'post',
+      url: '/api/prof/getowner',
+      headers: { Authorization: authLine },
+      data: { chapter: id }
+    }).then((response) => {
+      if(response.status === 200) {
+        console.log(response);
+        dispatch(setIsOwner(true));
+      } else {
+        dispatch(setIsOwner(false));
+      }
+    });
+  }
+}
+
+export function setIsOwner(isOwner) {
+  return { type: types.SET_IS_OWNER, isOwner };
+}
+
+export function checkIfCheckoutUser(id) {
+  const token = localStorage.getItem('userToken');
+  var authLine = 'Bearer ' + token;
+  return function (dispatch) {
+    axios({
+      method: 'post',
+      url: '/api/prof/getcheckoutuser',
+      headers: { Authorization: authLine },
+      data: { chapter: id }
+    }).then((response) => {
+      if(response.status === 200) {
+        dispatch(setIsCheckoutUser(true));
+      } else {
+        dispatch(setIsCheckoutUser(false));
+      }
+    });
+  }
+}
+
+export function setIsCheckoutUser(isCheckoutUser) {
+  return { type: types.SET_IS_CHECKOUT_USER, isCheckoutUser };
+}
+
 export function checkoutChapter(id) {
   const token = localStorage.getItem('userToken');
   var authLine = 'Bearer ' + token;

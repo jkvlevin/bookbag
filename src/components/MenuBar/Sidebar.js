@@ -10,14 +10,12 @@ import Logo from 'react-icons/lib/go/squirrel';
 import styles from './styles.css'
 
 
-const Sidebar = ({ isProf, handleCoursesClick, handleBrowseClick, handleSearchClick, handleSettingsClick, userName }) => {
+const Sidebar = ({ handleWorkbenchClick, handleSearchClick, handleSettingsClick, userName }) => {
   return (
     <div id="sidebar-container">
       <h2 style={{color:"#807F83", textAlign:"center", marginBottom:"35px", fontSize:"20px"}}> <div id="logo"><Logo /></div> <br/> BookBag </h2>
       <div id="sidebar-menu">
-        {isProf ? <div> <Button id="menu-button" onClick={handleCoursesClick}><ToolsIcon id="menu-icon"/></Button> <h3 id="menu-title">Workbench</h3> <br/><br/><br/> </div>:
-         <div><Button id="menu-button" onClick={handleCoursesClick}><LibraryIcon id="menu-icon"/></Button> <h3 id="menu-title">My Library</h3> <br/><br/><br/> </div>}
-        {/* <Button id="menu-button" onClick={handleBrowseClick}><BrowseIcon id="menu-icon"/></Button> <h3 id="menu-title">Browse</h3> <br/><br/><br/> */}
+        <Button id="menu-button" onClick={handleWorkbenchClick}><ToolsIcon id="menu-icon"/></Button> <h3 id="menu-title">Workbench</h3> <br/><br/><br/>
         <Button id="menu-button" onClick={handleSearchClick}><SearchIcon id="menu-icon"/></Button> <h3 id="menu-title">Search</h3> <br/><br/><br/>
 
         <div id="pref-container">
@@ -30,12 +28,10 @@ const Sidebar = ({ isProf, handleCoursesClick, handleBrowseClick, handleSearchCl
 };
 
 Sidebar.propTypes = {
-  handleCoursesClick: PropTypes.func,
-  handleBrowseClick: PropTypes.func,
+  handleWorkbenchClick: PropTypes.func,
   handleSearchClick: PropTypes.func,
   handleSettingsClick: PropTypes.func,
   userName: PropTypes.string,
-  isProf: PropTypes.bool.isRequired
 };
 
 export default Sidebar;

@@ -25,6 +25,7 @@ class StudentHome extends React.Component {
    this.handleSearchClick = this.handleSearchClick.bind(this);
    this.handleSearchChange = this.handleSearchChange.bind(this);
    this.submitSearch = this.submitSearch.bind(this);
+
    this.handleFolderNameChange = this.handleFolderNameChange.bind(this);
    this.submitAddFolder = this.submitAddFolder.bind(this);
    this.onCourseSelect = this.onCourseSelect.bind(this);
@@ -33,7 +34,7 @@ class StudentHome extends React.Component {
 
  componentDidMount() {
    this.props.loadCourses();
-   this.props.loadFolders();
+  //  this.props.loadFolders();
  }
 
  handleFolderNameChange(event) {
@@ -75,13 +76,9 @@ class StudentHome extends React.Component {
    browserHistory.push('/');
  }
 
-
-
-
  handleCoursesClick() {
    browserHistory.push('/student');
  }
-
 
  handleSearchClick() {
    this.props.searchModal();
@@ -109,9 +106,9 @@ class StudentHome extends React.Component {
 
     return (
       <div className="student-container">
-        <HeaderMenu logout={this.logout} />
+        <HeaderMenu logout={this.logout} handleCoursesClick={this.handleCoursesClick}/>
 
-        <div id="librarybar-container" className="clearfix">
+        {/* <div id="librarybar-container" className="clearfix">
           <div id="library-menu">
 
           <Collapsible trigger="Courses" transitionTime={100} overflowWhenOpen='scroll' open={true}>
@@ -140,9 +137,8 @@ class StudentHome extends React.Component {
               </ButtonToolbar>
           </Collapsible>
 
-          {/* <Collapsible trigger="All Chapters" transitionTime={100} overflowWhenOpen="auto">
-          </Collapsible> */}
           </div>
+
           { this.props.courses.length > 0 ?
             this.props.isCourseSelected ?
             <div id="course-display">
@@ -154,8 +150,7 @@ class StudentHome extends React.Component {
             <div style={{marginLeft:"23%", width:"60%", textAlign:"center"}}>
               <p style={{marginTop:"40px", textAlign:"center"}}> You are not currently subscribed to any courses. Search for courses to subscribe to them and view their content </p>
             </div>
-        }
-
+          }
 
         </div>
 
@@ -180,7 +175,7 @@ class StudentHome extends React.Component {
               </ListGroup>
             </div>
           </Modal.Body>
-        </Modal>
+        </Modal> */}
       </div>
     );
   }

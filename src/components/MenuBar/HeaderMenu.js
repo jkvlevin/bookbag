@@ -1,9 +1,9 @@
 import React, { PropTypes } from 'react';
 import { Navbar, NavDropdown, MenuItem, Nav, NavItem, Col } from 'react-bootstrap';
 
-const HeaderMenu = ({logout}) => {
+const HeaderMenu = ({logout, handleCoursesClick}) => {
   return (
-    <Navbar id="headermenu-container" inverse fixedTop style={{textAlign:"right", backgroundColor:"#262228"}}>
+    <Navbar inverse collapseOnSelect>
       <Navbar.Header>
         <Navbar.Brand>
           <a href="/student">BookBag</a>
@@ -12,12 +12,9 @@ const HeaderMenu = ({logout}) => {
       </Navbar.Header>
       <Navbar.Collapse>
       <Nav pullRight>
-        <NavDropdown title={localStorage.getItem('userName')} eventKey={1} id="user-dropdown" style={{width:"200px", textAlign:"right"}}>
-          <MenuItem eventKey={1.1}>My Library</MenuItem>
-          <MenuItem eventKey={1.3}>Search</MenuItem>
-          <MenuItem divider />
-          <MenuItem eventKey={1.6} onClick={logout}>Logout</MenuItem>
-        </NavDropdown>
+        <NavItem eventKey={1} onClick={handleCoursesClick}>My Library</NavItem>
+        <NavItem eventKey={2}>Search</NavItem>
+        <NavItem eventKey={3} onClick={logout}>Logout</NavItem>
       </Nav>
       </Navbar.Collapse>
     </Navbar>
@@ -25,7 +22,8 @@ const HeaderMenu = ({logout}) => {
 };
 
 HeaderMenu.propTypes = {
-  logout: PropTypes.func.isRequired
+  logout: PropTypes.func.isRequired,
+  handleCoursesClick: PropTypes.func.isRequired
 };
 
 export default HeaderMenu;
