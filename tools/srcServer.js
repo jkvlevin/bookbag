@@ -246,7 +246,6 @@ app.post('/api/student/addchaptertofolder', function(req, res, next) {
 
 // Create new Folder (Both Accounts)
 app.post('/api/addfolder', function(req, res, next) {
-	// Auth.verify(req.email);
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.addFolder(decoded.id, req.body.folderName, function(err, data1) {
 			if (err) return next(err);
@@ -280,18 +279,27 @@ app.post('/api/prof/upload', expjwt, upload.array('files'), function(req, res, n
 		Database.prepUpload(req.body.chapter, function(err, info) {
 			if (err) return next(err);
 			if (info != 200) res.sendStatus(200).json(info);
-
+			var blobs = [];
 			async.each(req.files, function(item, callback) {
-				var pdfData = fs.readFile(item.path, 'base64', function(err, data) {
-					Git.uploadFileToRepo(req.body.chapter, data, item.originalname, req.body.commitMessage, decoded.firstname + " " + decoded.lastname, function(e, d) {
+				fs.readFile(item.path, 'base64', function(err, data) {
+					Git.makeBlobForFile(req.body.chapter, data, function(e, d) {
 						if (e) return next(e);
 						fs.unlink(item.path);
-						res.sendStatus(200);
+						blobs.push({
+							path : item.originalname,
+							sha : d
+						});
 					});
-				})
+				});
+				callback();
 			}, function(err) {
 	  			if (err) return next(err);
-	  			res.send();
+	  			Git.makeCommitWithBlobArray(req.body.chapter, blobs, decoded.firstname + " " + decoded.lastname, req.body.commitMessage, function(err, data) {
+	  				console.log(blobs);
+	  				if (err) return next(err);
+
+	  				res.sendStatus(200);
+	  			});
 	  		});
 		});
 	});
@@ -507,7 +515,6 @@ Search APIs
 
 // Search the Database for Chapters
 app.post('/api/searchchapters', function(req, res, next) {
-	// Auth.verify(req.email);
 	Database.searchChapters(req.body.searchQuery, function(err, data) {
 		if (err) return next(err);
 		res.send(data);
@@ -516,10 +523,20 @@ app.post('/api/searchchapters', function(req, res, next) {
 
 // Search the Database for Chapters
 app.post('/api/searchcourses', function(req, res, next) {
-	// Auth.verify(req.email);
 	Database.searchCourses(req.body.searchQuery, function(err, data) {
 		if (err) return next(err);
 		res.send(data);
+	});
+});
+
+// General Search
+app.post('/api/search', function(req, res, next) {
+	Database.searchCourses(req.body.searchQuery, function(err, data) {
+		if (err) return next(err);
+		Database.searchChapters(req.body.searchQuery, function(e, d) {
+			if (e) return next(e);
+			res.send([d, data]);
+		});
 	});
 });
 

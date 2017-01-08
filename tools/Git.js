@@ -359,7 +359,10 @@ Git.makeCommitWithBlobArray = function (repoName, blobs, author, commitMessage, 
 						base_tree: base_tree
 					}, function(err, res) {
 
-						if (err) callback(JSON.parse(err)["message"]);
+						if (err) {
+							console.log("error creating tree");
+							callback(JSON.parse(err)["message"]);
+						}
 
 						else {
 							var treeSha = res.sha;
@@ -371,8 +374,11 @@ Git.makeCommitWithBlobArray = function (repoName, blobs, author, commitMessage, 
 								tree: treeSha,
 								parents: [firstsha]
 							}, function(err, res) {
-								if (err)
+								if (err){
+									console.log("error creating commit");
+
 									callback(JSON.parse(err)["message"]);
+								}
 								else {
 
 									github.gitdata.updateReference({
