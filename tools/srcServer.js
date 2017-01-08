@@ -478,6 +478,18 @@ app.post('/api/prof/getcourses', expjwt, function(req, res, next) {
 	});
 });
 
+app.post('/api/prof/getcheckoutuser', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		if (decoded.id === req.body.user) res.sendStatus(200);
+		else {
+			Database.getUserNameById(req.body.user, function(err, data) {
+			if (err) return next(err);
+			res.send(data);
+		});
+		}
+	});
+});
+
 app.post('/api/prof/getcoursebyid', expjwt, function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.getCourseData(req.body.course, function(err, data) {
