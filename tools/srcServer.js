@@ -592,10 +592,12 @@ app.post('/api/searchcourses', function(req, res, next) {
 });
 
 // Search Profs
-app.post('/api/searchprofs', function(req, res, next) {
-	Database.searchProfs(req.body.searchQuery, function(err, data) {
-		if (err) return next(err);
-		res.send(data);
+app.post('/api/searchprofs', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.searchProfs(req.body.searchQuery, decoded.id, function(err, data) {
+			if (err) return next(err);
+			res.send(data);
+		});
 	});
 });
 
