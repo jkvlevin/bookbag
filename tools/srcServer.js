@@ -482,13 +482,11 @@ app.post('/api/prof/getcourses', expjwt, function(req, res, next) {
 
 app.post('/api/prof/getcheckoutuser', expjwt, function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		if (decoded.id === req.body.user) res.sendStatus(202);
-		else {
-			Database.getUserNameById(req.body.user, function(err, data) {
+		if (err) return next(err);
+		Database.isCheckedOutByUser(decoded.id, req.body.chapter, function(err, data) {
 			if (err) return next(err);
 			res.send(data);
 		});
-		}
 	});
 });
 
