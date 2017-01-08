@@ -280,6 +280,7 @@ app.post('/api/prof/upload', expjwt, upload.array('files'), function(req, res, n
 			if (err) return next(err);
 			if (info != 200) res.sendStatus(200).json(info);
 			var blobs = [];
+
 			async.each(req.files, function(item, callback) {
 				fs.readFile(item.path, 'base64', function(err, data) {
 					Git.makeBlobForFile(req.body.chapter, data, function(e, d) {
@@ -289,17 +290,18 @@ app.post('/api/prof/upload', expjwt, upload.array('files'), function(req, res, n
 							path : item.originalname,
 							sha : d
 						});
+						callback();
 					});
 				});
-				callback();
 			}, function(err) {
 	  			if (err) return next(err);
+
 	  			Git.makeCommitWithBlobArray(req.body.chapter, blobs, decoded.firstname + " " + decoded.lastname, req.body.commitMessage, function(err, data) {
-	  				console.log(blobs);
 	  				if (err) return next(err);
 
 	  				res.sendStatus(200);
 	  			});
+
 	  		});
 		});
 	});
