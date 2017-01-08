@@ -420,33 +420,43 @@ app.post('/api/prof/getcourses', expjwt, function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.getWorkingCourses(decoded.id, function(err, data) {
 			if (err) return next(err);
-	  		var publicCourses = [];
-	  		var privateCourses = [];
 
-	  		async.each(data, function(item, callback) {
-	  			Database.getCourseData(item.id, function(err, data) {
-	  				if (err) callback(err);
-	  				Database.getCourseChapters(item.id, function(e, d) {
-						if (e) callback(e);
-						if (data[0].public == true) {
-							publicCourses.push({
-								courseInfo: data[0],
-								chapters : d
-							});
-						} else {
-							privateCourses.push({
-								courseInfo: data[0],
-								chapters : d
-							});
-						}
-						callback();
-					});
-	  			});
-	  		}, function(err) {
+			let privateCourses = [];
+			let publicCourses = [];
+			async.each(data, function(item, callback) {
+				Database.getCourseData(item.id, function(err, data) {
+				if (err) callback(err);
+				Database.getCourseChapterCount(item.id, function(e, d) {
+					if (e) callback(e);
+					data[0]["count"] = d[0]["count"];
+					if (data[0].public == true) {
+						publicCourses.push(data[0]);
+					} else {
+						privateCourses.push(data[0]);
+					}
+					callback();
+				});
+				});
+			}, function(err) {
 	  			if (err) return next(err);
 	  			res.send([privateCourses, publicCourses]);
 	  		});
 	  	});
+	});
+});
+
+app.post('/api/prof/getcoursebyid', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.getCourseData(req.body.course, function(err, data) {
+			if (err) callback(err);
+			Database.getCourseChapters(req.body.course, function(e, d) {
+				if (e) callback(e);
+				res.send({
+					courseInfo: data[0],
+					chapters : d
+				})
+			});
+		});
 	});
 });
 

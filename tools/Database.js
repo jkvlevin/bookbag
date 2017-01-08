@@ -391,6 +391,16 @@ Database.getCourseData = function(course, callback) {
 	});
 };
 
+Database.getCourseChapterCount = function(course, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+		client.query("SELECT COUNT(*) FROM \"" + course + "_chapters\"").on('end', function(result) {
+			done();
+			callback(null, result.rows);
+		});
+	});
+};
+
 /******************************************************************************
 Search Queries
 *******************************************************************************/
