@@ -15,10 +15,6 @@ export function submitFiles(files, message, chapter) {
   }
 }
 
-export function addUploadFiles(file) {
-  return { type: types.ADD_UPLOAD_FILE_SUCCESS, file };
-}
-
 export function getChapterById(id) {
   const token = localStorage.getItem('userToken');
   var authLine = 'Bearer ' + token;

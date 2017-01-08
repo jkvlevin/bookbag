@@ -67,12 +67,9 @@ class ProfChapter extends React.Component {
   }
 
   handleRemovedFile(file) {
-    console.log(file);
-    // for (const f in this.state.uploadFiles) {
-    //   if (this.state.uploadFiles[f] === file) {
-    //     this.setState({ uploadFiles: this.state.uploadFiles.splice(this.state.uploadFiles[f], 1) });
-    //   }
-    // }
+    const i = this.state.uploadFiles.indexOf(file);
+    this.state.uploadFiles.splice(i, 1);
+    console.log(this.state.uploadFiles);
   }
 
   handleUploadMessageChange(event) {
@@ -82,6 +79,7 @@ class ProfChapter extends React.Component {
   handleUploadFilesSubmit(event) {
     event.preventDefault();
     this.props.submitFiles(this.state.uploadFiles, this.state.uploadCommitMessage, this.props.params.chapterId);
+    this.setState({ showUploadModal: false });
   }
 
   handleCoursesClick() {
