@@ -68,9 +68,7 @@ export function submitNewCourse(name, description, keywords) {
       headers: { Authorization : authLine},
       data: { name: name, keywords: keywords, description: description }
     }).then((response) => {
-      const workingCourses = response.data[0];
-      const publishedCourses = response.data[1];
-      dispatch(loadProfessorCoursesSuccess(workingCourses, publishedCourses));
+      dispatch(loadProfessorCoursesSuccess(response.data[0], response.data[1]));
     });
   };
 }

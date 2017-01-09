@@ -165,9 +165,11 @@ Database.addFolder = function(student, folderName, callback) {
 		if (err) callback(err);
 
 		// Insert the course into the student's courselist
-		client.query("INSERT INTO \"" + student + "_folders\"(name) VALUES ('" + folderName + "') RETURNING id", function(err, result) {
+		client.query("INSERT INTO \"" + student + "_folders\"(name) VALUES ('" + folderName + "') RETURNING id").on('row', function(row, result) {
+			result.addRow(row);
+		}).on('end', function(result) {
 			// Create a new table that holds all the chapters in this folder
-			client.query("CREATE TABLE \"" + student + result.rows[0].id + "_chapters\" (id text UNIQUE, url varchar(2083))", function() {
+			client.query("CREATE TABLE \"" + student + result.rows[0].id + "_chapters\" (id text UNIQUE, url varchar(2083))", function(result) {
 				done();
 				callback(null, 200);
 			});
@@ -179,6 +181,7 @@ Database.addFolder = function(student, folderName, callback) {
 Database.addChapterToCourse = function(chapter, course, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
+    console.log("INSERT INTO \"" + course + "_chapters\" VALUES ('" + chapter + "', null) ON CONFLICT (id) DO NOTHING");
 		client.query("INSERT INTO \"" + course + "_chapters\" VALUES ('" + chapter + "', null) ON CONFLICT (id) DO NOTHING", function() {
 			done();
 			callback(null, 200);
@@ -186,27 +189,36 @@ Database.addChapterToCourse = function(chapter, course, callback) {
 	});
 };
 
-// Allows a student to add a chapter to course notes
-Database.addChapterToCourseNotes = function(student, prof, chapterName, chapterAuthor, courseName, callback) {
+Database.changeCourseInfo= function(course, name, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
-		let cn = courseName.replace(' ', '');
 		if (err) callback(err);
-		let s = "INSERT INTO " + sanitizeEmail(student) + cn + sanitizeEmail(prof) + "_notes VALUES ('" + chapterName + "', '" + chapterAuthor + "', null)";
-		client.query(s);
-		done();
-		callback(null, 202);
+		client.query("UPDATE courses SET name = '" + name + "', keywords = '{" + keywords + "}', description = '" + description + "'  WHERE id = '" + course + "'", function() {
+				done();
+				callback(null, 200);
+		});
 	});
 };
 
+// Allows a student to add a chapter to course notes
+// Database.addChapterToCourseNotes = function(student, prof, chapterName, chapterAuthor, courseName, callback) {
+// 	pg.connect(DATABASE_URL, function(err, client, done) {
+// 		let cn = courseName.replace(' ', '');
+// 		if (err) callback(err);
+// 		let s = "INSERT INTO " + sanitizeEmail(student) + cn + sanitizeEmail(prof) + "_notes VALUES ('" + chapterName + "', '" + chapterAuthor + "', null)";
+// 		client.query(s);
+// 		done();
+// 		callback(null, 202);
+// 	});
+// };
+
 // Allows a student to add a chapter to a folder
-Database.addChapterToFolder = function(student, chapterName, chapterAuthor, folderName, callback) {
+Database.addChapterToFolder = function(student, folder, chapter, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
-		let fn = folderName.replace(' ', '');
 		if (err) callback(err);
-		let s = "INSERT INTO " + sanitizeEmail(student) + fn + " VALUES ('" + chapterName + "', '" + chapterAuthor + "', null)";
-		client.query(s);
-		done();
-		callback(null, 202);
+		client.query("INSERT INTO \"" + student + folder "_chapters\" VALUES ('" + chapter + "', null)", function(result) {
+			done();
+			callback(null, 200);
+		});
 	});
 };
 
@@ -242,6 +254,17 @@ Database.addContributorToChapter = function(contributor, chapter, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 		client.query("UPDATE chapters SET contributors = array_append(contributors, '" + contributor + "') WHERE id = '" + chapter + "' AND NOT contributors::text[] @> ARRAY['" + contributor + "']");
+		client.query("INSERT INTO \"" + contributor + "_working_chapters\" (id) VALUES ('" + chapter + "') ON CONFLICT (id) DO NOTHING");
+		done();
+		callback(null, 200);
+	});
+}
+
+// Remove a contributor from a chapter
+Database.removeContributorFromChapter = function(contributor, chapter, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+		client.query("UPDATE chapters SET contributors = array_remove(contributors, '" + contributor + "') WHERE id = '" + chapter + "'");
 		client.query("INSERT INTO \"" + contributor + "_working_chapters\" (id) VALUES ('" + chapter + "') ON CONFLICT (id) DO NOTHING");
 		done();
 		callback(null, 200);
@@ -347,7 +370,7 @@ Database.getUserNameById = function(user, callback) {
 			result.addRow(row);
 		}).on('end', function(result) {
 			done();
-			callback(null, result.rows[0]);			
+			callback(null, result.rows[0]);
 		});
 	});
 }
@@ -360,7 +383,7 @@ Database.getChapterById = function(chapter, callback) {
 			result.addRow(row);
 		}).on('end', function(result) {
 			done();
-			callback(null, result.rows[0]);			
+			callback(null, result.rows[0]);
 		});
 	});
 };
@@ -372,8 +395,14 @@ Database.isCheckedOutByUser = function(user, chapter, callback) {
 			result.addRow(row);
 		}).on('end', function(result) {
 			done();
-			if (result.rowCount > 0) callback(null, 200);
-			else callback(null, 202);		
+			if (result.rowCount > 0) {
+				done();
+				callback(null, 200);
+			}
+			else {
+				done();
+				callback(null, 202);
+			}
 		});
 	});
 }
@@ -385,8 +414,14 @@ Database.isOwner = function(user, chapter, callback) {
 			result.addRow(row);
 		}).on('end', function(result) {
 			done();
-			if (result.rowCount > 0) callback(null, 200);
-			else callback(null, 202);		
+			if (result.rowCount > 0) {
+				done();
+				callback(null, 200);
+			}
+			else {
+				done();
+				callback(null, 202);
+			}
 		});
 	});
 }
@@ -472,7 +507,7 @@ Search Queries
 
 // Search a user's query and return the results
 Database.searchChapters = function(searchQuery, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
 		let query = client.query("SELECT * FROM chapters WHERE name ILIKE '%" + searchQuery + "%' OR description ILIKE '%" + searchQuery + "%' AND public = TRUE");
@@ -480,6 +515,7 @@ Database.searchChapters = function(searchQuery, callback) {
 			result.addRow(row);
 		});
 		query.on('end', function(result) {
+			done();
 			callback(null, result.rows);
 		});
 	});
@@ -487,7 +523,7 @@ Database.searchChapters = function(searchQuery, callback) {
 
 // Search a user's query and return the results
 Database.searchCourses = function(searchQuery, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
 		let query = client.query("SELECT * FROM courses WHERE name ILIKE '%" + searchQuery + "%' OR description ILIKE '%" + searchQuery + "%' OR profname ILIKE '%" + searchQuery + "%'");
@@ -495,18 +531,20 @@ Database.searchCourses = function(searchQuery, callback) {
 			result.addRow(row);
 		});
 		query.on('end', function(result) {
+			done();
 			callback(null, result.rows);
 		});
 	});
 };
 
 Database.searchProfs = function(searchQuery, user, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
 		client.query("SELECT * FROM users WHERE prof = TRUE AND firstname || ' ' || lastname ILIKE '%" + searchQuery + "%' AND id != '" + user + "'").on('row', function (row, result) {
 			result.addRow(row);
 		}).on('end', function (result) {
+			done();
 			callback(null, result.rows);
 		})
 	})
@@ -518,27 +556,31 @@ Checkout/in Queries
 
 // Make a course public
 Database.makeCoursePublic = function(course, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		client.query("UPDATE courses SET public = TRUE WHERE id = '" + course + "'", function(err, result) {
 			if (err) callback (err);
+			done();
 			callback(null, 200);
 		});
 	});
 };
 
 // Make a chapter public
-Database.makeChapterPublic = function(chapter, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+Database.makeChapterPublic = function(chapter, pdf_url, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		client.query("UPDATE chapters SET public = TRUE WHERE id = '" + chapter + "'", function(err, result) {
 			if (err) callback (err);
-			callback(null, 200);
+			client.query("UPDATE chapters SET pdf_url = '" + pdf_url + "' WHERE id = '" + chapter + "'", function(e, r) {
+				done();
+				callback(null, 200);
+			});
 		});
 	});
 };
 
 // See if the user can upload
 Database.prepUpload = function(chapter, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		client.query("SELECT checkout_exp FROM chapters WHERE id = '" + chapter + "'").on('row', function(row, result) {
 			result.addRow(row);
 		}).on('end', function(result) {
@@ -547,9 +589,11 @@ Database.prepUpload = function(chapter, callback) {
 			client.query("UPDATE chapters SET checkout_exp = NULL, checkout_user = NULL WHERE id = '" + chapter + "'");
 			if (d2 > d1) {
 				// past checkout
+				done();
 				callback(null, "Chapter is past checkout date");
 			} else {
-				// time to check out	
+				// time to check out
+				done();
 				callback(null, 200);
 			}
 		})
@@ -558,7 +602,7 @@ Database.prepUpload = function(chapter, callback) {
 
 // Attempt to check out chapter
 Database.attemptCheckout = function(prof, chapter, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
 		client.query("SELECT checkout_user FROM chapters WHERE id = '" + chapter + "'").on('row', function(row, result) {
@@ -569,9 +613,13 @@ Database.attemptCheckout = function(prof, chapter, callback) {
 				client.query("SELECT checkout_dur FROM chapters WHERE id = '" + chapter + "'", function(err, result) {
 					let dur = result.rows[0].checkout_dur;
 					client.query("UPDATE chapters SET checkout_exp = NOW() + INTERVAL '" + dur + " hour' WHERE id = '" + chapter + "'");
+					done();
 					callback(null, 200);
 				})
-			} else callback(null, result.rows[0]);
+			} else {
+				done();
+				callback(null, result.rows[0]);
+			}
 		});
 	});
 };
@@ -582,7 +630,7 @@ Deletion Queries
 
 // Delete a student
 Database.deleteStudent = function(student, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
 		// Remove from users table
@@ -611,18 +659,20 @@ Database.deleteStudent = function(student, callback) {
 		});
 		client.query("DROP TABLE \"" + userFolders + "\"");
 
+		done();
 		callback(null, 200);
 	});
 };
 
 // Remove course from a student's library
 Database.removeCourse = function(student, course, callback) {
-	pg.connect(DATABASE_URL, function(err, client) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
 		client.query("DROP TABLE \"" + student + course + "_notes\"");
 		client.query("DELETE FROM \"" + student + "_courses\" WHERE id = '" + course + "'");
 		client.query("UPDATE courses SET subscribers = subscribers - 1 WHERE id = '" + course + "'");
+		done();
 		callback(null, 200);
 	});
 };

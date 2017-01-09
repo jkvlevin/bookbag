@@ -12,6 +12,8 @@ import PublishIcon from 'react-icons/lib/md/publish';
 import DotIcon from 'react-icons/lib/go/primitive-dot';
 import UploadIcon from 'react-icons/lib/go/cloud-upload';
 import AddIcon from 'react-icons/lib/md/add-circle-outline.js';
+import PrivateIcon from 'react-icons/lib/md/vpn-lock';
+import PublicIcon from 'react-icons/lib/md/public';
 import DropzoneComponent from 'react-dropzone-component';
 import * as actions from './actions.js';
 import styles from './styles.css';
@@ -39,6 +41,8 @@ class ProfChapter extends React.Component {
    this.handleSearchContributorsChange = this.handleSearchContributorsChange.bind(this);
    this.submitContributorsSearch = this.submitContributorsSearch.bind(this);
    this.handleAddContributors = this.handleAddContributors.bind(this);
+
+   this.handlePublish = this.handlePublish.bind(this);
 
    this.handleWorkbenchClick = this.handleWorkbenchClick.bind(this);
    this.handleSearchClick = this.handleSearchClick.bind(this);
@@ -150,10 +154,12 @@ class ProfChapter extends React.Component {
     this.props.search(this.state.searchValue);
   }
 
+  handlePublish(event) {
+    this.props.publish(this.props.params.chapterId, event.target.id);
+  }
+
 
  render() {
-   const isOwner = true;
-
    const config = this.componentConfig;
    const djsConfig = this.djsConfig;
    const eventHandlers = {
@@ -197,6 +203,21 @@ class ProfChapter extends React.Component {
         { this.props.isOwner ? <div style={{textAlign:"center"}}><Button style={{border:"none", background:"none"}} onClick={this.showAddContributors}><AddIcon style={{fontSize:"26px", color:"#1db954"}}/></Button></div>: ''}
       </Popover>
     );
+
+    const publishPopover = (
+      <Popover id="publish-popover" title={"Version " + this.props.versionDisplayed.version} style={{width:"400px !impotant"}}>
+        <ListGroup>
+          {this.props.currentVersionFiles.map(file =>
+            file.isPDF ?
+            <ListGroupItem key={file.downloadURL} style={{borderTop:"none", marginTop:"1px"}}>
+              {file.filename}
+              <Button onClick={this.handlePublish} id={file.downloadURL} style={{float:"right", background:"none", border:"none", marginTop:"-5px", color:"#1db594"}}><PublishIcon id={file.downloadURL} onClick={this.handlePublish}/></Button>
+            </ListGroupItem> :
+            ''
+          )}
+        </ListGroup>
+      </Popover>
+    )
     return (
       <div id="chapter-container">
         <Sidebar
@@ -206,17 +227,28 @@ class ProfChapter extends React.Component {
           logout={this.logout}
           userName={localStorage.getItem('userName')}
         />
-        <h1 style={{marginLeft:"220px", marginTop:"25px", fontSize:"22px", color:"#878787"}}> {this.props.params.name} </h1>
+        <h1 style={{marginLeft:"220px", marginTop:"25px", fontSize:"22px", color:"#878787"}}>
+          {this.props.params.name} {this.props.currentChapter.public ? <PublicIcon style={{marginLeft:"75%", fontSize:"30px"}}/> : <PrivateIcon style={{marginLeft:"75%", fontSize:"30px"}}/>}
+        </h1>
+        <p style={{marginLeft:"235px", fontSize:"11px"}}>"{this.props.currentChapter.description}"</p>
 
           <div id="button-options">
             <OverlayTrigger trigger="click" rootClose placement="right" overlay={contributorsPopover}>
               <Button id="contributors-button"><UserIcon/><h4 id="contributors-text">Contributors </h4></Button>
             </OverlayTrigger>
-              { this.props.isOwner ? <div style={{float:"right", marginRight:"60px", marginTop:"10px", fontSize:"25px"}}><PublishIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>Publish</h4></div> : ""}
+              { this.props.isOwner ?
+                  this.props.currentChapter.public ?
+                    <OverlayTrigger trigger="click" rootClose placement="bottom" overlay={publishPopover}>
+                      <Button id="publish-button"><PublishIcon style={{color:"#1db954"}}/><h4 id="publish-text">Update Published Version</h4></Button>
+                    </OverlayTrigger> :
+                    <OverlayTrigger trigger="click" rootClose placement="bottom" overlay={publishPopover}>
+                      <Button id="publish-button"><PublishIcon style={{color:"#1db954"}}/><h4 id="publish-text">Publish</h4></Button>
+                    </OverlayTrigger>
+                : ""}
               { this.props.currentChapter.checkout_user === null ?
                 <Button id="checkout-btn" onClick={this.handleCheckout}><CheckoutIcon/><h4 id="checkout-text">Checkout</h4></Button> :
                 this.props.checkoutUser ?
-                <Button id="upload-btn" onClick={this.showUploadModal}><UploadIcon/><h4 id="upload-text">Upload Files</h4></Button> :
+                <Button id="upload-btn" onClick={this.showUploadModal}><UploadIcon style={{color:"#407dc6"}}/><h4 id="upload-text">Upload Files & Check-In</h4></Button> :
                 <Button disabled id="checked-out-btn"><CheckoutIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>Checked Out</h4></Button>
               }
           </div>
@@ -224,9 +256,9 @@ class ProfChapter extends React.Component {
           <div id="version-list">
             <ListGroup>
               {this.props.chapterVersions.map(version =>
-                <ListGroupItem key={version.sha} id={version.sha} style={{textAlign:"left"}} onClick={this.handleVersionChange}>
+                <ListGroupItem key={version.sha} id={version.sha} style={{textAlign:"left", fontSize:"12px"}} onClick={this.handleVersionChange}>
                   Version {version.version} - <div id={version.sha} onClick={this.handleVersionChange} style={{fontSize:"10px", fontStyle:"italic", display:"inline"}}>{version.author}</div>
-                  {(this.props.versionDisplayed.sha === version.sha) ? <DotIcon style={{float:"right", marginTop:"5px", fontSize:"14px", color:"#1db594"}}/> : ""}
+                  {(this.props.versionDisplayed.sha === version.sha) ? <DotIcon style={{float:"right", marginTop:"3px", fontSize:"14px", color:"#1db594"}}/> : ""}
                 </ListGroupItem>
               )}
             </ListGroup>
@@ -251,11 +283,10 @@ class ProfChapter extends React.Component {
              <Modal.Title>Upload Files</Modal.Title>
            </Modal.Header>
            <Modal.Body>
-
             <Form onSubmit={this.handleUploadFilesSubmit} encType="multipart\/form-data">
               <DropzoneComponent config={config} eventHandlers={eventHandlers} djsConfig={djsConfig} />
-              <FormControl type="text" value={this.state.uploadCommitMessage} placeholder="Short desecription of changes in upload" onChange={this.handleUploadMessageChange} />
-              <Button type="submit"> Upload </Button>
+              <FormControl type="text" value={this.state.uploadCommitMessage} placeholder="Short desecription of changes in upload" onChange={this.handleUploadMessageChange} style={{marginTop:"25px"}} />
+              <div style={{textAlign:"center"}}><Button type="submit" style={{marginTop:"30px", backgroundColor:"#1db954", color:"white", borderRadius:"20px"}}> Upload </Button></div>
             </Form>
            </Modal.Body>
           </Modal>
@@ -311,7 +342,8 @@ ProfChapter.propTypes = {
   contributors: PropTypes.array.isRequired,
   searchProfs: PropTypes.func.isRequired,
   searchProfsResults: PropTypes.array.isRequired,
-  addContributor: PropTypes.func.isRequired
+  addContributor: PropTypes.func.isRequired,
+  publish: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state) {
@@ -346,7 +378,8 @@ function mapDispatchToProps(dispatch) {
     getContributors: (id) => dispatch(actions.getContributors(id)),
     searchProfs: (name) => dispatch(actions.searchProfs(name)),
     addContributor: (id, chapter) => dispatch(actions.addContributor(id, chapter)),
-    loadSearchProfsResults: (profs) => dispatch(actions.loadSearchProfsResults(profs))
+    loadSearchProfsResults: (profs) => dispatch(actions.loadSearchProfsResults(profs)),
+    publish: (chapter, url) => dispatch(actions.publish(chapter, url))
   };
 }
 

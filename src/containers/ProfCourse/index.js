@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link, browserHistory } from 'react-router';
-import { ListGroup, ListGroupItem, Modal, Form, FormGroup, FormControl, InputGroup, Button, Nav, NavItem } from 'react-bootstrap';
+import { ListGroup, ListGroupItem, Modal, Form, FormGroup, FormControl, ControlLabel, InputGroup, Button, Nav, NavItem } from 'react-bootstrap';
 import Sidebar from '../../components/MenuBar/Sidebar.js';
 import SearchContent from '../../components/SearchContent';
 import CourseChapterList from '../../components/ProfessorWorkbench/CourseChapterList.js';
@@ -10,6 +10,7 @@ import ChapterIcon from 'react-icons/lib/go/book';
 import SettingsIcon from 'react-icons/lib/go/gear';
 import AddIcon from 'react-icons/lib/go/plus';
 import DeleteIcon from 'react-icons/lib/go/x';
+import PublishIcon from 'react-icons/lib/md/publish';
 import * as actions from './actions.js';
 import styles from './styles.css';
 
@@ -18,7 +19,7 @@ class ProfCourse extends React.Component {
   constructor(props) {
    super(props);
 
-   this.state = { searchChaptersValue: '', showAddChapterModal: false };
+   this.state = { searchChaptersValue: '', showAddChapterModal: false, showChapters:true };
 
    this.handleDeleteChapter = this.handleDeleteChapter.bind(this);
 
@@ -29,6 +30,9 @@ class ProfCourse extends React.Component {
 
    this.handleSearchChaptersChange = this.handleSearchChaptersChange.bind(this);
    this.submitChaptersSearch = this.submitChaptersSearch.bind(this);
+
+   this.showChapters = this.showChapters.bind(this);
+   this.showSettings = this.showSettings.bind(this);
 
    this.handleWorkbenchClick = this.handleWorkbenchClick.bind(this);
    this.handleSearchClick = this.handleSearchClick.bind(this);
@@ -69,6 +73,13 @@ class ProfCourse extends React.Component {
    this.props.searchChapters(this.state.searchChaptersValue);
  }
 
+ showChapters() {
+   this.setState({ showChapters:true });
+ }
+
+ showSettings() {
+   this.setState({ showChapters:false });
+ }
 
   handleWorkbenchClick() {
     browserHistory.push('/professor');
@@ -98,26 +109,51 @@ class ProfCourse extends React.Component {
           userName={localStorage.getItem('userName')}
         />
         <h1 style={{marginLeft:"220px", marginTop:"25px", fontSize:"22px", color:"#878787"}}> {this.props.currentCourse.courseInfo.name} </h1>
-        <p style={{marginLeft:"225px"}}> {this.props.currentCourse.courseInfo.description} </p>
+        <p style={{marginLeft:"235px", fontSize:"11px"}}> "{this.props.currentCourse.courseInfo.description}" </p>
 
           <div id="button-options">
-            <div style={{display:"inline", marginTop:"10px", fontSize:"25px"}}><ChapterIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>{this.props.currentCourse.chapters ? this.props.currentCourse.chapters.length : 0}</h4></div>
-            <div style={{display:"inline", marginLeft:"120px", marginTop:"10px", fontSize:"25px"}}><SettingsIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>Settings</h4></div>
-            <Button id="addchapter-button" onClick={this.showAddChapterModal}><AddIcon/><h4 id="addchapter-text">Add Chapter</h4></Button>
+            <Button id="show-chapters-btn" onClick={this.showChapters}><ChapterIcon onClick={this.showChapters} style={{color:"#407dc6"}}/><h4 onClick={this.showChapters} id="showchap-text">Course Chapters</h4></Button>
+            <Button id="addchapter-button" onClick={this.showAddChapterModal}><AddIcon style={{color:"#1db954"}}/><h4 id="addchapter-text">Add Chapter</h4></Button>
+            <Button id="show-settings-btn" onClick={this.showSettings}><SettingsIcon onClick={this.showSettings}/><h4 onClick={this.showSettings} id="settings-text">Settings</h4></Button>
           </div>
 
-          <div id="course-chapter-list">
-            <ListGroup>
-              {this.props.currentCourse.chapters.map(chapter =>
-                <ListGroupItem key={chapter.id} style={{textAlign:"left"}}>
-                  <a style={{marginLeft:"15px", float:"left"}}>{chapter.name}</a>
-                  <p style={{marginLeft:"5px", marginTop:"2px", fontSize:"11px", display:"inline"}}> - {chapter.ownername} </p>
-                  <p style={{display:"inline", marginLeft:"40px", fontSize:"11px", fontStyle:"italic"}}> "{chapter.description}" </p>
-                  <Button onClick={this.handleDeleteChapter} id="del-chapter-button" name={chapter.id}> x </Button>
-                </ListGroupItem>
-              )}
-            </ListGroup>
+          { this.state.showChapters ?
+            this.props.currentCourse.chapters.length > 0 ?
+            <div id="course-chapter-list">
+              <ListGroup>
+                {this.props.currentCourse.chapters.map(chapter =>
+                  <ListGroupItem key={chapter.id} style={{textAlign:"left"}}>
+                    <a style={{marginLeft:"15px", float:"left"}}>{chapter.name}</a>
+                    <p style={{marginLeft:"5px", marginTop:"2px", fontSize:"11px", display:"inline"}}> - {chapter.ownername} </p>
+                    <p style={{display:"inline", marginLeft:"40px", fontSize:"11px", fontStyle:"italic"}}> "{chapter.description}" </p>
+                    <Button onClick={this.handleDeleteChapter} id="del-chapter-button" name={chapter.id}> x </Button>
+                  </ListGroupItem>
+                )}
+              </ListGroup>
+            </div> :
+            <div id="course-chapter-list">
+              <p style={{marginLeft:"35%", marginTop:"100px"}}>Add chapters to start creating your course!</p>
+            </div> :
+          <div id="course-settings">
+            <Form style={{width:"60%", marginLeft:"30px", marginTop:"30px", float:"left"}}>
+              <FormGroup>
+                <ControlLabel>Name</ControlLabel>
+                <FormControl type="text" value={this.props.currentCourse.courseInfo.name} title="Name" name="name"/>
+                <ControlLabel style={{marginTop:"15px"}}>Description</ControlLabel>
+                <FormControl componentClass="textarea" value={this.props.currentCourse.courseInfo.description} title="Description" name="description" style={{minHeight:"40px"}} />
+                <ControlLabel style={{marginTop:"15px"}}>Keywords</ControlLabel>
+                <FormControl componentClass="textarea" value={this.props.currentCourse.courseInfo.keywords} title="Keywords" name="keywords" style={{minHeight:"40px"}}/>
+                <Button type="submit" style={{marginLeft:"30%", marginTop:"25px", backgroundColor:"#1db954", color:"white", borderRadius:"20px", width:"150px"}}>Save Changes</Button>
+              </FormGroup>
+            </Form>
+            {this.props.currentCourse.courseInfo.public ? '' :
+              <div>
+                <PublishIcon style={{display:"inline", marginLeft:"150px", marginTop:"10%", fontSize:"50px", color:"#1db954", border:"thin solid #1db954", borderRadius:"25px"}}/> <br /><br />
+                <h4 id="publish-text">Publish</h4> <br />
+                <h7 style={{display:"inline", fontSize:"11px", marginLeft:"5%"}}>Warning: this will make your course publicly available</h7>
+              </div>}
           </div>
+          }
 
           <Modal show={this.state.showAddChapterModal} onHide={this.closeAddChapterModal}>
            <Modal.Header closeButton>

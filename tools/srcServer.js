@@ -275,14 +275,12 @@ app.post('/api/addfolder', function(req, res, next) {
 });
 
 app.post('/api/prof/upload', expjwt, upload.array('files'), function(req, res, next) {
-
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.prepUpload(req.body.chapter, function(err, info) {
 			if (err) return next(err);
-			if (info != 200) res.sendStatus(200).json(info);
+			if (info != 200) res.sendStatus(202).json(info);
 			else {
 				var blobs = [];
-
 				async.each(req.files, function(item, callback) {
 					fs.readFile(item.path, 'base64', function(err, data) {
 						Git.makeBlobForFile(req.body.chapter, data, function(e, d) {
@@ -297,14 +295,24 @@ app.post('/api/prof/upload', expjwt, upload.array('files'), function(req, res, n
 					});
 				}, function(err) {
 		  			if (err) return next(err);
-
 		  			Git.makeCommitWithBlobArray(req.body.chapter, blobs, decoded.firstname + " " + decoded.lastname, req.body.commitMessage, function(err, data) {
 		  				if (err) return next(err);
 
 		  				res.sendStatus(200);
 		  			});
-
 		  		});
+			}
+		});
+	});
+});
+
+app.post('/api/prof/checkin', expjwt, upload.array('files'), function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.prepUpload(req.body.chapter, function(err, info) {
+			if (err) return next(err);
+			if (info != 200) res.sendStatus(202).json(info);
+			else {
+				res.sendStatus(200);
 			}
 		});
 	});
@@ -503,7 +511,16 @@ app.post('/api/prof/getowner', expjwt, function(req, res, next) {
 
 app.post('/api/prof/makecoursepublic', expjwt, function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		Database.makeCoursePublic(req.body.course, function(err, data) {
+		Database.makeCoursePublic(req.body.course, req.body.name, function(err, data) {
+			if (err) return next(err);
+			res.sendStatus(data);
+		});
+	});
+});
+
+app.post('/api/prof/changecourseinfo', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.changeCourseInfo(req.body.course, req.body.name, req.body.description, req.body.keywords, function(err, data) {
 			if (err) return next(err);
 			res.sendStatus(data);
 		});
@@ -512,7 +529,7 @@ app.post('/api/prof/makecoursepublic', expjwt, function(req, res, next) {
 
 app.post('/api/prof/makechapterpublic', expjwt, function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		Database.makeChapterPublic(req.body.chapter, function(err, data) {
+		Database.makeChapterPublic(req.body.chapter, req.body.pdf_url, function(err, data) {
 			if (err) return next(err);
 			res.sendStatus(data);
 		});
@@ -522,6 +539,15 @@ app.post('/api/prof/makechapterpublic', expjwt, function(req, res, next) {
 app.post('/api/prof/addcontributortochapter', expjwt, function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.addContributorToChapter(req.body.contributor, req.body.chapter, function(err, data) {
+			if (err) return next(err);
+			res.sendStatus(data);
+		});
+	});
+});
+
+app.post('/api/prof/removecontributorfromchapter', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.removeContributorFromChapter(req.body.contributor, req.body.chapter, function(err, data) {
 			if (err) return next(err);
 			res.sendStatus(data);
 		});

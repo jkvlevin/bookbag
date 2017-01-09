@@ -39,6 +39,24 @@
   margin-top: 5px;
 }
 
+#publish-button {
+  float: right;
+  margin-right: 60px;
+  margin-top: 5px;
+  background: none;
+  border: none;
+  font-size: 25px;
+}
+
+#publish-text {
+  margin-left: 10px;
+  color: #868686;
+}
+
+#publish-text:hover {
+  color: #407dc6;
+}
+
 #checkout-text {
   margin-left: 10px;
   color: #868686;
@@ -80,7 +98,7 @@
 #version-list {
   margin-left: 40px;
   margin-top: 30px;
-  width: 14%;
+  width: 16%;
   height: 65vh;
   border: thin solid #DDDDDD;
   overflow: auto;

@@ -13,14 +13,44 @@
 }
 
 #button-options {
-  text-align: center;
   margin-left: 210px;
+}
+
+#show-chapters-btn {
+  display: inline;
+  font-size: 25px;
+  margin-left: 45px;
+  border: none;
+  background: none;
+}
+
+#showchap-text {
+  margin-left: 10px;
+  color: #868686;
+}
+#showchap-text:hover {
+  color: #407dc6;
+}
+
+#show-settings-btn {
+  display: inline;
+  margin-left: 40px;
+  font-size: 25px;
+  border: none;
+  background: none;
+}
+
+#settings-text {
+  margin-left: 10px;
+  color: #868686;
+}
+#settings-text:hover {
+  color: #407dc6;
 }
 
 #addchapter-button {
   display: inline;
-  margin-left: 120px;
-  margin-top: 5px;
+  margin-left: 35%;
   font-size: 25px;
   background: none;
   border: none;
@@ -40,7 +70,6 @@
   background: none;
   border: none;
   float: right;
-  margin-top: -5px;
 }
 
 #course-chapter-list {
@@ -51,6 +80,25 @@
   border: thin solid #DDDDDD;
   overflow: auto;
   border-radius: 5px;
+}
+
+#course-settings {
+  margin-left: 210px;
+  margin-top: 25px;
+  width: 77.5%;
+  min-height: 58vh;
+  border: thin solid #DDDDDD;
+  overflow: auto;
+  border-radius: 5px;
+}
+
+#publish-text {
+  display: inline;
+  margin-left: 150px;
+  color: #878787;
+}
+#publish-text:hover {
+  color: #407cd6;
 }
 
 #del-chapter-button {
