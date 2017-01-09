@@ -663,6 +663,16 @@ app.post('/api/student/removecourse', function(req, res, next) {
 	});
 });
 
+// Remove Folder from a Student's Library
+app.post('/api/student/removefolder', function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.removeFolder(decoded.id, req.body.folder, function(err, data) {
+			if (err) return next(err);
+			res.sendStatus(data);
+		});
+	});
+});
+
 // Delete a Chapter from Bookbag
 app.post('/api/prof/deletechapter', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
@@ -674,6 +684,16 @@ app.post('/api/prof/deletechapter', function(req, res, next) {
   		})
   	});
   });
+});
+
+// Remove Course from a Student's Library
+app.post('/api/student/removechapterfromfolder', function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.removeChapterFromFolder(decoded.id, req.body.chapter, req.body.folder, function(err, data) {
+			if (err) return next(err);
+			res.sendStatus(data);
+		});
+	});
 });
 
 // Remove Course from a Student's Library

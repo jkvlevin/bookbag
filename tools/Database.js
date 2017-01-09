@@ -509,7 +509,7 @@ Database.searchChapters = function(searchQuery, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
-		let query = client.query("SELECT * FROM chapters WHERE name ILIKE '%" + searchQuery + "%' OR description ILIKE '%" + searchQuery + "%' AND public = TRUE");
+		let query = client.query("SELECT * FROM chapters WHERE (name ILIKE '%" + searchQuery + "%' OR description ILIKE '%" + searchQuery + "%') AND public = TRUE");
 		query.on('row', function(row, result) {
 			result.addRow(row);
 		});
@@ -525,7 +525,7 @@ Database.searchCourses = function(searchQuery, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
-		let query = client.query("SELECT * FROM courses WHERE name ILIKE '%" + searchQuery + "%' OR description ILIKE '%" + searchQuery + "%' OR profname ILIKE '%" + searchQuery + "%'");
+		let query = client.query("SELECT * FROM courses WHERE (name ILIKE '%" + searchQuery + "%' OR description ILIKE '%" + searchQuery + "%' OR profname ILIKE '%" + searchQuery + "%') AND public = TRUE");
 		query.on('row', function(row, result) {
 			result.addRow(row);
 		});
@@ -676,6 +676,18 @@ Database.removeCourse = function(student, course, callback) {
 	});
 };
 
+// Remove folder from a student's library
+Database.removeCourse = function(student, folder, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+
+		client.query("DROP TABLE \"" + student + folder + "_chapters\"");
+		client.query("DELETE FROM \"" + student + "_folders\" WHERE id = '" + folder + "'");
+		done();
+		callback(null, 200);
+	});
+};
+
 Database.deleteCourse = function(prof, courseName, callback) {
 	pg.connect(DATABASE_URL, function(err, client) {
 		if (err) callback(err);
@@ -707,6 +719,18 @@ Database.removeChapterFromCourse = function(chapter, course, callback) {
 		if (err) callback(err);
 
 		client.query("DELETE FROM \"" + course + "_chapters\" WHERE id = '" + chapter + "'", function(err, result) {
+			if (err) callback(err);
+			done();
+			callback(null, 200);
+		});
+	});
+};
+
+Database.removeChapterFromFolder = function(student, chapter, folder, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+
+		client.query("DELETE FROM \"" + student + folder + "_chapters\" WHERE id = '" + chapter + "'", function(err, result) {
 			if (err) callback(err);
 			done();
 			callback(null, 200);
