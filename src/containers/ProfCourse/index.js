@@ -99,7 +99,7 @@ class ProfCourse extends React.Component {
 
  handleSettingsChangeSubmit(event) {
    event.preventDefault();
-   this.props.changeSettings(this.state.newName, this.state.newDescrip, this.state.newKeywords, this.props.params.chapterId);
+   this.props.changeSettings(this.state.newName, this.state.newDescrip, this.state.newKeywords, this.props.params.courseId);
  }
 
   handleWorkbenchClick() {

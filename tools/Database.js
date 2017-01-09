@@ -188,7 +188,7 @@ Database.addChapterToCourse = function(chapter, course, callback) {
 	});
 };
 
-Database.changeCourseInfo= function(course, name, callback) {
+Database.changeCourseInfo= function(course, name, description, keywords, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 		client.query("UPDATE courses SET name = '" + name + "', keywords = '{" + keywords + "}', description = '" + description + "'  WHERE id = '" + course + "'", function() {

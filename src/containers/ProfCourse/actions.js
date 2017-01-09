@@ -11,7 +11,7 @@ export function changeSettings(name, description, keywords, id) {
       headers: { Authorization : authLine},
       data: { name: name, description: description, keywords:keywords, course: id }
     }).then((response) => {
-      dispatch(getCourseById(course));
+      dispatch(getCourseById(id));
     });
   };
 }
