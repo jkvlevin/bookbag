@@ -165,9 +165,11 @@ Database.addFolder = function(student, folderName, callback) {
 		if (err) callback(err);
 
 		// Insert the course into the student's courselist
-		client.query("INSERT INTO \"" + student + "_folders\"(name) VALUES ('" + folderName + "') RETURNING id", function(err, result) {
+		client.query("INSERT INTO \"" + student + "_folders\"(name) VALUES ('" + folderName + "') RETURNING id").on('row', function(row, result) {
+			result.addRow(row);
+		}).on('end', function(result) {
 			// Create a new table that holds all the chapters in this folder
-			client.query("CREATE TABLE \"" + student + result.rows[0].id + "_chapters\" (id text UNIQUE, url varchar(2083))", function() {
+			client.query("CREATE TABLE \"" + student + result.rows[0].id + "_chapters\" (id text UNIQUE, url varchar(2083))", function(result) {
 				done();
 				callback(null, 200);
 			});
@@ -180,6 +182,36 @@ Database.addChapterToCourse = function(chapter, course, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 		client.query("INSERT INTO \"" + course + "_chapters\" VALUES ('" + chapter + "', null) ON CONFLICT (id) DO NOTHING", function() {
+			done();
+			callback(null, 200);
+		});
+	});
+};
+
+Database.changeCourseName = function(course, name, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+		client.query("UPDATE courses SET name = '" + name + "' WHERE id = '" + course + "'", function() {
+			done();
+			callback(null, 200);
+		});
+	});
+};
+
+Database.changeCourseDescription = function(course, description, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+		client.query("UPDATE courses SET description = '" + description + "' WHERE id = '" + course + "'", function() {
+			done();
+			callback(null, 200);
+		});
+	});
+};
+
+Database.changeCourseKeywords = function(course, keywords, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+		client.query("UPDATE courses SET keywords = '{" + keywords + "}' WHERE id = '" + course + "'", function() {
 			done();
 			callback(null, 200);
 		});
@@ -199,14 +231,13 @@ Database.addChapterToCourseNotes = function(student, prof, chapterName, chapterA
 };
 
 // Allows a student to add a chapter to a folder
-Database.addChapterToFolder = function(student, chapterName, chapterAuthor, folderName, callback) {
+Database.addChapterToFolder = function(student, folder, chapter, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
-		let fn = folderName.replace(' ', '');
 		if (err) callback(err);
-		let s = "INSERT INTO " + sanitizeEmail(student) + fn + " VALUES ('" + chapterName + "', '" + chapterAuthor + "', null)";
-		client.query(s);
-		done();
-		callback(null, 202);
+		client.query("INSERT INTO \"" + student + folder "_chapters\" VALUES ('" + chapter + "', null)", function(result) {
+			done();
+			callback(null, 200);
+		});
 	});
 };
 

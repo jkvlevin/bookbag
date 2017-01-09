@@ -511,7 +511,34 @@ app.post('/api/prof/getowner', expjwt, function(req, res, next) {
 
 app.post('/api/prof/makecoursepublic', expjwt, function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		Database.makeCoursePublic(req.body.course, function(err, data) {
+		Database.makeCoursePublic(req.body.course, req.body.name, function(err, data) {
+			if (err) return next(err);
+			res.sendStatus(data);
+		});
+	});
+});
+
+app.post('/api/prof/changecoursename', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.changeCourseName(req.body.course, req.body.name, function(err, data) {
+			if (err) return next(err);
+			res.sendStatus(data);
+		});
+	});
+});
+
+app.post('/api/prof/changecoursedescription', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.changeCourseName(req.body.course, req.body.description, function(err, data) {
+			if (err) return next(err);
+			res.sendStatus(data);
+		});
+	});
+});
+
+app.post('/api/prof/changecoursekeywords', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.changeCourseName(req.body.course, req.body.keywords, function(err, data) {
 			if (err) return next(err);
 			res.sendStatus(data);
 		});
