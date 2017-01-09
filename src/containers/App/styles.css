@@ -13,9 +13,9 @@
 }
 
 .btn:focus {
-   outline: none !important;
+   outline: 0 !important;
 }
 
 .btn:active {
-  outline: none !important;
+  outline: 0 !important;
 }

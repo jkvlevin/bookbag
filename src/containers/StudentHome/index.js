@@ -106,7 +106,6 @@ class StudentHome extends React.Component {
 
  handleAddToFolder(event) {
    this.props.addToFolder(event.target.id, this.state.selectedChapterToAdd);
-   this.setState({ selectedChapterToAdd: '' });
  }
 
  handleRemoteAddToFolder(chapter, folder) {
@@ -235,7 +234,7 @@ class StudentHome extends React.Component {
         </div>
 
         <Modal show={this.props.showSearchModal} onHide={this.props.closeSearchModal} style={{marginTop:"23px"}}>
-          <Modal.Header closeButton style={{backgroundColor:"#262228", color:"white"}}>
+          <Modal.Header closeButton style={{backgroundColor:"#111111", color:"#9a9a9a"}}>
             <Modal.Title>Search BookBag Library</Modal.Title>
           </Modal.Header>
           <Modal.Body>
