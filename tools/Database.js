@@ -214,7 +214,7 @@ Database.changeCourseInfo= function(course, name, description, keywords, callbac
 Database.addChapterToFolder = function(student, folder, chapter, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
-		client.query("INSERT INTO \"" + student + folder + "_chapters\" VALUES ('" + chapter + "', null)", function(result) {
+		client.query("INSERT INTO \"" + student + folder + "_chapters\" VALUES ('" + chapter + "', null) ON CONFLICT (id) DO NOTHING", function(result) {
 			done();
 			callback(null, 200);
 		});
