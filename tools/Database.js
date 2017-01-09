@@ -188,47 +188,27 @@ Database.addChapterToCourse = function(chapter, course, callback) {
 	});
 };
 
-Database.changeCourseName = function(course, name, callback) {
+Database.changeCourseInfo= function(course, name, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
-		client.query("UPDATE courses SET name = '" + name + "' WHERE id = '" + course + "'", function() {
-			done();
-			callback(null, 200);
-		});
-	});
-};
-
-Database.changeCourseDescription = function(course, description, callback) {
-	pg.connect(DATABASE_URL, function(err, client, done) {
-		if (err) callback(err);
-		client.query("UPDATE courses SET description = '" + description + "' WHERE id = '" + course + "'", function() {
-			done();
-			callback(null, 200);
-		});
-	});
-};
-
-Database.changeCourseKeywords = function(course, keywords, callback) {
-	pg.connect(DATABASE_URL, function(err, client, done) {
-		if (err) callback(err);
-		client.query("UPDATE courses SET keywords = '{" + keywords + "}' WHERE id = '" + course + "'", function() {
-			done();
-			callback(null, 200);
+		client.query("UPDATE courses SET name = '" + name + "', keywords = '{" + keywords + "}', description = '" + description + "'  WHERE id = '" + course + "'", function() {
+				done();
+				callback(null, 200);
 		});
 	});
 };
 
 // Allows a student to add a chapter to course notes
-Database.addChapterToCourseNotes = function(student, prof, chapterName, chapterAuthor, courseName, callback) {
-	pg.connect(DATABASE_URL, function(err, client, done) {
-		let cn = courseName.replace(' ', '');
-		if (err) callback(err);
-		let s = "INSERT INTO " + sanitizeEmail(student) + cn + sanitizeEmail(prof) + "_notes VALUES ('" + chapterName + "', '" + chapterAuthor + "', null)";
-		client.query(s);
-		done();
-		callback(null, 202);
-	});
-};
+// Database.addChapterToCourseNotes = function(student, prof, chapterName, chapterAuthor, courseName, callback) {
+// 	pg.connect(DATABASE_URL, function(err, client, done) {
+// 		let cn = courseName.replace(' ', '');
+// 		if (err) callback(err);
+// 		let s = "INSERT INTO " + sanitizeEmail(student) + cn + sanitizeEmail(prof) + "_notes VALUES ('" + chapterName + "', '" + chapterAuthor + "', null)";
+// 		client.query(s);
+// 		done();
+// 		callback(null, 202);
+// 	});
+// };
 
 // Allows a student to add a chapter to a folder
 Database.addChapterToFolder = function(student, folder, chapter, callback) {
