@@ -1,8 +1,4 @@
 {
-  "scripts": {
-    "start": "babel-node tools/srcServer.js",
-    "lint": "node_modules/.bin/esw webpack.config.* src tools"
-  },
   "dependencies": {
     "async": "^2.1.4",
     "axios": "^0.15.2",
