@@ -302,10 +302,9 @@ Database.getCourseChapters = function(course, callback) {
 			result.addRow(row);
 		});
 		query.on('end', function(result) {
-			client.query("SELECT name FROM courses WHERE courses.id = \'" + course + "\'").on('end', function(r) {
-				let name = r.rows[0].name;
+			client.query("SELECT * FROM courses WHERE courses.id = \'" + course + "\'").on('end', function(r) {
 				done();
-				callback(null, result.rows, name);
+				callback(null, result.rows, r.rows[0].name);
 			});
 		});
 	});

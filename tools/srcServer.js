@@ -333,11 +333,11 @@ app.post('/api/student/getcourses', expjwt, function(req, res, next) {
   		var courses = [];
 
   		async.each(data, function(item, callback) {
-  			Database.getCourseChapters(item.id, function(err, data, name) {
+  			Database.getCourseChapters(item.id, function(err, data, course) {
 				if (err) callback(err);
 				else {
 					courses.push({
-						courseName: name,
+						courseInfo: course,
 						chapters : data
 					});
 				}
