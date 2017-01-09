@@ -509,7 +509,7 @@ Database.searchChapters = function(searchQuery, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
-		let query = client.query("SELECT * FROM chapters WHERE (name ILIKE '%" + searchQuery + "%' OR description ILIKE '%" + searchQuery + "%') AND public = TRUE");
+		let query = client.query("SELECT * FROM chapters WHERE (name ILIKE '%" + searchQuery + "%' OR description ILIKE '%" + searchQuery + "%' OR ownername ILIKE '%" + searchQuery + "%') AND public = TRUE");
 		query.on('row', function(row, result) {
 			result.addRow(row);
 		});
