@@ -1,6 +1,21 @@
 import * as types from '../../actionTypes';
 import axios from 'axios';
 
+export function publish(chapter, url) {
+  const token = localStorage.getItem('userToken');
+  var authLine = 'Bearer ' + token;
+  return function (dispatch) {
+    axios({
+      method: 'post',
+      url: '/api/prof/makechapterpublic',
+      headers: { Authorization: authLine },
+      data: { chapter: chapter, url: url }
+    }).then((response) => {
+      dispatch(window.location.reload());
+    });
+  }
+}
+
 export function addContributor(id, chapter) {
   const token = localStorage.getItem('userToken');
   var authLine = 'Bearer ' + token;
@@ -114,6 +129,7 @@ export function checkoutChapter(id) {
       data: { chapter: id }
     }).then((response) => {
       dispatch(getChapterById(id));
+      dispatch(checkIfCheckoutUser(id));
     });
   }
 }
@@ -126,7 +142,7 @@ export function submitFiles(files, message, chapter) {
     formdata.append("files", files[i]);
   formdata.append("chapter", chapter);
   formdata.append("commitMessage", message);
-  
+
   return function (dispatch) {
     axios({
       method: 'post',
@@ -134,8 +150,9 @@ export function submitFiles(files, message, chapter) {
       headers: { Authorization: authLine, 'Content-Type': 'multipart/form-data' },
       data: formdata
     }).then((response) => {
-      console.log("made request");
       dispatch(getChapterById(chapter));
+      dispatch(loadChapterVersions(chapter));
+      dispatch(loadVersionFiles(chapter));
     });
   }
 }

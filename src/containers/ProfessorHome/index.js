@@ -242,7 +242,7 @@ class ProfessorHome extends React.Component {
               </div>
             </div>}
 
-          <Modal show={this.props.showSearchModal} onHide={this.props.closeSearchModal} style={{marginTop:"100px"}}>
+          {/* <Modal show={this.props.showSearchModal} onHide={this.props.closeSearchModal} style={{marginTop:"100px"}}>
             <Modal.Body>
               <Form onSubmit={this.submitSearch}>
               <FormGroup>
@@ -263,7 +263,7 @@ class ProfessorHome extends React.Component {
                 </ListGroup>
               </div>
             </Modal.Body>
-          </Modal>
+          </Modal> */}
 
         </div>
       </div>

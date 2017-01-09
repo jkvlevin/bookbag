@@ -101,9 +101,9 @@ class ProfCourse extends React.Component {
         <p style={{marginLeft:"225px"}}> {this.props.currentCourse.courseInfo.description} </p>
 
           <div id="button-options">
-            <div style={{display:"inline", marginTop:"10px", fontSize:"25px"}}><ChapterIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>{this.props.currentCourse.chapters ? this.props.currentCourse.chapters.length : 0}</h4></div>
-            <div style={{display:"inline", marginLeft:"120px", marginTop:"10px", fontSize:"25px"}}><SettingsIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>Settings</h4></div>
+            <div style={{display:"inline", fontSize:"25px", marginLeft:"45px"}}><ChapterIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>{this.props.currentCourse.chapters ? this.props.currentCourse.chapters.length : 0}</h4></div>
             <Button id="addchapter-button" onClick={this.showAddChapterModal}><AddIcon/><h4 id="addchapter-text">Add Chapter</h4></Button>
+            <div style={{float:"right", marginRight:"80px", fontSize:"25px"}}><SettingsIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>Settings</h4></div>
           </div>
 
           <div id="course-chapter-list">

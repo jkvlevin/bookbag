@@ -13,16 +13,15 @@
 }
 
 #button-options {
-  text-align: center;
   margin-left: 210px;
 }
 
 #addchapter-button {
   display: inline;
-  margin-left: 120px;
-  margin-top: 5px;
+  margin-left: 380px;
   font-size: 25px;
   background: none;
+  margin-top: -5px;
   border: none;
 }
 
