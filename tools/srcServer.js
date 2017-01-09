@@ -101,8 +101,7 @@ Creation APIs
 // Add course to library
 app.post('/api/student/addcourse', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		Database.addCourse(decoded.id, req.body.course, function(err, data) {
-			if (err) return next(err);
+		Database.addCourse(decoded.id, req.body.course, function(err, ct) {
 			if (err) return next(err);
 			Database.getCourseNameById(req.body.course, function(er, fn) {
 				if (er) return next(er);
@@ -218,10 +217,10 @@ app.post('/api/student/addchaptertocoursenotes', function(req, res, next) {
 		  		}, function(err) {
 		  			if (err) throw Error(err);
 		  			res.send(courses.sort(function(a, b) {
-		  				let ua = a.toUpperCase();
-		  				let ub = b.toUpperCase();
+		  				let ua = a.courseName.toUpperCase();
+		  				let ub = b.courseName.toUpperCase();
 		  				if (ua < ub) return -1;
-		  				if (ua >) return 1;
+		  				if (ua > ub) return 1;
 		  				return 0;
 		  			}));
 		  		});
@@ -271,10 +270,10 @@ app.post('/api/addfolder', function(req, res, next) {
 		  		}, function(err) {
 		  			if (err) throw Error(err);
 			  			res.send(folders.sort(function(a, b) {
-			  				let ua = a.toUpperCase();
-			  				let ub = b.toUpperCase();
+			  				let ua = a.foldername.toUpperCase();
+			  				let ub = b.foldername.toUpperCase();
 			  				if (ua < ub) return -1;
-			  				if (ua >) return 1;
+			  				if (ua > ub) return 1;
 			  				return 0;
 			  			}));
 		  		});
@@ -374,11 +373,11 @@ app.post('/api/student/getcourses', expjwt, function(req, res, next) {
   		}, function(err) {
   			if (err) return next(err);
   			res.send(courses.sort(function(a, b) {
-  				let ua = a.toUpperCase();
-  				let ub = b.toUpperCase();
+  				let ua = a.courseName.toUpperCase();
+  				let ub = b.courseName.toUpperCase();
   				if (ua < ub) return -1;
-  				if (ua >) return 1;
-  				return 0;	
+  				if (ua > ub) return 1;
+  				return 0;
   			}));
   		});
   	});
@@ -407,11 +406,11 @@ app.post('/api/getfolders', function(req, res, next) {
   		}, function(err) {
   			if (err) throw Error(err);
   			res.send(folders.sort(function(a, b) {
-  				let ua = a.toUpperCase();
-				let ub = b.toUpperCase();
+  				let ua = a.foldername.toUpperCase();
+				let ub = b.foldername.toUpperCase();
 				if (ua < ub) return -1;
-				if (ua >) return 1;
-				return 0;	
+				if (ua > ub) return 1;
+				return 0;
   			}));
   		});
   	});

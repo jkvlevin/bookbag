@@ -1,12 +1,13 @@
 import * as types from '../../actionTypes';
 
 const initialState = {
-  courses: [{courseName:' ', chapters: [{id:'', name:'', owner:'', contributors:'', src_url:'', pdf_url:''}]}],
+  courses: [{courseName:' ', description:'', chapters: [{id:'', name:'', ownername:'', contributors:'', src_url:'', pdf_url:''}]}],
   showSearchModal: false,
   showFolderModal: false,
-  searchContent: [],
+  searchContentCourses: [],
+  searchContentChapters: [],
   folders: [{folderName:' ', chapters: [{id: '', name:'', owner:'', contributors:'', src_url:'', pdf_url:''}]}],
-  selectedCourse: {courseName:' ', chapters: [{id:'', name:'', owner:'', contributors:'', src_url:'', pdf_url:''}]},
+  selectedCourse: {courseName:' ', description:'', chapters: [{id:'', name:'', ownername:'', contributors:'', src_url:'', pdf_url:''}]},
   selectedFolder: {folderName:' ', chapters: [{id: '', name:'', owner:'', contributors:'', src_url:'', pdf_url:''}]},
   isCourseSelected: true,
 };
@@ -55,9 +56,13 @@ function studentReducer(state = initialState, action) {
       return Object.assign({}, state, {
         showFolderModal: false,
       });
-    case types.SEARCH_RESPONSE_SUCCESS:
+    case types.SEARCH_RESPONSE_CHAPTERS:
       return Object.assign({}, state, {
-        searchContent: action.searchResponse
+        searchContentChapters: action.chapters
+      });
+    case types.SEARCH_RESPONSE_COURSES:
+      return Object.assign({}, state, {
+        searchContentCourses: action.courses
       });
     default:
       return state;

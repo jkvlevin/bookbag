@@ -278,10 +278,10 @@ ProfessorHome.propTypes = {
   searchContent: PropTypes.array.isRequired,
   submitNewChapter: PropTypes.func.isRequired,
   loadProfessorChapters: PropTypes.func.isRequired,
-  workingChapters: PropTypes.array.isRequired,
-  publishedChapters: PropTypes.array.isRequired,
-  workingCourses: PropTypes.array.isRequired,
-  publishedCourses: PropTypes.array.isRequired,
+  workingChapters: PropTypes.array,
+  publishedChapters: PropTypes.array,
+  workingCourses: PropTypes.array,
+  publishedCourses: PropTypes.array,
   submitNewCourse: PropTypes.func.isRequired
 };
 
