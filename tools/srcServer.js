@@ -209,7 +209,9 @@ app.post('/api/student/addchaptertocoursenotes', function(req, res, next) {
 					});
 		  		}, function(err) {
 		  			if (err) throw Error(err);
-		  			res.send(courses);
+		  			res.send(courses.sort(function(a, b) {
+		  				return a.courseName > b.courseName;	
+		  			}));
 		  		});
 		  	});
 		});
@@ -249,7 +251,9 @@ app.post('/api/addfolder', function(req, res, next) {
 					});
 		  		}, function(err) {
 		  			if (err) throw Error(err);
-		  			res.send(folders);
+			  			res.send(folders.sort(function(a, b) {
+			  				return a.courseName > b.courseName;	
+			  			}));
 		  		});
 		  	});
 		});
@@ -346,7 +350,9 @@ app.post('/api/student/getcourses', expjwt, function(req, res, next) {
 			});
   		}, function(err) {
   			if (err) return next(err);
-  			res.send(courses);
+  			res.send(courses.sort(function(a, b) {
+  				return a.courseName > b.courseName;	
+  			}));
   		});
   	});
   });
@@ -373,7 +379,9 @@ app.post('/api/getfolders', function(req, res, next) {
 			});
   		}, function(err) {
   			if (err) throw Error(err);
-  			res.send(folders);
+  			res.send(folders.sort(function(a, b) {
+  				return a.courseName > b.courseName;	
+  			}));
   		});
   	});
   });
@@ -576,6 +584,33 @@ app.post('/api/prof/getcoursebyid', expjwt, function(req, res, next) {
 app.post('/api/prof/getchapterbyid', expjwt, function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.getWorkingChapterData(req.body.chapter, function(err, data) {
+			if (err) callback(err);
+			res.send(data[0]);
+		});
+  	});
+});
+
+app.post('/api/prof/getchapternamebyid', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.getWorkingChapterData(req.body.chapter, function(err, data) {
+			if (err) callback(err);
+			res.send(data[0]);
+		});
+  	});
+});
+
+app.post('/api/prof/getfoldernamebyid', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.getWorkingChapterData(decoded.id, req.body.folder, function(err, data) {
+			if (err) callback(err);
+			res.send(data[0]);
+		});
+  	});
+});
+
+app.post('/api/prof/getcoursenamebyid', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.getWorkingChapterData(req.body.course, function(err, data) {
 			if (err) callback(err);
 			res.send(data[0]);
 		});

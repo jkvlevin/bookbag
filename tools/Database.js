@@ -386,6 +386,45 @@ Database.getChapterById = function(chapter, callback) {
 	});
 };
 
+// Get a chapter's name by ID
+Database.getChapterNameById = function(chapter, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+		client.query("SELECT name FROM chapters WHERE id = '" + chapter + "'").on('row', function(row, result) {
+			result.addRow(row);
+		}).on('end', function(result) {
+			done();
+			callback(null, result.rows[0]);
+		});
+	});
+};
+
+// Get a folder's name by ID
+Database.getFolderNameById = function(student, folder, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+		client.query("SELECT name FROM \"" + student + "_folders\" +  WHERE id = '" + folder + "'").on('row', function(row, result) {
+			result.addRow(row);
+		}).on('end', function(result) {
+			done();
+			callback(null, result.rows[0]);
+		});
+	});
+};
+
+// Get a course's name by ID
+Database.getCourseNameById = function(course, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+		client.query("SELECT name FROM courses +  WHERE id = '" + course + "'").on('row', function(row, result) {
+			result.addRow(row);
+		}).on('end', function(result) {
+			done();
+			callback(null, result.rows[0]);
+		});
+	});
+};
+
 Database.isCheckedOutByUser = function(user, chapter, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
