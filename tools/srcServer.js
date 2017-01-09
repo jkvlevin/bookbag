@@ -563,6 +563,15 @@ app.post('/api/prof/addcontributortochapter', expjwt, function(req, res, next) {
 	});
 });
 
+app.post('/api/prof/removecontributorfromchapter', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.removeContributorFromChapter(req.body.contributor, req.body.chapter, function(err, data) {
+			if (err) return next(err);
+			res.sendStatus(data);
+		});
+	});
+});
+
 app.post('/api/prof/getcontributors', expjwt, function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		if (err) return next(err);

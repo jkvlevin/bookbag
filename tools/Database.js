@@ -279,6 +279,17 @@ Database.addContributorToChapter = function(contributor, chapter, callback) {
 	});
 }
 
+// Remove a contributor from a chapter
+Database.removeContributorFromChapter = function(contributor, chapter, callback) {
+	pg.connect(DATABASE_URL, function(err, client, done) {
+		if (err) callback(err);
+		client.query("UPDATE chapters SET contributors = array_remove(contributors, '" + contributor + "') WHERE id = '" + chapter + "'");
+		client.query("INSERT INTO \"" + contributor + "_working_chapters\" (id) VALUES ('" + chapter + "') ON CONFLICT (id) DO NOTHING");
+		done();
+		callback(null, 200);
+	});
+}
+
 /******************************************************************************
 Retreival Queries
 *******************************************************************************/
