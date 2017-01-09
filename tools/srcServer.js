@@ -103,7 +103,15 @@ app.post('/api/student/addcourse', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.addCourse(decoded.id, req.body.course, function(err, data) {
 			if (err) return next(err);
-			res.sendStatus(data);
+			if (err) return next(err);
+			Database.getCourseNameById(req.body.course, function(er, fn) {
+				if (er) return next(er);
+				Database.getChapterNameById(req.body.chapter, function(e, cn) {
+					if (e) return next(e);
+					if (ct > 0) res.sendStatus(200).json({coursename: fn, chaptername: cn});
+					else res.sendStatus(202).json({coursename: fn, chaptername: cn});
+				});
+			});
 		});
 	});
 });
@@ -210,7 +218,11 @@ app.post('/api/student/addchaptertocoursenotes', function(req, res, next) {
 		  		}, function(err) {
 		  			if (err) throw Error(err);
 		  			res.send(courses.sort(function(a, b) {
-		  				return a.courseName > b.courseName;	
+		  				let ua = a.toUpperCase();
+		  				let ub = b.toUpperCase();
+		  				if (ua < ub) return -1;
+		  				if (ua >) return 1;
+		  				return 0;
 		  			}));
 		  		});
 		  	});
@@ -220,9 +232,16 @@ app.post('/api/student/addchaptertocoursenotes', function(req, res, next) {
 
 app.post('/api/student/addchaptertofolder', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		Database.addChapterToFolder(decoded.id, req.body.folder, req.body.chapter, function(err, data) {
+		Database.addChapterToFolder(decoded.id, req.body.folder, req.body.chapter, function(err, ct) {
 			if (err) return next(err);
-			res.sendStatus(data);
+			Database.getFolderNameById(decoded.id, req.body.folder, function(er, fn) {
+				if (er) return next(er);
+				Database.getChapterNameById(req.body.chapter, function(e, cn) {
+					if (e) return next(e);
+					if (ct > 0) res.sendStatus(200).json({foldername: fn, chaptername: cn});
+					else res.sendStatus(202).json({foldername: fn, chaptername: cn});
+				});
+			});
 		});
 	});
 });
@@ -252,7 +271,11 @@ app.post('/api/addfolder', function(req, res, next) {
 		  		}, function(err) {
 		  			if (err) throw Error(err);
 			  			res.send(folders.sort(function(a, b) {
-			  				return a.courseName > b.courseName;	
+			  				let ua = a.toUpperCase();
+			  				let ub = b.toUpperCase();
+			  				if (ua < ub) return -1;
+			  				if (ua >) return 1;
+			  				return 0;
 			  			}));
 		  		});
 		  	});
@@ -351,7 +374,11 @@ app.post('/api/student/getcourses', expjwt, function(req, res, next) {
   		}, function(err) {
   			if (err) return next(err);
   			res.send(courses.sort(function(a, b) {
-  				return a.courseName > b.courseName;	
+  				let ua = a.toUpperCase();
+  				let ub = b.toUpperCase();
+  				if (ua < ub) return -1;
+  				if (ua >) return 1;
+  				return 0;	
   			}));
   		});
   	});
@@ -380,7 +407,11 @@ app.post('/api/getfolders', function(req, res, next) {
   		}, function(err) {
   			if (err) throw Error(err);
   			res.send(folders.sort(function(a, b) {
-  				return a.courseName > b.courseName;	
+  				let ua = a.toUpperCase();
+				let ub = b.toUpperCase();
+				if (ua < ub) return -1;
+				if (ua >) return 1;
+				return 0;	
   			}));
   		});
   	});
