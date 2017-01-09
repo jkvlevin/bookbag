@@ -1,0 +1,7 @@
+Welcome to your workbench! 
+
+Here, you can see the chapters that you are currently collaborating on. Those marked as "In Progress" are still in the works. The "Published" tab contains your chapters that have been made available for students and other professors to add to their courses. When a chapter is published, it can still be worked on privately, and the chapter owner can publish an updated version whenever necessary!
+
+Here are your courses, which are simply groups of chapters. "In Progress" Courses have not yet been made available to your students; "Published" Courses are--I think you get the point!
+
+Try creating a new chapter about a topic you've been meaning to write about. Or, upload something that you've already written!

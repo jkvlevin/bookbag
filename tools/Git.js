@@ -45,9 +45,8 @@ Git.createNewRepo = function(repoName, callback) {
 		}
 
 		else {
-			fs.readFile(__dirname + '/chapter_help.txt', 'base64', function(err, contents) {
+			fs.readFile(__dirname + '/chapter_help.md', 'base64', function(err, contents) {
 				if (err) {
-					console.log(err);
 					callback("Unable to create initial help file! Try again.");
 				}
 
@@ -55,7 +54,7 @@ Git.createNewRepo = function(repoName, callback) {
 					github.repos.createFile({
 						owner: ACCOUNT_NAME,
 						repo: repoName,
-						path: 'chapter_help.txt',
+						path: 'clickMeForHelp!.md',
 						message: 'Bookbag'+separator+'Your chapter is empty. Add collaborators, checkout and upload files to get started!',
 						content: contents,
 					}, function(err, res) {
@@ -309,7 +308,6 @@ Git.uploadFileToRepo = function(repoName, contents, fileName, commitMessage, aut
 							callback(null, 200);
 					});
 				}
-
 			});
 		}
 
