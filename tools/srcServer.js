@@ -103,13 +103,13 @@ app.post('/api/student/addcourse', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.addCourse(decoded.id, req.body.course, function(err, ct) {
 			if (err) return next(err);
-			Database.getCourseNameById(req.body.course, function(er, fn) {
+			Database.getCourseNameById(req.body.course, function(er, cn) {
 				if (er) return next(er);
-				Database.getChapterNameById(req.body.chapter, function(e, cn) {
-					if (e) return next(e);
-					if (ct > 0) res.sendStatus(200).json({coursename: fn, chaptername: cn});
-					else res.sendStatus(202).json({coursename: fn, chaptername: cn});
-				});
+				if (ct > 0) {
+          res.status(200).send({coursename: cn});
+        } else {
+          res.status(202).send({coursename: cn});
+        }
 			});
 		});
 	});
@@ -237,8 +237,8 @@ app.post('/api/student/addchaptertofolder', function(req, res, next) {
 				if (er) return next(er);
 				Database.getChapterNameById(req.body.chapter, function(e, cn) {
 					if (e) return next(e);
-					if (ct > 0) res.sendStatus(200).json({foldername: fn, chaptername: cn});
-					else res.sendStatus(202).json({foldername: fn, chaptername: cn});
+					if (ct > 0) res.status(200).send({foldername: fn, chaptername: cn});
+					else res.status(202).send({foldername: fn, chaptername: cn});
 				});
 			});
 		});
