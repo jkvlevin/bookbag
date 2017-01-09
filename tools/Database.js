@@ -147,15 +147,22 @@ Database.addCourse = function(student, course, callback) {
 		if (err) callback(err);
 
 		// Insert the course into the student's courselist
-		client.query("INSERT INTO \"" + student + "_courses\" VALUES ('" + course + "') ON CONFLICT (id) DO NOTHING");
+		client.query("INSERT INTO \"" + student + "_courses\" VALUES ('" + course + "') ON CONFLICT (id) DO NOTHING").on('row', function(row, result) {
+			result.addRow(row);
+		}).on('end', function (result) {
+			if (result.rowCount) {
+				// Create a new table that holds all the student's notes for the course
+				client.query("CREATE TABLE \"" + student + course + "_notes\" (id text UNIQUE, url varchar(2083))");
 
-		// Create a new table that holds all the student's notes for the course
-		client.query("CREATE TABLE \"" + student + course + "_notes\" (id text UNIQUE, url varchar(2083))");
+				client.query("UPDATE courses SET subscribers = subscribers + 1 WHERE id = '" + course + "'");
 
-		client.query("UPDATE courses SET subscribers = subscribers + 1 WHERE id = '" + course + "'");
-
-		done();
-		callback(null, 200);
+				done();
+				callback(null, 200);
+			} else {
+				done();
+				callback(null, 202);
+			}
+		});
 	});
 };
 
