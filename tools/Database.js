@@ -349,7 +349,7 @@ Database.getFolderChapters = function(student, folder, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 		let folderTable = student + folder;
-		let s = "SELECT * INNER JOIN \"" + folderTable + "_chapters\" on chapters.id = \"" + folderTable + "_chapters\".id";
+		let s = "SELECT * FROM chapters INNER JOIN \"" + folderTable + "_chapters\" on chapters.id = \"" + folderTable + "_chapters\".id";
 		let query = client.query(s);
 		query.on('row', function(row, result) {
 			result.addRow(row);
