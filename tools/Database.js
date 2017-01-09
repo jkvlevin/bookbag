@@ -235,7 +235,7 @@ Database.addChapterToCourseNotes = function(student, prof, chapterName, chapterA
 Database.addChapterToFolder = function(student, folder, chapter, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
-		client.query("INSERT INTO \"" + student + folder "_chapters\" VALUES ('" + chapter + "', null)", function(result) {
+		client.query("INSERT INTO \"" + student + folder + "_chapters\" VALUES ('" + chapter + "', null)", function(result) {
 			done();
 			callback(null, 200);
 		});

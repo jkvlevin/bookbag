@@ -1,6 +1,21 @@
 import * as types from '../../actionTypes';
 import axios from 'axios';
 
+export function changeSettings(name, description, keywords, id) {
+  const token = localStorage.getItem('userToken');
+  var authLine = 'Bearer ' + token;
+  return function (dispatch) {
+    axios({
+      method: 'post',
+      url: '/api/prof/changecourseinfo',
+      headers: { Authorization : authLine},
+      data: { name: name, description: description, keywords:keywords, course: id }
+    }).then((response) => {
+      dispatch(getCourseById(course));
+    });
+  };
+}
+
 export function addChapterToCourse(chapter, course) {
   const token = localStorage.getItem('userToken');
   var authLine = 'Bearer ' + token;
