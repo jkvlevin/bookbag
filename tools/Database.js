@@ -425,7 +425,7 @@ Database.getFolderNameById = function(student, folder, callback) {
 Database.getCourseNameById = function(course, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
-		client.query("SELECT name FROM courses +  WHERE id = '" + course + "'").on('row', function(row, result) {
+		client.query("SELECT name FROM courses WHERE id = '" + course + "'").on('row', function(row, result) {
 			result.addRow(row);
 		}).on('end', function(result) {
 			done();

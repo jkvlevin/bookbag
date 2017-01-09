@@ -1,16 +1,33 @@
 import React, { PropTypes } from 'react';
-import { ListGroupItem, DropdownButton, MenuItem } from 'react-bootstrap';
+import { ListGroupItem, MenuItem, Popover, OverlayTrigger, Button, ListGroup } from 'react-bootstrap';
 import styles from './styles.css'
 import MenuIcon from 'react-icons/lib/md/keyboard-control'
 
+const ChapterList = ({ name, owner, pdfUrl, id, folders, addToFolder }) => {
 
-const ChapterList = ({ name, owner, pdfUrl, id }) => {
+  function handleAddToFolderClick(event) {
+    addToFolder(event.target.id, id);
+  }
+
+  const chapPop = (
+    <Popover id="chap-pop" title="Add to Folder">
+      { folders.length > 0 ?
+        <ListGroup>
+        { folders.map(folder =>
+          <ListGroupItem key={folder.id} id={folder.id} onClick={handleAddToFolderClick} style={{borderTop:"none", marginTop:"1px", fontSize:"13px"}}>{folder.foldername}</ListGroupItem>
+        )}
+        </ListGroup>
+      : ''}
+    </Popover>
+  );
   return (
     <div>
-      <ListGroupItem><a href={pdfUrl} target="_blank"><h4>{name}</h4></a> - <h5>{owner}</h5> <div style={{float:"right"}}><DropdownButton title={<MenuIcon style={{marginBottom:"8px"}}/>} noCaret id="chapter-menu">
-          <MenuItem eventKey="1">Add to Course Notes</MenuItem>
-          <MenuItem eventKey="2">Add to Folder</MenuItem>
-        </DropdownButton></div></ListGroupItem>
+      <ListGroupItem href={pdfUrl} target="_blank" style={{width:"80%", float:"left", borderTop:"none", marginTop:"1px"}}>
+        <h4 style={{color:"#407dc6"}}>{name}</h4> - <h5>{owner}</h5>
+      </ListGroupItem>
+      <OverlayTrigger trigger="click" rootClose placement="right" overlay={chapPop}>
+        <Button style={{float:"left", marginTop:"2px", background:"none", border:"none", color:"#1db954", fontWeight:"bold", fontSize:"16px"}}>...</Button>
+      </OverlayTrigger>
     </div>
   );
 };
@@ -19,7 +36,9 @@ ChapterList.propTypes = {
   name: PropTypes.string.isRequired,
   owner: PropTypes.string.isRequired,
   pdfUrl: PropTypes.string.isRequired,
-  id: PropTypes.string,
+  id: PropTypes.string.isRequired,
+  folders: PropTypes.array.isRequired,
+  addToFolder: PropTypes.func.isRequired
 };
 
 export default ChapterList;

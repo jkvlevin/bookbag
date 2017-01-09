@@ -10,23 +10,23 @@
 
 #library-menu {
   width: 30%;
-  width: 270px;
+  width: 310px;
   border-right: thin solid #B0B0B0;
   height: 100vh;
   float: left;
 }
 
 #course-display {
-  margin-left: 310px;
-  width: 100%;
-  height: 100vh;
+  margin-left: 28%;
+  width: 70%;
+  min-height: 80%;
   display: flex;
 }
 
 #folder-display {
-  margin-left: 25%;
+  margin-left: 28%;
   width: 70%;
-  height: 100vh;
+  min-height: 80%;
   display: flex;
 }
 
