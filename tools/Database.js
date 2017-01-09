@@ -146,22 +146,17 @@ Database.addCourse = function(student, course, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
-		// Insert the course into the student's courselist
-		client.query("INSERT INTO \"" + student + "_courses\" VALUES ('" + course + "') ON CONFLICT (id) DO NOTHING").on('row', function(row, result) {
-			result.addRow(row);
-		}).on('end', function (result) {
-			if (result.rowCount) {
-				// Create a new table that holds all the student's notes for the course
-				client.query("CREATE TABLE \"" + student + course + "_notes\" (id text UNIQUE, url varchar(2083))");
-
-				client.query("UPDATE courses SET subscribers = subscribers + 1 WHERE id = '" + course + "'");
-
+		client.query("SELECT * from \"" + student + "_courses\" WHERE id = '" + course + "'").on('row', function(row, result) {
+				result.addRow(row);
+			}).on('end', function(result) {
+				client.query("INSERT INTO \"" + student + "_courses\" VALUES ('" + course + "') ON CONFLICT (id) DO NOTHING");
+				if (result.rowCount != 1) {
+					// Create a new table that holds all the student's notes for the course
+					client.query("CREATE TABLE \"" + student + course + "_notes\" (id text UNIQUE, url varchar(2083))");
+					client.query("UPDATE courses SET subscribers = subscribers + 1 WHERE id = '" + course + "'");
+				}
 				done();
-				callback(null, 200);
-			} else {
-				done();
-				callback(null, 202);
-			}
+		       	callback(null, result.rowCount);
 		});
 	});
 };
@@ -221,12 +216,11 @@ Database.changeCourseInfo= function(course, name, description, keywords, callbac
 Database.addChapterToFolder = function(student, folder, chapter, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
-		client.query("INSERT INTO \"" + student + folder + "_chapters\" VALUES ('" + chapter + "', null) ON CONFLICT (id) DO UPDATE SET id = '" + chapter + "' RETURNING id").on('row', function(row, result) {
+		client.query("SELECT * from \"" + student + folder + "_chapters\" WHERE id = '" + chapter + "'").on('row', function(row, result) {
 				result.addRow(row);
-        console.log(row);
 			}).on('end', function(result) {
+				client.query("INSERT INTO \"" + student + folder + "_chapters\" VALUES ('" + chapter + "', null) ON CONFLICT (id) DO NOTHING");
 				done();
-        console.log(result.rowCount);
 				callback(null, result.rowCount);
 		});
 	});
