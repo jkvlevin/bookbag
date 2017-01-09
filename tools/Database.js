@@ -225,7 +225,7 @@ Database.addChapterToFolder = function(student, folder, chapter, callback) {
 				result.addRow(row);
 			}).on('end', function(result) {
 				done();
-				callback(null, row.rowCount);
+				callback(null, result.rowCount);
 		});
 	});
 };
