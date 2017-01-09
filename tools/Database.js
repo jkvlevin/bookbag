@@ -221,10 +221,12 @@ Database.changeCourseInfo= function(course, name, description, keywords, callbac
 Database.addChapterToFolder = function(student, folder, chapter, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
-		client.query("INSERT INTO \"" + student + folder + "_chapters\" VALUES ('" + chapter + "', null) ON CONFLICT (id) DO NOTHING").on('row', function(row, result) {
+		client.query("INSERT INTO \"" + student + folder + "_chapters\" VALUES ('" + chapter + "', null) ON CONFLICT (id) DO UPDATE SET id = '" + chapter + "' RETURNING id").on('row', function(row, result) {
 				result.addRow(row);
+        console.log(row);
 			}).on('end', function(result) {
 				done();
+        console.log(result.rowCount);
 				callback(null, result.rowCount);
 		});
 	});
@@ -572,7 +574,7 @@ Database.searchCourses = function(searchQuery, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
 
-		let query = client.query("SELECT * FROM courses WHERE (name ILIKE '%" + searchQuery + "%' OR description ILIKE '%" + searchQuery + "%' OR profname ILIKE '%" + searchQuery + "%' OR keywords::text[] @> ARRAY['" + searchQuery + "']) AND public = TRUE");
+		let query = client.query("SELECT * FROM courses WHERE (name ILIKE '%" + searchQuery + "%' OR description ILIKE '%" + searchQuery + "%' OR profname ILIKE '%" + searchQuery + "%') AND public = TRUE");
 		query.on('row', function(row, result) {
 			result.addRow(row);
 		});

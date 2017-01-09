@@ -235,7 +235,7 @@ class StudentHome extends React.Component {
         </div>
 
         <Modal show={this.props.showSearchModal} onHide={this.props.closeSearchModal} style={{marginTop:"23px"}}>
-          <Modal.Header closeButton>
+          <Modal.Header closeButton style={{backgroundColor:"#262228", color:"white"}}>
             <Modal.Title>Search BookBag Library</Modal.Title>
           </Modal.Header>
           <Modal.Body>

@@ -138,7 +138,7 @@ class ProfCourse extends React.Component {
           userName={localStorage.getItem('userName')}
         />
         <h1 style={{marginLeft:"220px", marginTop:"25px", fontSize:"22px", color:"#878787"}}>
-          {this.props.params.name} {this.props.currentCourse.courseInfo.public ? <PublicIcon style={{marginLeft:"50%", fontSize:"30px"}}/> : <PrivateIcon style={{marginLeft:"50%", fontSize:"30px"}}/>}
+          {this.props.params.name} {this.props.currentCourse.courseInfo.public ? <PublicIcon style={{float:"right", marginRight:"12%", fontSize:"30px"}}/> : <PrivateIcon style={{float:"right", marginRight:"12%", fontSize:"30px"}}/>}
         </h1>
         <p style={{marginLeft:"235px", fontSize:"11px"}}>"{this.props.currentCourse.courseInfo.description}"</p>
 

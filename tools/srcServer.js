@@ -106,10 +106,10 @@ app.post('/api/student/addcourse', function(req, res, next) {
 			Database.getCourseNameById(req.body.course, function(er, cn) {
 				if (er) return next(er);
 				if(ct > 0) {
-					res.sendStatus(202).json({coursename: fn, chaptername: cn})
+					res.status(202).send({coursename: cn});
 				}
 				else {
-					res.sendStatus(200).json({coursename: fn, chaptername: cn});
+					res.status(200).send({coursename: cn});
 				}
 			});
 		});
@@ -238,8 +238,8 @@ app.post('/api/student/addchaptertofolder', function(req, res, next) {
 				if (er) return next(er);
 				Database.getChapterNameById(req.body.chapter, function(e, cn) {
 					if (e) return next(e);
-					if (ct > 0) res.sendStatus(202).json({foldername: fn, chaptername: cn});
-					else res.sendStatus(200).json({foldername: fn, chaptername: cn});
+					if (ct > 0) res.status(202).send({foldername: fn, chaptername: cn});
+					else res.status(200).send({foldername: fn, chaptername: cn});
 				});
 			});
 		});

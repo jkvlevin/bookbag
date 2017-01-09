@@ -16,7 +16,7 @@ export function addToFolder(folder, chapter) {
         dispatch(loadFolders());
         toastr.success(response.data.chaptername + ' added to ' + response.data.foldername);
       } else if (response.status === 202) {
-        toastr.warning(response.data.chaptername + ' already in folder ' + response.data.foldername);
+        toastr.info(response.data.chaptername + ' already in folder ' + response.data.foldername);
       }
     });
   };
@@ -36,7 +36,7 @@ export function subscribeToCourse(id) {
         dispatch(loadCourses());
         toastr.success('You are now subscribed to ' + response.data.coursename);
       } else if (response.status === 202) {
-        toastr.warning('You are already subscribed to'  + response.data.coursename);
+        toastr.info('You are already subscribed to '  + response.data.coursename);
       }
     });
   };
