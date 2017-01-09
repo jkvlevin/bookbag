@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "start": "babel-node tools/srcServer.js"
+  },
   "dependencies": {
     "async": "^2.1.4",
     "axios": "^0.15.2",
@@ -94,5 +97,8 @@
   },
   "repository": {
     "type": "git"
+  },
+  "engines": {
+    "node": "4.1.1"
   }
 }
