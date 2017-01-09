@@ -41,6 +41,7 @@ class ProfChapter extends React.Component {
    this.handleSearchContributorsChange = this.handleSearchContributorsChange.bind(this);
    this.submitContributorsSearch = this.submitContributorsSearch.bind(this);
    this.handleAddContributors = this.handleAddContributors.bind(this);
+   this.handleRemoveContributor = this.handleRemoveContributor.bind(this);
 
    this.handlePublish = this.handlePublish.bind(this);
 
@@ -130,6 +131,10 @@ class ProfChapter extends React.Component {
     this.props.loadSearchProfsResults([]);
   }
 
+  handleRemoveContributor(event) {
+    this.props.removeContributor(event.target.id, this.props.params.chapterId);
+  }
+
   handleWorkbenchClick() {
     browserHistory.push('/professor');
   }
@@ -174,7 +179,7 @@ class ProfChapter extends React.Component {
           { this.props.contributors ? this.props.contributors.map(user =>
             <ListGroupItem key={user.id} style={{borderTop:"none", marginTop:"1px"}}>
               <h5 style={{display:"inline"}}>{user.firstname} {user.lastname}</h5>
-              { this.props.isOwner ? <Button style={{float:"right", marginTop:"-7px", color:"#878787", background:"none", border:"none", fontSize:"14px"}}>x</Button> : ''}
+              { this.props.isOwner ? <Button onClick={this.handleRemoveContributor} id={user.id} style={{float:"right", marginTop:"-7px", color:"#878787", background:"none", border:"none", fontSize:"14px"}}>x</Button> : ''}
             </ListGroupItem>
           ) : '' }
         </ListGroup>
@@ -343,7 +348,8 @@ ProfChapter.propTypes = {
   searchProfs: PropTypes.func.isRequired,
   searchProfsResults: PropTypes.array.isRequired,
   addContributor: PropTypes.func.isRequired,
-  publish: PropTypes.func.isRequired
+  publish: PropTypes.func.isRequired,
+  removeContributor: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state) {
@@ -379,7 +385,8 @@ function mapDispatchToProps(dispatch) {
     searchProfs: (name) => dispatch(actions.searchProfs(name)),
     addContributor: (id, chapter) => dispatch(actions.addContributor(id, chapter)),
     loadSearchProfsResults: (profs) => dispatch(actions.loadSearchProfsResults(profs)),
-    publish: (chapter, url) => dispatch(actions.publish(chapter, url))
+    publish: (chapter, url) => dispatch(actions.publish(chapter, url)),
+    removeContributor: (contributor, chapter) => dispatch(actions.removeContributor(contributor, chapter))
   };
 }
 

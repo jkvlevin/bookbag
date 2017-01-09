@@ -11,6 +11,8 @@ import SettingsIcon from 'react-icons/lib/go/gear';
 import AddIcon from 'react-icons/lib/go/plus';
 import DeleteIcon from 'react-icons/lib/go/x';
 import PublishIcon from 'react-icons/lib/md/publish';
+import PrivateIcon from 'react-icons/lib/md/vpn-lock';
+import PublicIcon from 'react-icons/lib/md/public';
 import * as actions from './actions.js';
 import styles from './styles.css';
 
@@ -135,8 +137,10 @@ class ProfCourse extends React.Component {
           logout={this.logout}
           userName={localStorage.getItem('userName')}
         />
-        <h1 style={{marginLeft:"220px", marginTop:"25px", fontSize:"22px", color:"#878787"}}> {this.props.currentCourse.courseInfo.name} </h1>
-        <p style={{marginLeft:"235px", fontSize:"11px"}}> "{this.props.currentCourse.courseInfo.description}" </p>
+        <h1 style={{marginLeft:"220px", marginTop:"25px", fontSize:"22px", color:"#878787"}}>
+          {this.props.params.name} {this.props.currentCourse.courseInfo.public ? <PublicIcon style={{marginLeft:"50%", fontSize:"30px"}}/> : <PrivateIcon style={{marginLeft:"50%", fontSize:"30px"}}/>}
+        </h1>
+        <p style={{marginLeft:"235px", fontSize:"11px"}}>"{this.props.currentCourse.courseInfo.description}"</p>
 
           <div id="button-options">
             <Button id="show-chapters-btn" onClick={this.showChapters}><ChapterIcon onClick={this.showChapters} style={{color:"#407dc6"}}/><h4 onClick={this.showChapters} id="showchap-text">Course Chapters</h4></Button>
