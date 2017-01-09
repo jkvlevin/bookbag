@@ -14,9 +14,9 @@ export function addToFolder(folder, chapter) {
     }).then((response) => {
       if(response.status === 200) {
         dispatch(loadFolders());
-        toastr.success(response.data.chaptername + 'added to' + response.data.foldername);
+        toastr.success(response.data.chaptername + ' added to ' + response.data.foldername);
       } else if (response.status === 202) {
-        toastr.warning(response.data.chaptername + 'already in folder' + response.data.foldername);
+        toastr.warning(response.data.chaptername + ' already in folder ' + response.data.foldername);
       }
     });
   };
@@ -34,9 +34,9 @@ export function subscribeToCourse(id) {
     }).then((response) => {
       if(response.status === 200) {
         dispatch(loadCourses());
-        toastr.success('You are now subscribed to' + response.data.coursename);
+        toastr.success('You are now subscribed to ' + response.data.coursename);
       } else if (response.status === 202) {
-        toastr.warning('You are already subscribed to' + response.data.coursename);
+        toastr.warning('You are already subscribed to'  + response.data.coursename);
       }
     });
   };

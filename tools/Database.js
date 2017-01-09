@@ -403,7 +403,7 @@ Database.getChapterNameById = function(chapter, callback) {
 			result.addRow(row);
 		}).on('end', function(result) {
 			done();
-			callback(null, result.rows[0]);
+			callback(null, result.rows[0].name);
 		});
 	});
 };
@@ -416,7 +416,7 @@ Database.getFolderNameById = function(student, folder, callback) {
 			result.addRow(row);
 		}).on('end', function(result) {
 			done();
-			callback(null, result.rows[0]);
+			callback(null, result.rows[0].name);
 		});
 	});
 };
@@ -429,7 +429,7 @@ Database.getCourseNameById = function(course, callback) {
 			result.addRow(row);
 		}).on('end', function(result) {
 			done();
-			callback(null, result.rows[0]);
+			callback(null, result.rows[0].name);
 		});
 	});
 };

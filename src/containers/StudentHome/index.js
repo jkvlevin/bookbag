@@ -273,7 +273,7 @@ class StudentHome extends React.Component {
                       <h5>Courses</h5>
                       <ListGroup>
                         {this.props.searchContentCourses.map(course =>
-                          <ListGroupItem key={course.id}>
+                          <ListGroupItem key={course.id} style={{borderBottom:"none", marginTop:"1px"}}>
                             <p style={{display:"inline"}}>{course.name} - </p>
                             <p style={{display:"inline", fontSize:"12px", marginLeft:"5px", fontStyle:"italic"}}>{course.profname}</p>
                             <Button onClick={this.handleCourseSubscribe} id={course.id} style={{float:"right", marginTop:"-7px", background:"none", border:"none", color:"#1db954", fontWeight:"bold", fontSize:"16px"}}>+</Button>

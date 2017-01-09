@@ -103,7 +103,7 @@ app.post('/api/student/addcourse', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
 		Database.addCourse(decoded.id, req.body.course, function(err, ct) {
 			if (err) return next(err);
-			Database.getCourseNameById(req.body.course, function(er, fn) {
+			Database.getCourseNameById(req.body.course, function(er, cn) {
 				if (er) return next(er);
 				if(ct > 0) {
 					res.sendStatus(202).json({coursename: fn, chaptername: cn})
@@ -240,7 +240,6 @@ app.post('/api/student/addchaptertofolder', function(req, res, next) {
 					if (e) return next(e);
 					if (ct > 0) res.sendStatus(202).json({foldername: fn, chaptername: cn});
 					else res.sendStatus(200).json({foldername: fn, chaptername: cn});
-					
 				});
 			});
 		});
