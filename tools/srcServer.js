@@ -218,7 +218,7 @@ app.post('/api/student/addchaptertocoursenotes', function(req, res, next) {
 
 app.post('/api/student/addchaptertofolder', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		Database.addChapterToFolder(decoded.id, req.body.chaptername, req.body.chapterauthor, req.body.foldername, function(err, data) {
+		Database.addChapterToFolder(decoded.id, req.body.folder, req.body.chapter, function(err, data) {
 			if (err) return next(err);
 			Database.getFolders(decoded.id, function(err, data) {
 		  		if (err) throw Error(err);
