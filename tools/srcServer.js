@@ -230,6 +230,7 @@ app.post('/api/student/addchaptertofolder', function(req, res, next) {
 						else {
 							folders.push({
 								foldername: item.name,
+								id : item.id,
 								chapters : data
 							});
 						}
@@ -260,6 +261,7 @@ app.post('/api/addfolder', function(req, res, next) {
 						else {
 							folders.push({
 								foldername: item.name,
+								id : item.id,
 								chapters : folderdata
 							});
 						}
@@ -382,6 +384,7 @@ app.post('/api/getfolders', function(req, res, next) {
 				else {
 					folders.push({
 						foldername: item.name,
+						id : item.id,
 						chapters : data
 					});
 				}
