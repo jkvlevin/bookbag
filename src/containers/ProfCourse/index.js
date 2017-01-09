@@ -83,7 +83,7 @@ class ProfCourse extends React.Component {
  showSettings() {
    this.setState({ newName: this.props.currentCourse.courseInfo.name,
      newDescrip: this.props.currentCourse.courseInfo.description,
-     newKeywords: this.props.currentCourse.courseInfo.keywords,
+     newKeywords: this.props.currentCourse.courseInfo.keywords.replace('{', '').replace('}', ''),
      showChapters:false  });
  }
 
