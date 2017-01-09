@@ -12,6 +12,10 @@
                                   not supported by any browser */
 }
 
-.btn:focus,.btn:active {
+.btn:focus {
    outline: none !important;
+}
+
+.btn:active {
+  outline: none !important;
 }

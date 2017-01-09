@@ -1,6 +1,21 @@
 import * as types from '../../actionTypes';
 import axios from 'axios';
 
+export function removeContributor(contributor, chapter) {
+  const token = localStorage.getItem('userToken');
+  var authLine = 'Bearer ' + token;
+  return function (dispatch) {
+    axios({
+      method: 'post',
+      url: '/api/prof/removecontributorfromchapter',
+      headers: { Authorization: authLine },
+      data: { contributor: contributor, chapter:chapter }
+    }).then((response) => {
+      dispatch(getContributors(chapter));
+    });
+  }
+}
+
 export function publish(chapter, url) {
   const token = localStorage.getItem('userToken');
   var authLine = 'Bearer ' + token;

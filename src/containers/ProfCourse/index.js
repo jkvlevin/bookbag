@@ -11,6 +11,8 @@ import SettingsIcon from 'react-icons/lib/go/gear';
 import AddIcon from 'react-icons/lib/go/plus';
 import DeleteIcon from 'react-icons/lib/go/x';
 import PublishIcon from 'react-icons/lib/md/publish';
+import PrivateIcon from 'react-icons/lib/md/vpn-lock';
+import PublicIcon from 'react-icons/lib/md/public';
 import * as actions from './actions.js';
 import styles from './styles.css';
 
@@ -19,7 +21,7 @@ class ProfCourse extends React.Component {
   constructor(props) {
    super(props);
 
-   this.state = { searchChaptersValue: '', showAddChapterModal: false, showChapters:true };
+   this.state = { searchChaptersValue: '', showAddChapterModal: false, showChapters:true, newName:'', newDescrip:'', newKeywords:'' };
 
    this.handleDeleteChapter = this.handleDeleteChapter.bind(this);
 
@@ -33,6 +35,10 @@ class ProfCourse extends React.Component {
 
    this.showChapters = this.showChapters.bind(this);
    this.showSettings = this.showSettings.bind(this);
+
+   this.handleSettingsChange = this.handleSettingsChange.bind(this);
+   this.handleSettingsChangeSubmit = this.handleSettingsChangeSubmit.bind(this);
+   this.handleMakeCoursePublic = this.handleMakeCoursePublic.bind(this);
 
    this.handleWorkbenchClick = this.handleWorkbenchClick.bind(this);
    this.handleSearchClick = this.handleSearchClick.bind(this);
@@ -78,7 +84,30 @@ class ProfCourse extends React.Component {
  }
 
  showSettings() {
-   this.setState({ showChapters:false });
+   this.setState({ newName: this.props.currentCourse.courseInfo.name,
+     newDescrip: this.props.currentCourse.courseInfo.description,
+     newKeywords: this.props.currentCourse.courseInfo.keywords.replace('{', '').replace('}', ''),
+     showChapters:false
+   });
+ }
+
+ handleSettingsChange(event) {
+   if (event.target.name === 'name') {
+     this.setState({ newName: event.target.value });
+   } else if (event.target.name === 'description') {
+     this.setState({ newDescrip: event.target.value });
+   } else if (event.target.name === 'keywords') {
+     this.setState({ newKeywords: event.target.value});
+   }
+ }
+
+ handleSettingsChangeSubmit(event) {
+   event.preventDefault();
+   this.props.changeSettings(this.state.newName, this.state.newDescrip, this.state.newKeywords, this.props.params.courseId);
+ }
+
+ handleMakeCoursePublic() {
+   this.props.publishCourse(this.props.params.courseId);
  }
 
   handleWorkbenchClick() {
@@ -108,8 +137,10 @@ class ProfCourse extends React.Component {
           logout={this.logout}
           userName={localStorage.getItem('userName')}
         />
-        <h1 style={{marginLeft:"220px", marginTop:"25px", fontSize:"22px", color:"#878787"}}> {this.props.currentCourse.courseInfo.name} </h1>
-        <p style={{marginLeft:"235px", fontSize:"11px"}}> "{this.props.currentCourse.courseInfo.description}" </p>
+        <h1 style={{marginLeft:"220px", marginTop:"25px", fontSize:"22px", color:"#878787"}}>
+          {this.props.params.name} {this.props.currentCourse.courseInfo.public ? <PublicIcon style={{float:"right", marginRight:"12%", fontSize:"30px"}}/> : <PrivateIcon style={{float:"right", marginRight:"12%", fontSize:"30px"}}/>}
+        </h1>
+        <p style={{marginLeft:"235px", fontSize:"11px"}}>"{this.props.currentCourse.courseInfo.description}"</p>
 
           <div id="button-options">
             <Button id="show-chapters-btn" onClick={this.showChapters}><ChapterIcon onClick={this.showChapters} style={{color:"#407dc6"}}/><h4 onClick={this.showChapters} id="showchap-text">Course Chapters</h4></Button>
@@ -135,21 +166,22 @@ class ProfCourse extends React.Component {
               <p style={{marginLeft:"35%", marginTop:"100px"}}>Add chapters to start creating your course!</p>
             </div> :
           <div id="course-settings">
-            <Form style={{width:"60%", marginLeft:"30px", marginTop:"30px", float:"left"}}>
+            <Form onSubmit={this.handleSettingsChangeSubmit} style={{width:"60%", marginLeft:"30px", marginTop:"30px", float:"left"}}>
               <FormGroup>
                 <ControlLabel>Name</ControlLabel>
-                <FormControl type="text" value={this.props.currentCourse.courseInfo.name} title="Name" name="name"/>
+                <FormControl type="text" value={this.state.newName} title="Name" name="name" onChange={this.handleSettingsChange}/>
                 <ControlLabel style={{marginTop:"15px"}}>Description</ControlLabel>
-                <FormControl componentClass="textarea" value={this.props.currentCourse.courseInfo.description} title="Description" name="description" style={{minHeight:"40px"}} />
+                <FormControl componentClass="textarea" value={this.state.newDescrip} title="Description" name="description" onChange={this.handleSettingsChange} style={{minHeight:"40px"}} />
                 <ControlLabel style={{marginTop:"15px"}}>Keywords</ControlLabel>
-                <FormControl componentClass="textarea" value={this.props.currentCourse.courseInfo.keywords} title="Keywords" name="keywords" style={{minHeight:"40px"}}/>
-                <Button type="submit" style={{marginLeft:"30%", marginTop:"25px", backgroundColor:"#1db954", color:"white", borderRadius:"20px", width:"150px"}}>Save Changes</Button>
+                <FormControl componentClass="textarea" value={this.state.newKeywords} title="Keywords" name="keywords" onChange={this.handleSettingsChange} style={{minHeight:"40px"}}/>
+                <Button type="submit" style={{marginLeft:"35%", marginTop:"25px", backgroundColor:"#1db954", color:"white", borderRadius:"20px", width:"150px"}}>Save Changes</Button>
               </FormGroup>
             </Form>
             {this.props.currentCourse.courseInfo.public ? '' :
               <div>
-                <PublishIcon style={{display:"inline", marginLeft:"150px", marginTop:"10%", fontSize:"50px", color:"#1db954", border:"thin solid #1db954", borderRadius:"25px"}}/> <br /><br />
-                <h4 id="publish-text">Publish</h4> <br />
+                <Button style={{background:"none", border:"none",  marginTop:"10%", marginLeft:"130px"}} onClick={this.handleMakeCoursePublic}>
+                <PublishIcon onClick={this.handleMakeCoursePublic} style={{display:"inline", fontSize:"50px", color:"#1db954", border:"thin solid #1db954", borderRadius:"25px", marginBottom:"5px"}}/> <br />
+                <h4 onClick={this.handleMakeCoursePublic} id="publish-text">Publish</h4></Button> <br />
                 <h7 style={{display:"inline", fontSize:"11px", marginLeft:"5%"}}>Warning: this will make your course publicly available</h7>
               </div>}
           </div>
@@ -248,7 +280,9 @@ ProfCourse.propTypes = {
   publishedChapters: PropTypes.array.isRequired,
   addChapterToCourse: PropTypes.func.isRequired,
   searchChaptersResult: PropTypes.array,
-  hasSearched: PropTypes.bool.isRequired
+  hasSearched: PropTypes.bool.isRequired,
+  changeSettings: PropTypes.func.isRequired,
+  publishCourse: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state) {
@@ -272,7 +306,9 @@ function mapDispatchToProps(dispatch) {
     getCourseById: (id) => dispatch(actions.getCourseById(id)),
     deleteChapter: (chapterId, courseId) => dispatch(actions.deleteChapter(chapterId, courseId)),
     changeAddChapterTab: (tab) => dispatch(actions.changeAddChapterTab(tab)),
-    addChapterToCourse: (chapter, course) => dispatch(actions.addChapterToCourse(chapter, course))
+    addChapterToCourse: (chapter, course) => dispatch(actions.addChapterToCourse(chapter, course)),
+    changeSettings: (name, description, keywords, id) => dispatch(actions.changeSettings(name, description, keywords, id)),
+    publishCourse: (id) => dispatch(actions.publishCourse(id))
   };
 }
 

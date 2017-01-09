@@ -101,9 +101,17 @@ Creation APIs
 // Add course to library
 app.post('/api/student/addcourse', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		Database.addCourse(decoded.id, req.body.course, function(err, data) {
+		Database.addCourse(decoded.id, req.body.course, function(err, ct) {
 			if (err) return next(err);
-			res.sendStatus(data);
+			Database.getCourseNameById(req.body.course, function(er, cn) {
+				if (er) return next(er);
+				if(ct > 0) {
+					res.status(202).send({coursename: cn});
+				}
+				else {
+					res.status(200).send({coursename: cn});
+				}
+			});
 		});
 	});
 });
@@ -209,7 +217,13 @@ app.post('/api/student/addchaptertocoursenotes', function(req, res, next) {
 					});
 		  		}, function(err) {
 		  			if (err) throw Error(err);
-		  			res.send(courses);
+		  			res.send(courses.sort(function(a, b) {
+		  				let ua = a.courseName.toUpperCase();
+		  				let ub = b.courseName.toUpperCase();
+		  				if (ua < ub) return -1;
+		  				if (ua > ub) return 1;
+		  				return 0;
+		  			}));
 		  		});
 		  	});
 		});
@@ -218,28 +232,16 @@ app.post('/api/student/addchaptertocoursenotes', function(req, res, next) {
 
 app.post('/api/student/addchaptertofolder', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		Database.addChapterToFolder(decoded.id, req.body.chaptername, req.body.chapterauthor, req.body.foldername, function(err, data) {
+		Database.addChapterToFolder(decoded.id, req.body.folder, req.body.chapter, function(err, ct) {
 			if (err) return next(err);
-			Database.getFolders(decoded.id, function(err, data) {
-		  		if (err) throw Error(err);
-		  		var folders = [];
-
-		  		async.each(data, function(item, callback) {
-		  			Database.getFolderChapters(decoded.id, item.foldername, function(err, data) {
-						if (err) callback(err);
-						else {
-							folders.push({
-								foldername: item.name,
-								chapters : data
-							});
-						}
-						callback();
-					});
-		  		}, function(err) {
-		  			if (err) throw Error(err);
-		  			res.send(folders);
-		  		});
-		  	});
+			Database.getFolderNameById(decoded.id, req.body.folder, function(er, fn) {
+				if (er) return next(er);
+				Database.getChapterNameById(req.body.chapter, function(e, cn) {
+					if (e) return next(e);
+					if (ct > 0) res.status(202).send({foldername: fn, chaptername: cn});
+					else res.status(200).send({foldername: fn, chaptername: cn});
+				});
+			});
 		});
 	});
 });
@@ -260,6 +262,7 @@ app.post('/api/addfolder', function(req, res, next) {
 						else {
 							folders.push({
 								foldername: item.name,
+								id : item.id,
 								chapters : folderdata
 							});
 						}
@@ -267,7 +270,13 @@ app.post('/api/addfolder', function(req, res, next) {
 					});
 		  		}, function(err) {
 		  			if (err) throw Error(err);
-		  			res.send(folders);
+			  			res.send(folders.sort(function(a, b) {
+			  				let ua = a.foldername.toUpperCase();
+			  				let ub = b.foldername.toUpperCase();
+			  				if (ua < ub) return -1;
+			  				if (ua > ub) return 1;
+			  				return 0;
+			  			}));
 		  		});
 		  	});
 		});
@@ -351,11 +360,12 @@ app.post('/api/student/getcourses', expjwt, function(req, res, next) {
   		var courses = [];
 
   		async.each(data, function(item, callback) {
-  			Database.getCourseChapters(item.id, function(err, data, name) {
+  			Database.getCourseChapters(item.id, function(err, data, name, description) {
 				if (err) callback(err);
 				else {
 					courses.push({
 						courseName: name,
+						description: description,
 						chapters : data
 					});
 				}
@@ -363,7 +373,13 @@ app.post('/api/student/getcourses', expjwt, function(req, res, next) {
 			});
   		}, function(err) {
   			if (err) return next(err);
-  			res.send(courses);
+  			res.send(courses.sort(function(a, b) {
+  				let ua = a.courseName.toUpperCase();
+  				let ub = b.courseName.toUpperCase();
+  				if (ua < ub) return -1;
+  				if (ua > ub) return 1;
+  				return 0;
+  			}));
   		});
   	});
   });
@@ -382,6 +398,7 @@ app.post('/api/getfolders', function(req, res, next) {
 				else {
 					folders.push({
 						foldername: item.name,
+						id : item.id,
 						chapters : data
 					});
 				}
@@ -389,7 +406,13 @@ app.post('/api/getfolders', function(req, res, next) {
 			});
   		}, function(err) {
   			if (err) throw Error(err);
-  			res.send(folders);
+  			res.send(folders.sort(function(a, b) {
+  				let ua = a.foldername.toUpperCase();
+				let ub = b.foldername.toUpperCase();
+				if (ua < ub) return -1;
+				if (ua > ub) return 1;
+				return 0;
+  			}));
   		});
   	});
   });
@@ -511,7 +534,7 @@ app.post('/api/prof/getowner', expjwt, function(req, res, next) {
 
 app.post('/api/prof/makecoursepublic', expjwt, function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
-		Database.makeCoursePublic(req.body.course, req.body.name, function(err, data) {
+		Database.makeCoursePublic(req.body.course, function(err, data) {
 			if (err) return next(err);
 			res.sendStatus(data);
 		});
@@ -598,6 +621,33 @@ app.post('/api/prof/getchapterbyid', expjwt, function(req, res, next) {
   	});
 });
 
+app.post('/api/prof/getchapternamebyid', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.getWorkingChapterData(req.body.chapter, function(err, data) {
+			if (err) callback(err);
+			res.send(data[0]);
+		});
+  	});
+});
+
+app.post('/api/prof/getfoldernamebyid', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.getWorkingChapterData(decoded.id, req.body.folder, function(err, data) {
+			if (err) callback(err);
+			res.send(data[0]);
+		});
+  	});
+});
+
+app.post('/api/prof/getcoursenamebyid', expjwt, function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.getWorkingChapterData(req.body.course, function(err, data) {
+			if (err) callback(err);
+			res.send(data[0]);
+		});
+  	});
+});
+
 /******************************************************************************
 Search APIs
 *******************************************************************************/
@@ -663,6 +713,16 @@ app.post('/api/student/removecourse', function(req, res, next) {
 	});
 });
 
+// Remove Folder from a Student's Library
+app.post('/api/student/removefolder', function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.removeFolder(decoded.id, req.body.folder, function(err, data) {
+			if (err) return next(err);
+			res.sendStatus(data);
+		});
+	});
+});
+
 // Delete a Chapter from Bookbag
 app.post('/api/prof/deletechapter', function(req, res, next) {
 	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
@@ -674,6 +734,16 @@ app.post('/api/prof/deletechapter', function(req, res, next) {
   		})
   	});
   });
+});
+
+// Remove Course from a Student's Library
+app.post('/api/student/removechapterfromfolder', function(req, res, next) {
+	jwt.verify(req.headers["authorization"].split(' ')[1], 'JWT Secret', function(err, decoded) {
+		Database.removeChapterFromFolder(decoded.id, req.body.chapter, req.body.folder, function(err, data) {
+			if (err) return next(err);
+			res.sendStatus(data);
+		});
+	});
 });
 
 // Remove Course from a Student's Library

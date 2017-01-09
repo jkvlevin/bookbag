@@ -1,9 +1,10 @@
 import React, { PropTypes } from 'react';
 import { Navbar, NavDropdown, MenuItem, Nav, NavItem, Col } from 'react-bootstrap';
+import SearchIcon from 'react-icons/lib/go/search';
 
-const HeaderMenu = ({logout, handleCoursesClick}) => {
+const HeaderMenu = ({logout, handleCoursesClick, handleSearchClick}) => {
   return (
-    <Navbar inverse collapseOnSelect>
+    <Navbar inverse fixedTop collapseOnSelect>
       <Navbar.Header>
         <Navbar.Brand>
           <a href="/student">BookBag</a>
@@ -12,9 +13,12 @@ const HeaderMenu = ({logout, handleCoursesClick}) => {
       </Navbar.Header>
       <Navbar.Collapse>
       <Nav pullRight>
-        <NavItem eventKey={1} onClick={handleCoursesClick}>My Library</NavItem>
-        <NavItem eventKey={2}>Search</NavItem>
-        <NavItem eventKey={3} onClick={logout}>Logout</NavItem>
+        <NavItem eventKey={2} onClick={handleSearchClick} style={{marginLeft:"-15%"}}><SearchIcon style={{fontSize:"16px"}}/> Search</NavItem>
+        <NavDropdown eventKey="1" title={localStorage.getItem('userName')} id="nav-dropdown" style={{marginLeft:"15%"}}>
+          <MenuItem eventKey={1.1} onClick={handleCoursesClick}>My Library</MenuItem>
+          <MenuItem divider />
+          <MenuItem eventKey={1.2} onClick={logout}>Logout</MenuItem>
+        </NavDropdown>
       </Nav>
       </Navbar.Collapse>
     </Navbar>
@@ -23,7 +27,8 @@ const HeaderMenu = ({logout, handleCoursesClick}) => {
 
 HeaderMenu.propTypes = {
   logout: PropTypes.func.isRequired,
-  handleCoursesClick: PropTypes.func.isRequired
+  handleCoursesClick: PropTypes.func.isRequired,
+  handleSearchClick: PropTypes.func.isRequired
 };
 
 export default HeaderMenu;

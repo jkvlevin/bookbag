@@ -19,7 +19,7 @@ const Sidebar = ({ handleWorkbenchClick, handleSearchClick, logout, userName }) 
         <Button id="menu-button" onClick={handleSearchClick}><SearchIcon id="menu-icon"/></Button> <h3 id="menu-title">Search</h3> <br/><br/><br/>
 
         <div id="pref-container">
-          <DropdownButton dropup pullLeft noCaret id="settings-menu" title={<SettingsIcon id="menu-icon" style={{fontSize:"28px", color:"#1db954", marginLeft:"-4px"}}/>} style={{width:"45px", height:"45px", borderRadius:"25px"}}>
+          <DropdownButton dropup noCaret id="settings-menu" title={<SettingsIcon id="menu-icon" style={{fontSize:"28px", color:"#1db954", marginLeft:"-4px"}}/>} style={{width:"45px", height:"45px", borderRadius:"25px"}}>
             <MenuItem onClick={logout}>Logout</MenuItem>
           </DropdownButton>
           <h3 style={{fontSize:"12px"}}> {userName} </h3>

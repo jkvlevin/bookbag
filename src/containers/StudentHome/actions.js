@@ -1,5 +1,46 @@
 import * as types from '../../actionTypes';
+import toastr from 'toastr';
 import axios from 'axios';
+
+export function addToFolder(folder, chapter) {
+  const token = localStorage.getItem('userToken');
+  var authLine = 'Bearer ' + token;
+  return function (dispatch) {
+    axios({
+      method: 'post',
+      url: '/api/student/addchaptertofolder',
+      headers: { Authorization : authLine},
+      data: { folder: folder, chapter: chapter }
+    }).then((response) => {
+      if(response.status === 200) {
+        dispatch(loadFolders());
+        toastr.success(response.data.chaptername + ' added to ' + response.data.foldername);
+      } else if (response.status === 202) {
+        toastr.info(response.data.chaptername + ' already in folder ' + response.data.foldername);
+      }
+    });
+  };
+}
+
+export function subscribeToCourse(id) {
+  const token = localStorage.getItem('userToken');
+  var authLine = 'Bearer ' + token;
+  return function (dispatch) {
+    axios({
+      method: 'post',
+      url: '/api/student/addcourse',
+      headers: { Authorization : authLine},
+      data: { course: id }
+    }).then((response) => {
+      if(response.status === 200) {
+        dispatch(loadCourses());
+        toastr.success('You are now subscribed to ' + response.data.coursename);
+      } else if (response.status === 202) {
+        toastr.info('You are already subscribed to '  + response.data.coursename);
+      }
+    });
+  };
+}
 
 export function loadCourses() {
   const token = localStorage.getItem('userToken');
@@ -30,19 +71,21 @@ export function search(searchValue) {
       headers: { Authorization : authLine},
       data: { searchQuery: searchValue }
     }).then((response) => {
-        const searchResponse = [];
-        for (let chapter in response.data) {
-          searchResponse.push(response.data[chapter].name);
-        }
-        dispatch(searchResponseSuccess(searchResponse));
+        const chapters = response.data[0];
+        const courses = response.data[1];
+        dispatch(searchResponseChapters(chapters));
+        dispatch(searchResponseCourses(courses));
     });
   };
 }
 
-export function searchResponseSuccess(searchResponse) {
-  return { type: types.SEARCH_RESPONSE_SUCCESS, searchResponse };
+export function searchResponseChapters(chapters) {
+  return { type: types.SEARCH_RESPONSE_CHAPTERS, chapters };
 }
 
+export function searchResponseCourses(courses) {
+  return { type: types.SEARCH_RESPONSE_COURSES, courses };
+}
 
 export function addFolder(folderName) {
   const token = localStorage.getItem('userToken');

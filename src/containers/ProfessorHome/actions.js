@@ -68,7 +68,7 @@ export function submitNewCourse(name, description, keywords) {
       headers: { Authorization : authLine},
       data: { name: name, keywords: keywords, description: description }
     }).then((response) => {
-      dispatch(loadProfessorCoursesSuccess(response.data[0], response.data[1]));
+      dispatch(loadProfessorCourses());
     });
   };
 }
