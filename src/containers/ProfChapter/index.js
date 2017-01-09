@@ -12,6 +12,8 @@ import PublishIcon from 'react-icons/lib/md/publish';
 import DotIcon from 'react-icons/lib/go/primitive-dot';
 import UploadIcon from 'react-icons/lib/go/cloud-upload';
 import AddIcon from 'react-icons/lib/md/add-circle-outline.js';
+import PrivateIcon from 'react-icons/lib/md/vpn-lock';
+import PublicIcon from 'react-icons/lib/md/public';
 import DropzoneComponent from 'react-dropzone-component';
 import * as actions from './actions.js';
 import styles from './styles.css';
@@ -209,7 +211,7 @@ class ProfChapter extends React.Component {
             file.isPDF ?
             <ListGroupItem key={file.downloadURL} style={{borderTop:"none", marginTop:"1px"}}>
               {file.filename}
-              <Button onClick={this.handlePublish} id={file.downloadURL} style={{float:"right", background:"none", border:"none", marginTop:"-5px", color:"#1db594"}}><PublishIcon /></Button>
+              <Button onClick={this.handlePublish} id={file.downloadURL} style={{float:"right", background:"none", border:"none", marginTop:"-5px", color:"#1db594"}}><PublishIcon id={file.downloadURL} onClick={this.handlePublish}/></Button>
             </ListGroupItem> :
             ''
           )}
@@ -226,22 +228,27 @@ class ProfChapter extends React.Component {
           userName={localStorage.getItem('userName')}
         />
         <h1 style={{marginLeft:"220px", marginTop:"25px", fontSize:"22px", color:"#878787"}}>
-          {this.props.params.name} {this.props.currentChapter.public ? " (Published)" : " (In Progress)"}
+          {this.props.params.name} {this.props.currentChapter.public ? <PublicIcon style={{marginLeft:"75%", fontSize:"30px"}}/> : <PrivateIcon style={{marginLeft:"75%", fontSize:"30px"}}/>}
         </h1>
+        <p style={{marginLeft:"235px", fontSize:"11px"}}>"{this.props.currentChapter.description}"</p>
 
           <div id="button-options">
             <OverlayTrigger trigger="click" rootClose placement="right" overlay={contributorsPopover}>
               <Button id="contributors-button"><UserIcon/><h4 id="contributors-text">Contributors </h4></Button>
             </OverlayTrigger>
               { this.props.isOwner ?
-                  <OverlayTrigger trigger="click" rootClose placement="bottom" overlay={publishPopover}>
-                    <Button id="publish-button"><PublishIcon/><h4 id="publish-text">Publish</h4></Button>
-                  </OverlayTrigger>
+                  this.props.currentChapter.public ?
+                    <OverlayTrigger trigger="click" rootClose placement="bottom" overlay={publishPopover}>
+                      <Button id="publish-button"><PublishIcon style={{color:"#1db954"}}/><h4 id="publish-text">Update Published Version</h4></Button>
+                    </OverlayTrigger> :
+                    <OverlayTrigger trigger="click" rootClose placement="bottom" overlay={publishPopover}>
+                      <Button id="publish-button"><PublishIcon style={{color:"#1db954"}}/><h4 id="publish-text">Publish</h4></Button>
+                    </OverlayTrigger>
                 : ""}
               { this.props.currentChapter.checkout_user === null ?
                 <Button id="checkout-btn" onClick={this.handleCheckout}><CheckoutIcon/><h4 id="checkout-text">Checkout</h4></Button> :
                 this.props.checkoutUser ?
-                <Button id="upload-btn" onClick={this.showUploadModal}><UploadIcon/><h4 id="upload-text">Upload Files & Check-In</h4></Button> :
+                <Button id="upload-btn" onClick={this.showUploadModal}><UploadIcon style={{color:"#407dc6"}}/><h4 id="upload-text">Upload Files & Check-In</h4></Button> :
                 <Button disabled id="checked-out-btn"><CheckoutIcon/><h4 style={{marginLeft:"10px", color:"#868686"}}>Checked Out</h4></Button>
               }
           </div>

@@ -9,7 +9,7 @@ export function publish(chapter, url) {
       method: 'post',
       url: '/api/prof/makechapterpublic',
       headers: { Authorization: authLine },
-      data: { chapter: chapter, url: url }
+      data: { chapter: chapter, pdf_url: url }
     }).then((response) => {
       dispatch(window.location.reload());
     });

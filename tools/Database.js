@@ -181,6 +181,7 @@ Database.addFolder = function(student, folderName, callback) {
 Database.addChapterToCourse = function(chapter, course, callback) {
 	pg.connect(DATABASE_URL, function(err, client, done) {
 		if (err) callback(err);
+    console.log("INSERT INTO \"" + course + "_chapters\" VALUES ('" + chapter + "', null) ON CONFLICT (id) DO NOTHING");
 		client.query("INSERT INTO \"" + course + "_chapters\" VALUES ('" + chapter + "', null) ON CONFLICT (id) DO NOTHING", function() {
 			done();
 			callback(null, 200);
@@ -369,7 +370,7 @@ Database.getUserNameById = function(user, callback) {
 			result.addRow(row);
 		}).on('end', function(result) {
 			done();
-			callback(null, result.rows[0]);			
+			callback(null, result.rows[0]);
 		});
 	});
 }
@@ -382,7 +383,7 @@ Database.getChapterById = function(chapter, callback) {
 			result.addRow(row);
 		}).on('end', function(result) {
 			done();
-			callback(null, result.rows[0]);			
+			callback(null, result.rows[0]);
 		});
 	});
 };
@@ -400,7 +401,7 @@ Database.isCheckedOutByUser = function(user, chapter, callback) {
 			}
 			else {
 				done();
-				callback(null, 202);		
+				callback(null, 202);
 			}
 		});
 	});
@@ -591,7 +592,7 @@ Database.prepUpload = function(chapter, callback) {
 				done();
 				callback(null, "Chapter is past checkout date");
 			} else {
-				// time to check out	
+				// time to check out
 				done();
 				callback(null, 200);
 			}
