@@ -36,6 +36,7 @@ class ProfCourse extends React.Component {
 
    this.handleSettingsChange = this.handleSettingsChange.bind(this);
    this.handleSettingsChangeSubmit = this.handleSettingsChangeSubmit.bind(this);
+   this.handleMakeCoursePublic = this.handleMakeCoursePublic.bind(this);
 
    this.handleWorkbenchClick = this.handleWorkbenchClick.bind(this);
    this.handleSearchClick = this.handleSearchClick.bind(this);
@@ -83,8 +84,9 @@ class ProfCourse extends React.Component {
  showSettings() {
    this.setState({ newName: this.props.currentCourse.courseInfo.name,
      newDescrip: this.props.currentCourse.courseInfo.description,
-     newKeywords: this.props.currentCourse.courseInfo.keywords,
-     showChapters:false  });
+     newKeywords: this.props.currentCourse.courseInfo.keywords.replace('{', '').replace('}', ''),
+     showChapters:false
+   });
  }
 
  handleSettingsChange(event) {
@@ -100,6 +102,10 @@ class ProfCourse extends React.Component {
  handleSettingsChangeSubmit(event) {
    event.preventDefault();
    this.props.changeSettings(this.state.newName, this.state.newDescrip, this.state.newKeywords, this.props.params.courseId);
+ }
+
+ handleMakeCoursePublic() {
+   this.props.publishCourse(this.props.params.courseId);
  }
 
   handleWorkbenchClick() {
@@ -169,8 +175,9 @@ class ProfCourse extends React.Component {
             </Form>
             {this.props.currentCourse.courseInfo.public ? '' :
               <div>
-                <PublishIcon style={{display:"inline", marginLeft:"150px", marginTop:"10%", fontSize:"50px", color:"#1db954", border:"thin solid #1db954", borderRadius:"25px", marginBottom:"5px"}}/> <br />
-                <h4 id="publish-text">Publish</h4> <br /><br />
+                <Button style={{background:"none", border:"none",  marginTop:"10%", marginLeft:"130px"}} onClick={this.handleMakeCoursePublic}>
+                <PublishIcon onClick={this.handleMakeCoursePublic} style={{display:"inline", fontSize:"50px", color:"#1db954", border:"thin solid #1db954", borderRadius:"25px", marginBottom:"5px"}}/> <br />
+                <h4 onClick={this.handleMakeCoursePublic} id="publish-text">Publish</h4></Button> <br />
                 <h7 style={{display:"inline", fontSize:"11px", marginLeft:"5%"}}>Warning: this will make your course publicly available</h7>
               </div>}
           </div>
@@ -270,7 +277,8 @@ ProfCourse.propTypes = {
   addChapterToCourse: PropTypes.func.isRequired,
   searchChaptersResult: PropTypes.array,
   hasSearched: PropTypes.bool.isRequired,
-  changeSettings: PropTypes.func.isRequired
+  changeSettings: PropTypes.func.isRequired,
+  publishCourse: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state) {
@@ -295,7 +303,8 @@ function mapDispatchToProps(dispatch) {
     deleteChapter: (chapterId, courseId) => dispatch(actions.deleteChapter(chapterId, courseId)),
     changeAddChapterTab: (tab) => dispatch(actions.changeAddChapterTab(tab)),
     addChapterToCourse: (chapter, course) => dispatch(actions.addChapterToCourse(chapter, course)),
-    changeSettings: (name, description, keywords, id) => dispatch(actions.changeSettings(name, description, keywords, id))
+    changeSettings: (name, description, keywords, id) => dispatch(actions.changeSettings(name, description, keywords, id)),
+    publishCourse: (id) => dispatch(actions.publishCourse(id))
   };
 }
 
