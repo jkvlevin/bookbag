@@ -3,6 +3,7 @@
     "start": "babel-node tools/srcServer.js"
   },
   "dependencies": {
+    "all": "0.0.0",
     "async": "^2.1.4",
     "axios": "^0.15.2",
     "babel-cli": "^6.18.0",
