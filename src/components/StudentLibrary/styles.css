@@ -38,7 +38,7 @@
 }
 
 .Collapsible__contentOuter {
-  max-height: 450px !important;
+  height: 100%;
 }
 
 .Collapsible__trigger {

@@ -149,7 +149,7 @@ class StudentHome extends React.Component {
             <ListGroup style={{paddingLeft:"15px", paddingRight:"15px", marginTop:"-1px", minHeight:"40%"}}>
               {this.props.courses.map(course =>
                 (course.courseName === this.props.selectedCourse.courseName && this.props.isCourseSelected) ? <ListGroupItem onClick={this.onCourseSelect} key={course.courseName} name={course.courseName} style={{borderTop:"none !important", color:"#1db954", fontSize:"15px"}}> {course.courseName}</ListGroupItem> :
-                <ListGroupItem onClick={this.onCourseSelect} key={course.id} name={course.courseName} style={{fontSize:"14px"}}> {course.courseName}</ListGroupItem>
+                <ListGroupItem onClick={this.onCourseSelect} key={course.courseName} name={course.courseName} style={{fontSize:"14px"}}> {course.courseName}</ListGroupItem>
               )}
             </ListGroup>
           </Collapsible>
